@@ -1,0 +1,6 @@
+orig_gd_src/*
+CMakeFiles/*
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+gravity_defied_cpp
