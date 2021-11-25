@@ -8,6 +8,13 @@ find_package(SDL2 REQUIRED)
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
     src/main.cpp
+    src/lcdui/Graphics.cpp
+    src/lcdui/tests/test_Graphics.cpp
+)
+
+set(HEADERS
+    src/lcdui/Graphics.h
+    src/lcdui/tests/test_Graphics.h
 )
 
 # Add an executable with the above sources
