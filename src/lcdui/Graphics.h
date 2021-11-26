@@ -1,11 +1,17 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <stdexcept>
+#include <cmath>
+#include <iostream>
+
+constexpr auto PI_CONV = 3.1415926 / 180.0;
 
 class Graphics {
 private:
     SDL_Renderer *renderer;
     // TODO: FontRenderContext frc;
+    // void _ellipse(int cx, int cy, int xradius, int yradius);
+    void _putpixel(int x, int y);
 
 public:
     enum Anchors {
@@ -26,7 +32,7 @@ public:
     // TODO: void drawChar(char c, int x, int y, int anchor);
     void fillRect(int x, int y, int w, int h);
     // TODO: void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle);
-    // TODO: void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle);
+    void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawLine(int x1, int y1, int x2, int y2);
     // TODO: void drawImage(Image image, int x, int y, int anchor);
     static int getAnchorX(int x, int size, int anchor);

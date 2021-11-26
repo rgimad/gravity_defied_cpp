@@ -18,6 +18,35 @@ void Graphics::fillRect(int x, int y, int w, int h) {
     SDL_RenderFillRect(renderer, &rect);
 }
 
+void Graphics::drawArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
+    // Draws an elliptical arc left-top at (x, y), with axes given by
+    // xradius and yradius, traveling from startAngle to endangle.
+    // Bresenham-based if complete
+    int xradius = w/2, yradius = h/2;
+    x += xradius;
+    y += yradius;
+    if (xradius == 0 && yradius == 0) {
+        return;
+    }
+    if (arcAngle < startAngle)
+        arcAngle += 360;
+    // draw complete ellipse if (0, 360) specified
+    // if (startAngle == 0 && arcAngle == 360) {
+    //     _ellipse(x, y, xradius, yradius);
+    //     return;
+    // }
+    for (int angle = startAngle; angle < arcAngle; angle++) {
+        drawLine(x + int(xradius * cos (angle * PI_CONV)),
+                y - int(yradius * sin (angle * PI_CONV)),
+                x + int(xradius * cos ((angle + 1) * PI_CONV)),
+                y - int(yradius * sin ((angle + 1) * PI_CONV)));
+    }
+}
+
+void Graphics::_putpixel(int x, int y) {
+    SDL_RenderDrawPoint(renderer, x, y);
+}
+
 void Graphics::drawLine(int x1, int y1, int x2, int y2) {
     SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 }

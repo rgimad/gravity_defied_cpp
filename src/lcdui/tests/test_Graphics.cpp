@@ -42,6 +42,14 @@ void test_Graphics() {
         g.fillRect(i + 120, i, 100, 100);
     }
 
+    g.setColor(255, 0, 0);
+
+    g.drawArc(30, 10, 50, 100, 30, 220);
+
+    g.drawArc(100, 10, 100, 100, 0, 127);
+
+    g.drawArc(200, 200, 30, 30, 0, 360);
+
     // TODO: test getAnchorX
     // TODO: test getAnchorY
 
