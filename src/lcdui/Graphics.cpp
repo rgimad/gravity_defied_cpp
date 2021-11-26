@@ -57,6 +57,7 @@ void Graphics::drawImage(Image *image, int x, int y, int anchor) {
     y = getAnchorY(y, image->getHeight(), anchor);
     SDL_Rect dstRect{x, y, image->getWidth(), image->getHeight()};
     SDL_RenderCopy(renderer, texture, 0, &dstRect);
+    SDL_DestroyTexture(texture);
 }
 
 int Graphics::getAnchorX(int x, int size, int anchor) {
