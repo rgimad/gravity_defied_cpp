@@ -1,10 +1,14 @@
 #pragma once
-#include <SDL2/SDL.h>
 #include <stdexcept>
 #include <cmath>
 #include <iostream>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include "Image.h"
 
 constexpr auto PI_CONV = 3.1415926 / 180.0;
+
+class Image;
 
 class Graphics {
 private:
@@ -34,7 +38,7 @@ public:
     // TODO: void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawLine(int x1, int y1, int x2, int y2);
-    // TODO: void drawImage(Image image, int x, int y, int anchor);
+    void drawImage(Image *image, int x, int y, int anchor);
     static int getAnchorX(int x, int size, int anchor);
     static int getAnchorY(int y, int size, int anchor);
 };

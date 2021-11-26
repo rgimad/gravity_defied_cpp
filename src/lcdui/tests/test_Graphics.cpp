@@ -5,8 +5,12 @@ void test_Graphics() {
         throw std::runtime_error(SDL_GetError());
     }
 
+    if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+        throw std::runtime_error(IMG_GetError());
+    }
+
     SDL_Window *window = SDL_CreateWindow(
-        "Graphics test",
+        0,
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         320, 240,
@@ -50,8 +54,13 @@ void test_Graphics() {
 
     g.drawArc(200, 200, 30, 30, 0, 360);
 
-    // TODO: test getAnchorX
-    // TODO: test getAnchorY
+    Image *img1 = Image::createImage("splash.png");
+    Image *img2 = Image::createImage("sprites.png");
+    g.drawImage(img1, 150, 150, Graphics::HCENTER | Graphics::VCENTER);
+    g.drawImage(img1, 0, 0, Graphics::HCENTER | Graphics::VCENTER);
+    g.drawImage(img2, 200, 150, Graphics::LEFT | Graphics::TOP);
+    delete img2;
+    delete img1;
 
     SDL_RenderPresent(renderer); // Send to screen
 

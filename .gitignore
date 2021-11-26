@@ -3,4 +3,5 @@ CMakeFiles/*
 CMakeCache.txt
 cmake_install.cmake
 Makefile
+*.png
 gravity_defied_cpp

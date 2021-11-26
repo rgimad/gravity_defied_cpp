@@ -51,6 +51,14 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2) {
     SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 }
 
+void Graphics::drawImage(Image *image, int x, int y, int anchor) {
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
+    x = getAnchorX(x, image->getWidth(), anchor);
+    y = getAnchorY(y, image->getHeight(), anchor);
+    SDL_Rect dstRect{x, y, image->getWidth(), image->getHeight()};
+    SDL_RenderCopy(renderer, texture, 0, &dstRect);
+}
+
 int Graphics::getAnchorX(int x, int size, int anchor) {
     if ((anchor & LEFT) != 0) {
         return x;
@@ -61,7 +69,7 @@ int Graphics::getAnchorX(int x, int size, int anchor) {
     if ((anchor & HCENTER) != 0) {
         return x - size / 2;
     }
-    throw std::runtime_error("unknown anchor = " + std::to_string(anchor));
+    throw std::runtime_error("unknown xanchor = " + std::to_string(anchor));
 }
 
 int Graphics::getAnchorY(int y, int size, int anchor) {
@@ -74,5 +82,5 @@ int Graphics::getAnchorY(int y, int size, int anchor) {
     if ((anchor & VCENTER) != 0) {
         return y - size / 2;
     }
-    throw std::runtime_error("unknown anchor = " + std::to_string(anchor));
+    throw std::runtime_error("unknown yanchor = " + std::to_string(anchor));
 }
