@@ -4,4 +4,6 @@ CMakeCache.txt
 cmake_install.cmake
 Makefile
 gravity_defied_cpp
+gravity_defied_cpp.exe
+libgravity_defied_cpp.dll.a
 *.dll
