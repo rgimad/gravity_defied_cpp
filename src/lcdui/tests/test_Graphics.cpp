@@ -54,8 +54,8 @@ void test_Graphics() {
 
     g.drawArc(200, 200, 30, 30, 0, 360);
 
-    Image *img1 = Image::createImage("splash.png");
-    Image *img2 = Image::createImage("sprites.png");
+    Image *img1 = Image::createImage("assets/splash.png");
+    Image *img2 = Image::createImage("assets/sprites.png");
     g.drawImage(img1, 150, 150, Graphics::HCENTER | Graphics::VCENTER);
     g.drawImage(img1, 0, 0, Graphics::HCENTER | Graphics::VCENTER);
     g.drawImage(img2, 200, 150, Graphics::LEFT | Graphics::TOP);

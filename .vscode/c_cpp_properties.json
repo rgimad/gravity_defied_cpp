@@ -4,7 +4,10 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/include/SDL2"
+                "/usr/include/SDL2",
+                "C:/Users/rgimad/SDL2/include",
+                "C:/Users/rgimad/SDL2/include/SDL2",
+                "C:/Users/rgimad/SDL2_Image/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
