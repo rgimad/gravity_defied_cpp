@@ -1,14 +1,14 @@
 #pragma once
 #include "class_10.h"
 
-/*
+
 class GamePhysics {
 private:
     int index01 = 0;
     int index10 = 1;
     int field_28 = -1;
-    TimerOrMotoPartOrMenuElem[] field_30;
-    TimerOrMotoPartOrMenuElem[] motoComponents = new TimerOrMotoPartOrMenuElem[6];
+    TimerOrMotoPartOrMenuElem **field_30; // array
+    TimerOrMotoPartOrMenuElem **motoComponents; // array, = new TimerOrMotoPartOrMenuElem[6];
     int field_31 = 0;
     LevelLoader *levelLoader;
     int field_33 = 0;
@@ -132,4 +132,3 @@ public:
     void renderGame(GameCanvas *gameCanvas);
 
 };
-*/

@@ -44,7 +44,7 @@ void TimerOrMotoPartOrMenuElem::menuElemMethod(int var1) {
         case 1:
         case 2:
             menuManager->processMenu(this);
-            gameMenu->setGameMenu(menuManager.getGameMenu());
+            gameMenu->setGameMenu(menuManager->getGameMenu());
             menuManager->method_1(gameMenu, false);
         case 3:
         default:
