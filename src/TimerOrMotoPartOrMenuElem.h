@@ -6,7 +6,7 @@ class TimerOrMotoPartOrMenuElem { // TODO  extends TimerTask implements IGameMen
 private:
     char *text;
     GameMenu *gameMenu;
-    IMenuManager menuManager;
+    IMenuManager *menuManager;
 
 public:
     int xF16;
