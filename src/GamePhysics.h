@@ -72,7 +72,7 @@ public:
     static int field_14;
     static int motoParam10;
     static int field_16;
-    static const int const175_1_half[] = {114688, 65536, 32768};
+    static const int const175_1_half[3];
     static int motoParam3;
     static int field_19;
 
@@ -83,7 +83,7 @@ public:
     static int motoParam8;
     static int motoParam9;
 
-    class_10[] field_29;
+    class_10 **field_29; // array
     bool field_41 = false;
     int field_45;
     bool field_46;
@@ -94,7 +94,7 @@ public:
     static const int field_50 = 1;
     static const int field_51 = 2;
     static const int field_52 = 3;
-    static int curentMotoLeague = 0;
+    static int curentMotoLeague;
     static const int field_62 = 0;
     static const int field_63 = 1;
     static const int field_64 = 2;
