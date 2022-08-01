@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "Micro.h"
+
 class TimerOrMotoPartOrMenuElem { // TODO  extends TimerTask implements IGameMenuElement
 private:
     char *text;

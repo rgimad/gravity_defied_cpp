@@ -40,7 +40,7 @@ private:
     const int hardcodedArr4[8][2] = {{183500, -39321}, {262144, -131072}, {393216, -65536}, {458752, -39321}, {294912, 6553}, {16384, -144179}, {13107, -78643}, {288358, 85196}};
     const int hardcodedArr5[8][2] = {{190054, -91750}, {255590, -235929}, {334233, -114688}, {393216, -42598}, {301465, 6553}, {65536, -78643}, {13107, -78643}, {288358, 85196}};
     const int hardcodedArr6[8][2] = {{157286, 13107}, {294912, -13107}, {367001, 104857}, {406323, 176947}, {347340, 72089}, {39321, -98304}, {13107, -52428}, {288358, 85196}};
-    int[][] field_80;
+    int field_80[3] = {45875, 32768, 52428};
 
     void method_27(int var1, int var2);
     void setInputFromAI();
@@ -117,7 +117,7 @@ public:
     void method_30(int var1, int var2);
     void enableGenerateInputAI();
     void disableGenerateInputAI();
-    bool isGenerateInputAI();
+    bool getIsGenerateInputAI();
     int updatePhysics();
     bool isTrackStarted();
     bool method_38();

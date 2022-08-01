@@ -1,9 +1,10 @@
 #pragma once
 #include <cstdint>
 
-class Game {
+class Micro {
 private:
     // TODO: static uint8_t singleByteArr[1]; ?
+    // Thread *thread = nullptr;
     int64_t goLoadingStep();
     void destroyApp(bool var1);
     void startApp();
@@ -14,20 +15,20 @@ public:
     LevelLoader *levelLoader;
     GamePhysics *gamePhysics;
     MenuManager *menuManager;
-    bool field_242;
-    int numPhysicsLoops;
-    int64_t timeMs;
-    int64_t gameTimeMs;
-    int64_t field_246;
-    bool isInited;
-    bool field_248;
+    bool field_242 = false;
+    int numPhysicsLoops = 2;
+    int64_t timeMs = 0;
+    int64_t gameTimeMs = 0;
+    int64_t field_246 = 0;
+    bool isInited = false;
+    bool field_248 = false;
     static bool field_249;
-    static bool isPaused;;
+    static bool isPaused;
     static bool isInGameMenu;
     static int gameLoadingStateStage;
 
-    Game();
-    ~Game();
+    Micro();
+    ~Micro();
 
     void gameToMenu();
     void menuToGame();
