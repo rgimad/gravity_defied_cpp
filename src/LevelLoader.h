@@ -1,10 +1,17 @@
 #pragma once
 
+#include <cstdint>
+#include <vector>
+#include <string>
+#include <fstream>
+
+#include "GamePhysics.h"
+
 class LevelLoader {
 private:
     int[][] field_121 = (int[][]) null; // TODO
-    int[] field_123 = new int[3]; // TODO
-    int[] field_124 = new int[3]; // TODO
+    int field_123[3];
+    int field_124[3];
     static int[][] levelOffsetInFile = new int[3][]; // TODO
 
     int field_132 = 0;
@@ -24,12 +31,26 @@ public:
     GameLevel *gameLevel = nullptr;
     int field_125 = 0;
     int field_126 = -1;
-    String[][] levelNames = new String[3][]; // TODO
+    std::vector<std::string> levelNames[3];
     int field_129;
     int field_130;
     int field_131;
     int field_137;
     int field_138;
+
+    LevelLoader();
+    ~LevelLoader();
+
+    void method_87();
+    int method_88(int var1, int var2);
+    void method_89(int var1, int var2);
+
+    void method_90(int var1);
+    int method_91();
+    int method_92();
+    int method_93();
+    int method_94();
+    int method_95(int var1);
 
 
 };
