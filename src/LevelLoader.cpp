@@ -42,23 +42,15 @@ int LevelLoader::method_88(int var1, int var2) {
     return field_126;
 }
 
-// TODO
 void LevelLoader::method_89(int var1, int var2) {
     std::ifstream dis("levels.mrg", std::ios::binary);
-
-    try {
-        for (int i = levelOffsetInFile[var1 - 1][var2 - 1]; i > 0; i -= dis.skipBytes(i)) {
-        }
-
-        if (gameLevel == nullptr) {
-            gameLevel = new GameLevel();
-        }
-
-        gameLevel->load(dis);
-        dis.close();
-        method_96(gameLevel);
-    } catch (IOException var6) {
+    dis.seekg(levelOffsetInFile[var1 - 1][var2 - 1]);
+    if (gameLevel == nullptr) {
+        gameLevel = new GameLevel();
     }
+    gameLevel->load(dis);
+    dis.close();
+    method_96(gameLevel);
 }
 
 

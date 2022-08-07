@@ -4,15 +4,16 @@
 #include <vector>
 #include <string>
 #include <fstream>
+#include <stdexcept>
 
 #include "GamePhysics.h"
 
 class LevelLoader {
 private:
-    int[][] field_121 = (int[][]) null; // TODO
+    std::vector< std::vector<int> > field_121;
     int field_123[3];
     int field_124[3];
-    static int[][] levelOffsetInFile = new int[3][]; // TODO
+    static std::vector<int> levelOffsetInFile[3];
 
     int field_132 = 0;
     static int field_133;
