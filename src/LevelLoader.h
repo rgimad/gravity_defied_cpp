@@ -52,7 +52,10 @@ public:
     int method_93();
     int method_94();
     int method_95(int var1);
-
+    void method_96(GameLevel *gameLevel);
+    void setMinMaxX(int minX, int maxX);
+    void renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16);
+    void renderTrackNearestLine(GameCanvas *canvas);
 
 };
 
