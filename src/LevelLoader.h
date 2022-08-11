@@ -7,6 +7,7 @@
 #include <stdexcept>
 
 #include "GamePhysics.h"
+#include "TimerOrMotoPartOrMenuElem.h"
 
 class LevelLoader {
 private:
@@ -56,6 +57,8 @@ public:
     void setMinMaxX(int minX, int maxX);
     void renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16);
     void renderTrackNearestLine(GameCanvas *canvas);
+    void method_100(int var1, int var2, int var3);
+    int method_101(TimerOrMotoPartOrMenuElem *var1, int var2);
 
 };
 
