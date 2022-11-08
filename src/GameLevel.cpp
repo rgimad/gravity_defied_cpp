@@ -101,6 +101,72 @@ void GameLevel::renderShadow(GameCanvas *gameCanvas, int var2, int var3) {
 
 }
 
+void GameLevel::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
+    int var7 = 0;
+    int var8 = 0;
+
+    int lineNo;
+    for (lineNo = 0; lineNo < pointsCount - 1 && pointPositions[lineNo][0] <= minX; ++lineNo) {
+    }
+
+    if (lineNo > 0) {
+        --lineNo;
+    }
+
+    int var9 = xF16 - pointPositions[lineNo][0];
+    int var10 = yF16 + 3276800 - pointPositions[lineNo][1];
+    int var11 = GamePhysics::getSmthLikeMaxAbs(var9, var10);
+    var9 = (int) (((int64_t) var9 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
+    var10 = (int) (((int64_t) var10 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
+    gameCanvas->setColor(0, 170, 0);
+
+    while (lineNo < pointsCount - 1) {
+        int var4 = var9;
+        int var5 = var10;
+        var9 = xF16 - pointPositions[lineNo + 1][0];
+        var10 = yF16 + 3276800 - pointPositions[lineNo + 1][1];
+        var11 = GamePhysics::getSmthLikeMaxAbs(var9, var10);
+        var9 = (int) (((int64_t) var9 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
+        var10 = (int) (((int64_t) var10 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
+        // far line
+        gameCanvas->drawLine(pointPositions[lineNo][0] + var4 << 3 >> 16, pointPositions[lineNo][1] + var5 << 3 >> 16, pointPositions[lineNo + 1][0] + var9 << 3 >> 16, pointPositions[lineNo + 1][1] + var10 << 3 >> 16);
+        // from far to near
+        gameCanvas->drawLine(pointPositions[lineNo][0] << 3 >> 16, pointPositions[lineNo][1] << 3 >> 16, pointPositions[lineNo][0] + var4 << 3 >> 16, pointPositions[lineNo][1] + var5 << 3 >> 16);
+        if (lineNo > 1) {
+            if (pointPositions[lineNo][0] > field_264 && var7 == 0) {
+                var7 = lineNo - 1;
+            }
+
+            if (pointPositions[lineNo][0] > field_265 && var8 == 0) {
+                var8 = lineNo - 1;
+            }
+        }
+
+        if (startFlagPoint == lineNo) {
+            // render far start flag
+            gameCanvas->renderStartFlag(pointPositions[startFlagPoint][0] + var4 << 3 >> 16, pointPositions[startFlagPoint][1] + var5 << 3 >> 16);
+            gameCanvas->setColor(0, 170, 0);
+        }
+
+        if (finishFlagPoint == lineNo) {
+            // render far finish flag
+            gameCanvas->renderFinishFlag(pointPositions[finishFlagPoint][0] + var4 << 3 >> 16, pointPositions[finishFlagPoint][1] + var5 << 3 >> 16);
+            gameCanvas->setColor(0, 170, 0);
+        }
+
+        if (pointPositions[lineNo][0] > maxX) {
+            break;
+        }
+
+        ++lineNo;
+    }
+
+    gameCanvas->drawLine(pointPositions[pointsCount - 1][0] << 3 >> 16, pointPositions[pointsCount - 1][1] << 3 >> 16, pointPositions[pointsCount - 1][0] + var9 << 3 >> 16, pointPositions[pointsCount - 1][1] + var10 << 3 >> 16);
+    if (LevelLoader::isEnabledShadows) {
+        renderShadow(gameCanvas, var7, var8);
+    }
+}
+
 
 void GameLevel::addPointSimple(int var1, int var2) {
     addPoint(var1 << 16 >> 3, var2 << 16 >> 3);

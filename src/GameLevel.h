@@ -3,6 +3,8 @@
 #include <cstdint>
 #include <vector>
 
+#include "GamePhysics.h"
+
 class GameLevel {
 private:
     int minX = 0;
