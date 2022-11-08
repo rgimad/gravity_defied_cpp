@@ -41,8 +41,8 @@ public:
     void method_183(int var1, int var2);
     void method_184(int var1, int var2, int var3);
     void renderShadow(GameCanvas *gameCanvas, int var2, int var3);
-    /*synchronized*/ void renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16); // TODO
-    /*synchronized*/ void renderTrackNearestGreenLine(GameCanvas *canvas); // TODO
+    /*synchronized*/ void renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16);
+    /*synchronized*/ void renderTrackNearestGreenLine(GameCanvas *canvas);
     void addPointSimple(int var1, int var2);
     void addPoint(int x, int y);
     /*synchronized*/ void load(DataInputStream *var1); /* throws IOException*/ // TODO
