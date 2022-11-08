@@ -182,6 +182,74 @@ void GameLevel::renderTrackNearestGreenLine(GameCanvas *gameCanvas) {
     }
 }
 
+// read int from big endian representation
+int read_int_be(std::ifstream &is) {
+    char data[4];
+    is.read(data, 4);
+    if (is.eof()) { // if reached eof when reading
+        return 0;
+    }
+    int res = (data[3]<<0) | (data[2]<<8) | (data[1]<<16) | ((unsigned)data[0]<<24);
+    // The last byte must be explicitly cast to unsigned before shifting,
+    // as by default it's promoted to int, and a shift by 24 bits means
+    // manipulating the sign bit which is Undefined Behavior.
+    return res;
+}
+
+// read int from big endian representation
+short read_short_be(std::ifstream &is) {
+    char data[2];
+    is.read(data, 2);
+    if (is.eof()) { // if reached eof when reading
+        return 0;
+    }
+    short res = (data[1]<<0) | ((unsigned)data[0]<<8);
+    return res;
+}
+
+void GameLevel::load(std::ifstream &var1) {
+    init();
+    char c;
+    var1.read(&c, 1);
+    if (c == 50) {
+        char var3[20];
+        var1.read(var3, 20);
+    }
+
+    finishFlagPoint = 0;
+    startFlagPoint = 0;
+    startPosX = read_int_be(var1);
+    startPosY = read_int_be(var1);
+    finishPosX = read_int_be(var1);
+    finishPosY = read_int_be(var1);
+    short pointsCount = read_short_be(var1);
+    int pointX = read_int_be(var1);
+    int pointY = read_int_be(var1);
+    int offsetX = pointX;
+    int offsetY = pointY;
+    addPointSimple(pointX, pointY);
+
+    for (int i = 1; i < pointsCount; ++i) {
+        unsigned char modeOrDx;
+        var1.read(reinterpret_cast<char*>(&modeOrDx), 1);
+        if (modeOrDx == 0xFF) {
+            offsetY = 0;
+            offsetX = 0;
+            pointX = read_int_be(var1);
+            pointY = read_int_be(var1);
+        } else {
+            pointX = modeOrDx;
+            unsigned char tmp;
+            var1.read(reinterpret_cast<char*>(&tmp), 1);
+            pointY = tmp;
+        }
+
+        offsetX += pointX;
+        offsetY += pointY;
+        addPointSimple(offsetX, offsetY);
+    }
+
+}
 
 
 void GameLevel::addPointSimple(int var1, int var2) {

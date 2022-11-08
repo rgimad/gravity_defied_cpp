@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <vector>
+#include <fstream>
 
 #include "GamePhysics.h"
 
@@ -45,7 +46,7 @@ public:
     /*synchronized*/ void renderTrackNearestGreenLine(GameCanvas *canvas);
     void addPointSimple(int var1, int var2);
     void addPoint(int x, int y);
-    /*synchronized*/ void load(DataInputStream *var1); /* throws IOException*/ // TODO
+    /*synchronized*/ void load(std::ifstream &var1);
     // static InputStream makeInputStream(String name); // maybe dont need?
 
 };
