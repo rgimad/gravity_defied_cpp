@@ -22,6 +22,8 @@ private:
     static int field_135;
     static int field_136;
 
+    // private void loadLevels() throws IOException // TODO
+
 public:
     static const int field_114;
     static const int field_115;
@@ -42,6 +44,9 @@ public:
 
     LevelLoader();
     ~LevelLoader();
+
+    // InputStream getResourceAsStream(String var1); // TODO
+    // String getName(int league, int level); // TODO
 
     void method_87();
     int method_88(int var1, int var2);
