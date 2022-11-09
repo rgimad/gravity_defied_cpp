@@ -42,23 +42,23 @@ private:
     const int hardcodedArr6[8][2] = {{157286, 13107}, {294912, -13107}, {367001, 104857}, {406323, 176947}, {347340, 72089}, {39321, -98304}, {13107, -52428}, {288358, 85196}};
     int field_80[3] = {45875, 32768, 52428};
 
-    void method_27(int var1, int var2);
-    void setInputFromAI();
-    void method_35();
-    int method_39(int var1);
-    void method_40(int var1);
-    void method_42(class_10 *var1, TimerOrMotoPartOrMenuElem *var2, class_10 var3, int var4, int var5);
-    void method_43(int var1, int var2, int var3);
-    void method_44(int var1, int var2, int var3);
-    void method_45(int var1);
-    int method_46(int var1);
-    void method_47(int var1);
-    void renderEngine(GameCanvas *gameCanvas, int var2, int var3);
-    void renderMotoFork(GameCanvas *gameCanvas);
-    void renderWheelTires(GameCanvas *gameCanvas);
-    void renderWheelSpokes(GameCanvas *gameCanvas);
-    void renderSmth(GameCanvas *gameCanvas, int var2, int var3, int var4, int var5);
-    void renderMotoAsLines(GameCanvas *gameCanvas, int var2, int var3, int var4, int var5);
+    void method_27(int var1, int var2); // TODO
+    void setInputFromAI(); // TODO
+    void method_35(); // TODO
+    int method_39(int var1); // TODO
+    void method_40(int var1); // TODO
+    void method_42(class_10 *var1, TimerOrMotoPartOrMenuElem *var2, class_10 var3, int var4, int var5); // TODO
+    void method_43(int var1, int var2, int var3); // TODO
+    void method_44(int var1, int var2, int var3); // TODO
+    void method_45(int var1); // TODO
+    int method_46(int var1); // TODO
+    void method_47(int var1); // TODO
+    void renderEngine(GameCanvas *gameCanvas, int var2, int var3); // TODO
+    void renderMotoFork(GameCanvas *gameCanvas); // TODO
+    void renderWheelTires(GameCanvas *gameCanvas); // TODO
+    void renderWheelSpokes(GameCanvas *gameCanvas); // TODO
+    void renderSmth(GameCanvas *gameCanvas, int var2, int var3, int var4, int var5); // TODO
+    void renderMotoAsLines(GameCanvas *gameCanvas, int var2, int var3, int var4, int var5); // TODO
 
 
 public:
@@ -110,25 +110,25 @@ public:
     void method_22(int var1);
     void setMode(int mode);
     void setMotoLeague(int league);
-    void resetSmth(bool unused);
-    void method_26(bool var1);
-    void setRenderMinMaxX(int minX, int maxX);
-    void processPointerReleased();
-    void method_30(int var1, int var2);
-    void enableGenerateInputAI();
-    void disableGenerateInputAI();
+    void resetSmth(bool unused); // TODO
+    void method_26(bool var1); // TODO
+    void setRenderMinMaxX(int minX, int maxX); // TODO
+    void processPointerReleased(); // TODO
+    void method_30(int var1, int var2); // TODO
+    void enableGenerateInputAI(); // TODO
+    void disableGenerateInputAI(); // TODO
     bool getIsGenerateInputAI();
-    int updatePhysics();
-    bool isTrackStarted();
-    bool method_38();
-    static int getSmthLikeMaxAbs(int xF16, int yF16);
-    void setEnableLookAhead(bool value);
-    void setMinimalScreenWH(int minWH);
-    int getCamPosX();
-    int getCamPosY();
-    int method_52();
-    void method_53();
-    void setMotoComponents();
-    void renderGame(GameCanvas *gameCanvas);
+    int updatePhysics(); // TODO
+    bool isTrackStarted(); // TODO
+    bool method_38(); // TODO
+    static int getSmthLikeMaxAbs(int xF16, int yF16); // TODO
+    void setEnableLookAhead(bool value); // TODO
+    void setMinimalScreenWH(int minWH); // TODO
+    int getCamPosX(); // TODO
+    int getCamPosY(); // TODO
+    int method_52(); // TODO
+    void method_53(); // TODO
+    void setMotoComponents(); // TODO
+    void renderGame(GameCanvas *gameCanvas); // TODO
 
 };

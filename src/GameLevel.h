@@ -47,6 +47,5 @@ public:
     void addPointSimple(int var1, int var2);
     void addPoint(int x, int y);
     /*synchronized*/ void load(std::ifstream &var1);
-    // static InputStream makeInputStream(String name); // maybe dont need?
 
 };
