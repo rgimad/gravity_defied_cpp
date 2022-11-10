@@ -4,34 +4,14 @@ const int GamePhysics::const175_1_half[] = {114688, 65536, 32768};
 int GamePhysics::curentMotoLeague = 0;
 
 
-GamePhysics::GamePhysics(LevelLoader *levelLoader) {
-    motoComponents = new TimerOrMotoPartOrMenuElem*[6];
-    for (int i = 0; i < 6; ++i) {
-        motoComponents[i] = new TimerOrMotoPartOrMenuElem();
-    }
-    field_44 = 0;
-    field_45 = 0;
-    field_46 = 0;
-    isRenderMotoWithSprites = false;
-    isInputAcceleration = false;
-    isInputBreak = false;
-    isInputBack = false;
-    isInputForward = false;
-    isInputUp = false;
-    isInputDown = false;
-    isInputLeft = false;
-    isInputRight = false;
-    field_68 = false;
-    field_69 = false;
-    isEnableLookAhead = true;
-    camShiftX = 0;
-    camShiftY = 0;
-    field_73 = 655360;
-    levelLoader = levelLoader;
+GamePhysics::GamePhysics(LevelLoader *levelLoader)
+    : motoComponents(6, TimerOrMotoPartOrMenuElem()),
+    field_29(6, class_10()),
+    field_30(10, TimerOrMotoPartOrMenuElem()),
+    levelLoader(levelLoader)
+{
     resetSmth(true);
-    isGenerateInputAI = false;
     method_53();
-    field_35 = false;
 }
 
 int GamePhysics::method_21() {
@@ -128,7 +108,99 @@ void GamePhysics::setMotoLeague(int league) {
     resetSmth(true);
 }
 
+void GamePhysics::method_27(int var1, int var2) {
+    int var4 = 0, var5 = 0, var6 = 0, var7 = 0;
 
+    for (int i = 0; i < 6; ++i) {
+        int var8 = 0;
+        switch (i) {
+            case 0:
+                var5 = 1;
+                var4 = 360448;
+                var6 = 0;
+                var7 = 0;
+                break;
+            case 1:
+                var5 = 0;
+                var4 = 98304;
+                var6 = 229376;
+                var7 = 0;
+                break;
+            case 2:
+                var5 = 0;
+                var4 = 360448;
+                var6 = -229376;
+                var7 = 0;
+                var8 = 21626;
+                break;
+            case 3:
+                var5 = 1;
+                var4 = 229376;
+                var6 = 131072;
+                var7 = 196608;
+                break;
+            case 4:
+                var5 = 1;
+                var4 = 229376;
+                var6 = -131072;
+                var7 = 196608;
+                break;
+            case 5:
+                var5 = 2;
+                var4 = 294912;
+                var6 = 0;
+                var7 = 327680;
+        }
+
+        field_29[i].reset();
+        field_29[i].field_257 = const175_1_half[var5];
+        field_29[i].field_258 = var5;
+        field_29[i].field_259 = (int) ((int64_t) ((int) (281474976710656LL / (int64_t) var4 >> 16)) * (int64_t) field_14 >> 16);
+        field_29[i].motoComponents[index01].xF16 = var1 + var6;
+        field_29[i].motoComponents[index01].yF16 = var2 + var7;
+        field_29[i].motoComponents[5].xF16 = var1 + var6;
+        field_29[i].motoComponents[5].yF16 = var2 + var7;
+        field_29[i].field_260 = var8;
+    }
+
+    for (int i = 0; i < 10; ++i) {
+        field_30[i].setToZeros();
+        field_30[i].xF16 = motoParam10;
+        field_30[i].angleF16 = field_16;
+    }
+
+    field_30[0].yF16 = 229376;
+    field_30[1].yF16 = 229376;
+    field_30[2].yF16 = 236293;
+    field_30[3].yF16 = 236293;
+    field_30[4].yF16 = 262144;
+    field_30[5].yF16 = 219814;
+    field_30[6].yF16 = 219814;
+    field_30[7].yF16 = 185363;
+    field_30[8].yF16 = 185363;
+    field_30[9].yF16 = 327680;
+    field_30[5].angleF16 = (int) ((int64_t) field_16 * 45875LL >> 16);
+    field_30[6].xF16 = (int) (6553LL * (int64_t) motoParam10 >> 16);
+    field_30[5].xF16 = (int) (6553LL * (int64_t) motoParam10 >> 16);
+    field_30[9].xF16 = (int) (72089LL * (int64_t) motoParam10 >> 16);
+    field_30[8].xF16 = (int) (72089LL * (int64_t) motoParam10 >> 16);
+    field_30[7].xF16 = (int) (72089LL * (int64_t) motoParam10 >> 16);
+}
+
+void GamePhysics::resetSmth(bool unused) {
+    field_44 = 0;
+    method_27(levelLoader->method_93(), levelLoader->method_94());
+    field_31 = 0;
+    field_39 = 0;
+    field_35 = false;
+    field_36 = false;
+    field_68 = false;
+    field_69 = false;
+    isGenerateInputAI = false;
+    field_41 = false;
+    field_42 = false;
+    levelLoader->gameLevel->method_183(field_29[2].motoComponents[5].xF16 + 98304 - const175_1_half[0], field_29[1].motoComponents[5].xF16 - 98304 + const175_1_half[0]);
+}
 
 
 
