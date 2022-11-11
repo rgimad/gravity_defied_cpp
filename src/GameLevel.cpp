@@ -65,7 +65,7 @@ void GameLevel::method_184(int var1, int var2, int var3) {
     field_266 = var3;
 }
 
-void GameLevel::renderShadow(GameCanvas *gameCanvas, int var2, int var3) {
+void GameLevel::renderShadow(GameCanvas &gameCanvas, int var2, int var3) {
     if (var3 <= pointsCount - 1) {
         int var4 = field_266 - (pointPositions[var2][1] + pointPositions[var3 + 1][1] >> 1) < 0 ? 0 : field_266 - (pointPositions[var2][1] + pointPositions[var3 + 1][1] >> 1);
         if (field_266 <= pointPositions[var2][1] || field_266 <= pointPositions[var3 + 1][1]) {
@@ -75,7 +75,7 @@ void GameLevel::renderShadow(GameCanvas *gameCanvas, int var2, int var3) {
         field_277 = (int) ((int64_t) field_277 * 49152L >> 16) + (int) ((int64_t) var4 * 16384L >> 16);
         if (field_277 <= 557056) {
             int var5 = (int) (1638400L * (int64_t) field_277 >> 16) >> 16;
-            gameCanvas->setColor(var5, var5, var5);
+            gameCanvas.setColor(var5, var5, var5);
             int var6 = pointPositions[var2][0] - pointPositions[var2 + 1][0];
             int var8 = (int) (((int64_t) (pointPositions[var2][1] - pointPositions[var2 + 1][1]) << 32) / (int64_t) var6 >> 16);
             int var9 = pointPositions[var2][1] - (int) ((int64_t) pointPositions[var2][0] * (int64_t) var8 >> 16);
@@ -85,23 +85,23 @@ void GameLevel::renderShadow(GameCanvas *gameCanvas, int var2, int var3) {
             var9 = pointPositions[var3][1] - (int) ((int64_t) pointPositions[var3][0] * (int64_t) var8 >> 16);
             int var11 = (int) ((int64_t) field_265 * (int64_t) var8 >> 16) + var9;
             if (var2 == var3) {
-                gameCanvas->drawLine(field_264 << 3 >> 16, var10 + 65536 << 3 >> 16, field_265 << 3 >> 16, var11 + 65536 << 3 >> 16);
+                gameCanvas.drawLine(field_264 << 3 >> 16, var10 + 65536 << 3 >> 16, field_265 << 3 >> 16, var11 + 65536 << 3 >> 16);
                 return;
             }
 
-            gameCanvas->drawLine(field_264 << 3 >> 16, var10 + 65536 << 3 >> 16, pointPositions[var2 + 1][0] << 3 >> 16, pointPositions[var2 + 1][1] + 65536 << 3 >> 16);
+            gameCanvas.drawLine(field_264 << 3 >> 16, var10 + 65536 << 3 >> 16, pointPositions[var2 + 1][0] << 3 >> 16, pointPositions[var2 + 1][1] + 65536 << 3 >> 16);
 
             for (int i = var2 + 1; i < var3; ++i) {
-                gameCanvas->drawLine(pointPositions[i][0] << 3 >> 16, pointPositions[i][1] + 65536 << 3 >> 16, pointPositions[i + 1][0] << 3 >> 16, pointPositions[i + 1][1] + 65536 << 3 >> 16);
+                gameCanvas.drawLine(pointPositions[i][0] << 3 >> 16, pointPositions[i][1] + 65536 << 3 >> 16, pointPositions[i + 1][0] << 3 >> 16, pointPositions[i + 1][1] + 65536 << 3 >> 16);
             }
 
-            gameCanvas->drawLine(pointPositions[var3][0] << 3 >> 16, pointPositions[var3][1] + 65536 << 3 >> 16, field_265 << 3 >> 16, var11 + 65536 << 3 >> 16);
+            gameCanvas.drawLine(pointPositions[var3][0] << 3 >> 16, pointPositions[var3][1] + 65536 << 3 >> 16, field_265 << 3 >> 16, var11 + 65536 << 3 >> 16);
         }
     }
 
 }
 
-void GameLevel::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
+void GameLevel::renderLevel3D(GameCanvas &gameCanvas, int xF16, int yF16) {
     int var7 = 0, var8 = 0;
     int lineNo;
     for (lineNo = 0; lineNo < pointsCount - 1 && pointPositions[lineNo][0] <= minX; ++lineNo) {
@@ -114,7 +114,7 @@ void GameLevel::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
     int var11 = GamePhysics::getSmthLikeMaxAbs(var9, var10);
     var9 = (int) (((int64_t) var9 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
     var10 = (int) (((int64_t) var10 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
-    gameCanvas->setColor(0, 170, 0);
+    gameCanvas.setColor(0, 170, 0);
 
     while (lineNo < pointsCount - 1) {
         int var4 = var9;
@@ -125,9 +125,9 @@ void GameLevel::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
         var9 = (int) (((int64_t) var9 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
         var10 = (int) (((int64_t) var10 << 32) / (int64_t) (var11 >> 1 >> 1) >> 16);
         // far line
-        gameCanvas->drawLine(pointPositions[lineNo][0] + var4 << 3 >> 16, pointPositions[lineNo][1] + var5 << 3 >> 16, pointPositions[lineNo + 1][0] + var9 << 3 >> 16, pointPositions[lineNo + 1][1] + var10 << 3 >> 16);
+        gameCanvas.drawLine(pointPositions[lineNo][0] + var4 << 3 >> 16, pointPositions[lineNo][1] + var5 << 3 >> 16, pointPositions[lineNo + 1][0] + var9 << 3 >> 16, pointPositions[lineNo + 1][1] + var10 << 3 >> 16);
         // from far to near
-        gameCanvas->drawLine(pointPositions[lineNo][0] << 3 >> 16, pointPositions[lineNo][1] << 3 >> 16, pointPositions[lineNo][0] + var4 << 3 >> 16, pointPositions[lineNo][1] + var5 << 3 >> 16);
+        gameCanvas.drawLine(pointPositions[lineNo][0] << 3 >> 16, pointPositions[lineNo][1] << 3 >> 16, pointPositions[lineNo][0] + var4 << 3 >> 16, pointPositions[lineNo][1] + var5 << 3 >> 16);
         if (lineNo > 1) {
             if (pointPositions[lineNo][0] > field_264 && var7 == 0) {
                 var7 = lineNo - 1;
@@ -138,27 +138,27 @@ void GameLevel::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
         }
         if (startFlagPoint == lineNo) {
             // render far start flag
-            gameCanvas->renderStartFlag(pointPositions[startFlagPoint][0] + var4 << 3 >> 16, pointPositions[startFlagPoint][1] + var5 << 3 >> 16);
-            gameCanvas->setColor(0, 170, 0);
+            gameCanvas.renderStartFlag(pointPositions[startFlagPoint][0] + var4 << 3 >> 16, pointPositions[startFlagPoint][1] + var5 << 3 >> 16);
+            gameCanvas.setColor(0, 170, 0);
         }
         if (finishFlagPoint == lineNo) {
             // render far finish flag
-            gameCanvas->renderFinishFlag(pointPositions[finishFlagPoint][0] + var4 << 3 >> 16, pointPositions[finishFlagPoint][1] + var5 << 3 >> 16);
-            gameCanvas->setColor(0, 170, 0);
+            gameCanvas.renderFinishFlag(pointPositions[finishFlagPoint][0] + var4 << 3 >> 16, pointPositions[finishFlagPoint][1] + var5 << 3 >> 16);
+            gameCanvas.setColor(0, 170, 0);
         }
         if (pointPositions[lineNo][0] > maxX) {
             break;
         }
         ++lineNo;
     }
-    gameCanvas->drawLine(pointPositions[pointsCount - 1][0] << 3 >> 16, pointPositions[pointsCount - 1][1] << 3 >> 16, pointPositions[pointsCount - 1][0] + var9 << 3 >> 16, pointPositions[pointsCount - 1][1] + var10 << 3 >> 16);
+    gameCanvas.drawLine(pointPositions[pointsCount - 1][0] << 3 >> 16, pointPositions[pointsCount - 1][1] << 3 >> 16, pointPositions[pointsCount - 1][0] + var9 << 3 >> 16, pointPositions[pointsCount - 1][1] + var10 << 3 >> 16);
     if (LevelLoader::isEnabledShadows) {
         renderShadow(gameCanvas, var7, var8);
     }
 }
 
 
-void GameLevel::renderTrackNearestGreenLine(GameCanvas *gameCanvas) {
+void GameLevel::renderTrackNearestGreenLine(GameCanvas &gameCanvas) {
     int pointNo;
     for (pointNo = 0; pointNo < pointsCount - 1 && pointPositions[pointNo][0] <= minX; ++pointNo) {
     }
@@ -166,14 +166,14 @@ void GameLevel::renderTrackNearestGreenLine(GameCanvas *gameCanvas) {
         --pointNo;
     }
     while (pointNo < pointsCount - 1) {
-        gameCanvas->drawLine(pointPositions[pointNo][0] << 3 >> 16, pointPositions[pointNo][1] << 3 >> 16, pointPositions[pointNo + 1][0] << 3 >> 16, pointPositions[pointNo + 1][1] << 3 >> 16);
+        gameCanvas.drawLine(pointPositions[pointNo][0] << 3 >> 16, pointPositions[pointNo][1] << 3 >> 16, pointPositions[pointNo + 1][0] << 3 >> 16, pointPositions[pointNo + 1][1] << 3 >> 16);
         if (startFlagPoint == pointNo) {
-            gameCanvas->renderStartFlag(pointPositions[startFlagPoint][0] << 3 >> 16, pointPositions[startFlagPoint][1] << 3 >> 16);
-            gameCanvas->setColor(0, 255, 0);
+            gameCanvas.renderStartFlag(pointPositions[startFlagPoint][0] << 3 >> 16, pointPositions[startFlagPoint][1] << 3 >> 16);
+            gameCanvas.setColor(0, 255, 0);
         }
         if (finishFlagPoint == pointNo) {
-            gameCanvas->renderFinishFlag(pointPositions[finishFlagPoint][0] << 3 >> 16, pointPositions[finishFlagPoint][1] << 3 >> 16);
-            gameCanvas->setColor(0, 255, 0);
+            gameCanvas.renderFinishFlag(pointPositions[finishFlagPoint][0] << 3 >> 16, pointPositions[finishFlagPoint][1] << 3 >> 16);
+            gameCanvas.setColor(0, 255, 0);
         }
         if (pointPositions[pointNo][0] > maxX) {
             break;
