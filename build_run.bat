@@ -1,0 +1,1 @@
+cmake . -G"MinGW Makefiles" && mingw32-make && gravity_defied_cpp.exe

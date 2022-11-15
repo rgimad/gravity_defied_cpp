@@ -43,6 +43,41 @@ void Graphics::drawArc(int x, int y, int w, int h, int startAngle, int arcAngle)
     }
 }
 
+void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
+    // NOTE this impl assumes startAngle < arcAngle
+    int  _x, _y,      // circle centered point
+        xx,yy,rr,   // x^2,y^2,r^2
+        ux,uy,      // u
+        vx,vy,      // v
+        sx,sy;      // pixel position
+
+    arcAngle += startAngle; // 
+
+    (void)w; (void)h;
+    int r = 30; // TODO
+    rr = r*r;
+    ux = double(r)*cos(double(startAngle)*M_PI/180.0);
+    uy = double(r)*sin(double(startAngle)*M_PI/180.0);
+    vx = double(r)*cos(double(arcAngle)*M_PI/180.0);
+    vy = double(r)*sin(double(arcAngle)*M_PI/180.0);
+
+    if (abs(arcAngle - startAngle) < 180) { // small pie
+        for (_y = -r, yy = _y*_y, sy = y + _y; _y <= +r; _y++, yy = _y*_y, sy++)
+            for (_x = -r, xx = _x*_x, sx = x + _x; _x <= +r; _x++, xx = _x*_x, sx++)
+                if (xx + yy <= rr)           // inside circle
+                    if (((_x*uy) - (_y*ux) <= 0)  // x,y is above a0 in clockwise direction
+                        && ((_x*vy) - (_y*vx) >= 0)) // x,y is below a1 in counter clockwise direction
+                        _putpixel(sx, sy);
+    } else { // big pie
+        for (_y = -r, yy = _y*_y, sy = y + _y; _y <= +r; _y++, yy = _y*_y, sy++)
+            for (_x = -r, xx = _x*_x, sx = x + _x; _x <= +r; _x++, xx = _x*_x, sx++)
+                if (xx + yy <= rr)           // inside circle
+                    if (((_x*uy) - (_y*ux) <= 0)  // x,y is above a0 in clockwise direction
+                        || ((_x*vy) - (_y*vx) >= 0)) // x,y is below a1 in counter clockwise direction
+                        _putpixel(sx, sy);
+    }
+}
+
 void Graphics::_putpixel(int x, int y) {
     SDL_RenderDrawPoint(renderer, x, y);
 }

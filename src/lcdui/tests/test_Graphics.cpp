@@ -55,6 +55,12 @@ void test_Graphics() {
 
     g.drawArc(200, 200, 30, 30, 0, 360);
 
+    // g.fillArc(60, 200, 50, 50, 225, 90);
+    g.fillArc(60, 200, 50, 50, 200, 200);
+
+    // comapre with http://www.java2s.com/Tutorial/Java/0261__2D-Graphics/FillArc.htm
+    // http://cs111.wellesley.edu/~cs111/archive/cs111_fall06/public_html/labs/lab12/arc.html
+
     Image *img1 = Image::createImage("assets/splash.png");
     Image *img2 = Image::createImage("assets/sprites.png");
     g.drawImage(img1, 150, 150, Graphics::HCENTER | Graphics::VCENTER);
@@ -67,11 +73,15 @@ void test_Graphics() {
 
     // Event loop
     SDL_Event event;
-	while (SDL_WaitEvent(&event) != 0) {
-		if (event.type == SDL_QUIT) {
-            break;
+    bool flag = true;
+    while (flag) {
+        while (SDL_WaitEvent(&event) != 0) {
+            if (event.type == SDL_QUIT) {
+                flag = false;
+                break;
+            }
         }
-	}
+    }
 
     SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);

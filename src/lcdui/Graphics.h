@@ -36,7 +36,7 @@ public:
     void setClip(int x, int y, int w, int h);
     // TODO: void drawChar(char c, int x, int y, int anchor);
     void fillRect(int x, int y, int w, int h);
-    // TODO: void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle);
+    void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawLine(int x1, int y1, int x2, int y2);
     void drawImage(Image *image, int x, int y, int anchor);
