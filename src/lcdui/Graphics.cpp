@@ -51,15 +51,15 @@ void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
         vx,vy,      // v
         sx,sy;      // pixel position
 
-    arcAngle += startAngle; // 
+    arcAngle += startAngle;
 
     (void)w; (void)h;
     int r = 30; // TODO
     rr = r*r;
-    ux = double(r)*cos(double(startAngle)*M_PI/180.0);
-    uy = double(r)*sin(double(startAngle)*M_PI/180.0);
-    vx = double(r)*cos(double(arcAngle)*M_PI/180.0);
-    vy = double(r)*sin(double(arcAngle)*M_PI/180.0);
+    ux = double(r)*cos(double(startAngle)*PI_CONV);
+    uy = double(r)*sin(double(startAngle)*PI_CONV);
+    vx = double(r)*cos(double(arcAngle)*PI_CONV);
+    vy = double(r)*sin(double(arcAngle)*PI_CONV);
 
     if (abs(arcAngle - startAngle) < 180) { // small pie
         for (_y = -r, yy = _y*_y, sy = y + _y; _y <= +r; _y++, yy = _y*_y, sy++)
