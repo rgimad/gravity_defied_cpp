@@ -92,6 +92,11 @@ void Graphics::drawArc(int x, int y, int w, int h, int startAngle, int arcAngle)
 // }
 
 int to_360(int ang) {
+    // if (ang != 0 && ang % 360 == 0) {
+    //     ang = 360;
+    // } else {
+    //     ang %= 360;
+    // }
     ang %= 360;
     if (ang < 0) {
         ang += 360;

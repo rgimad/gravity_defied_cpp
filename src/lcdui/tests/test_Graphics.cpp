@@ -60,7 +60,20 @@ void test_Graphics() {
 
     // g.fillArc(60, 200, 50, 50, 20, 90);
     // g.fillArc(60, 200, 50, 20, 0, 180);
-    g.fillArc(60, 200, 50, 50, 90, 120);
+    // g.fillArc(60, 200, 50, 50, 90, 120);
+    // g.fillArc(60, 200, 50, 50, 200, 20);
+    // g.fillArc(60, 200, 50, 50, 200, 200); // !!!
+    // g.fillArc(60, 200, 50, 50, 100, 250);
+    g.fillArc(60, 200, 50, 30, 100, 250);
+    // g.fillArc(60, 200, 30, 50, 100, 250); // !!!
+    // g.fillArc(60, 200, 50, 50, 200, 150);
+
+    // TODO: сделать обработку сдлучая когда происходит переход через 0(360) угол
+    // из-за этого не работает g.fillArc(60, 200, 50, 50, 200, 200);
+    // а вот g.fillArc(60, 200, 50, 50, 200, 150); работает
+
+    // TODO: g.fillArc(60, 200, 30, 50, 100, 250); не работает
+    // а g.fillArc(60, 200, 50, 30, 100, 250); работает
 
     // comapre with http://www.java2s.com/Tutorial/Java/0261__2D-Graphics/FillArc.htm
     // http://cs111.wellesley.edu/~cs111/archive/cs111_fall06/public_html/labs/lab12/arc.html
