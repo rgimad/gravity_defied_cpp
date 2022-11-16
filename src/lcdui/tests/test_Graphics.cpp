@@ -56,7 +56,11 @@ void test_Graphics() {
     g.drawArc(200, 200, 30, 30, 0, 360);
 
     // g.fillArc(60, 200, 50, 50, 225, 90);
-    g.fillArc(60, 200, 50, 50, 20, 90);
+    // g.fillArc(60, 200, 50, 50, 225, 90);
+
+    // g.fillArc(60, 200, 50, 50, 20, 90);
+    // g.fillArc(60, 200, 50, 20, 0, 180);
+    g.fillArc(60, 200, 50, 50, 90, 120);
 
     // comapre with http://www.java2s.com/Tutorial/Java/0261__2D-Graphics/FillArc.htm
     // http://cs111.wellesley.edu/~cs111/archive/cs111_fall06/public_html/labs/lab12/arc.html

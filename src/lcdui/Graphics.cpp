@@ -78,8 +78,32 @@ void Graphics::drawArc(int x, int y, int w, int h, int startAngle, int arcAngle)
 //     }
 // }
 
+// int norm_ang(int angle) {
+    // // reduce the angle  
+    // angle =  angle % 360; 
+
+    // // force it to be the positive remainder, so that 0 <= angle < 360  
+    // angle = (angle + 360) % 360;  
+
+    // // force into the minimum absolute value residue class, so that -180 < angle <= 180  
+    // if (angle > 180)  
+    //     angle -= 360;  
+    // return angle;
+// }
+
+int to_360(int ang) {
+    ang %= 360;
+    if (ang < 0) {
+        ang += 360;
+    }
+    return ang;
+}
+
 void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
-    int endAngle = startAngle + arcAngle;
+    // int endAngle = startAngle + arcAngle;
+    // startAngle = norm_ang(startAngle);
+    // endAngle = norm_ang(endAngle);
+    // SDL_Log("startAngle = %d, endAngle = %d\n", startAngle, endAngle);
     double a = w/2.0, b = h/2.0;
     double e = sqrt(1.0 - (b*b)/(a*a));
     for (int _y = y - b; _y < y + b; _y++) {
@@ -93,12 +117,17 @@ void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
             // if (atan2(_y - y, _x - x) < 3.14/2.0) {
             //     _putpixel(_x, _y);
             // }
-            double ang = -atan2(_y - y, _x - x); // - because we assume all angles like in trigonom. circle
+            double ang = atan2(-(_y - y), _x - x); // cuz in screen y grows downwards (in maths y grows upwards)
             
-            double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
-            double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
+            // double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
+            // double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
+            double rad = b*b/(1 - e*e*cos(ang)*cos(ang));
+            double dist = ((_x - x)*(_x - x) + (_y - y)*(_y - y));
             
-            if (ang >= startAngle*PI_CONV && ang <= endAngle*PI_CONV && dist <= rad) {
+            if (to_360(ang/PI_CONV) >= to_360(startAngle)
+                && to_360(ang/PI_CONV) <= to_360(startAngle + arcAngle)
+                && dist <= rad)
+            {
                 _putpixel(_x, _y);
             }
         }
