@@ -43,38 +43,65 @@ void Graphics::drawArc(int x, int y, int w, int h, int startAngle, int arcAngle)
     }
 }
 
+// void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
+//     // NOTE this impl assumes startAngle < arcAngle
+//     int  _x, _y,      // circle centered point
+//         xx,yy,rr,   // x^2,y^2,r^2
+//         ux,uy,      // u
+//         vx,vy,      // v
+//         sx,sy;      // pixel position
+
+//     arcAngle += startAngle;
+
+//     (void)w; (void)h;
+//     int r = 30; // TODO
+//     rr = r*r;
+//     ux = double(r)*cos(double(startAngle)*PI_CONV);
+//     uy = double(r)*sin(double(startAngle)*PI_CONV);
+//     vx = double(r)*cos(double(arcAngle)*PI_CONV);
+//     vy = double(r)*sin(double(arcAngle)*PI_CONV);
+
+//     if (abs(arcAngle - startAngle) < 180) { // small pie
+//         for (_y = -r, yy = _y*_y, sy = y + _y; _y <= +r; _y++, yy = _y*_y, sy++)
+//             for (_x = -r, xx = _x*_x, sx = x + _x; _x <= +r; _x++, xx = _x*_x, sx++)
+//                 if (xx + yy <= rr)           // inside circle
+//                     if (((_x*uy) - (_y*ux) <= 0)  // x,y is above a0 in clockwise direction
+//                         && ((_x*vy) - (_y*vx) >= 0)) // x,y is below a1 in counter clockwise direction
+//                         _putpixel(sx, sy);
+//     } else { // big pie
+//         for (_y = -r, yy = _y*_y, sy = y + _y; _y <= +r; _y++, yy = _y*_y, sy++)
+//             for (_x = -r, xx = _x*_x, sx = x + _x; _x <= +r; _x++, xx = _x*_x, sx++)
+//                 if (xx + yy <= rr)           // inside circle
+//                     if (((_x*uy) - (_y*ux) <= 0)  // x,y is above a0 in clockwise direction
+//                         || ((_x*vy) - (_y*vx) >= 0)) // x,y is below a1 in counter clockwise direction
+//                         _putpixel(sx, sy);
+//     }
+// }
+
 void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
-    // NOTE this impl assumes startAngle < arcAngle
-    int  _x, _y,      // circle centered point
-        xx,yy,rr,   // x^2,y^2,r^2
-        ux,uy,      // u
-        vx,vy,      // v
-        sx,sy;      // pixel position
-
-    arcAngle += startAngle;
-
-    (void)w; (void)h;
-    int r = 30; // TODO
-    rr = r*r;
-    ux = double(r)*cos(double(startAngle)*PI_CONV);
-    uy = double(r)*sin(double(startAngle)*PI_CONV);
-    vx = double(r)*cos(double(arcAngle)*PI_CONV);
-    vy = double(r)*sin(double(arcAngle)*PI_CONV);
-
-    if (abs(arcAngle - startAngle) < 180) { // small pie
-        for (_y = -r, yy = _y*_y, sy = y + _y; _y <= +r; _y++, yy = _y*_y, sy++)
-            for (_x = -r, xx = _x*_x, sx = x + _x; _x <= +r; _x++, xx = _x*_x, sx++)
-                if (xx + yy <= rr)           // inside circle
-                    if (((_x*uy) - (_y*ux) <= 0)  // x,y is above a0 in clockwise direction
-                        && ((_x*vy) - (_y*vx) >= 0)) // x,y is below a1 in counter clockwise direction
-                        _putpixel(sx, sy);
-    } else { // big pie
-        for (_y = -r, yy = _y*_y, sy = y + _y; _y <= +r; _y++, yy = _y*_y, sy++)
-            for (_x = -r, xx = _x*_x, sx = x + _x; _x <= +r; _x++, xx = _x*_x, sx++)
-                if (xx + yy <= rr)           // inside circle
-                    if (((_x*uy) - (_y*ux) <= 0)  // x,y is above a0 in clockwise direction
-                        || ((_x*vy) - (_y*vx) >= 0)) // x,y is below a1 in counter clockwise direction
-                        _putpixel(sx, sy);
+    int endAngle = startAngle + arcAngle;
+    double a = w/2.0, b = h/2.0;
+    double e = sqrt(1.0 - (b*b)/(a*a));
+    for (int _y = y - b; _y < y + b; _y++) {
+        for (int _x = x - a; _x < x + a; _x++) {
+            // _putpixel(_x, _y);
+            // std::cout << atan2(_y, _x) << "\n";
+            // SDL_Log("_y = %d, _x = %d atan2 = %lf\n", _y, _x, atan2(_y - y, _x - x));
+            // if (atan2(_y - y, _x - x) >= startAngle*PI_CONV && atan2(_y - y, _x - x) <= endAngle*PI_CONV) {
+            //     _putpixel(_x, _y);
+            // }
+            // if (atan2(_y - y, _x - x) < 3.14/2.0) {
+            //     _putpixel(_x, _y);
+            // }
+            double ang = -atan2(_y - y, _x - x); // - because we assume all angles like in trigonom. circle
+            
+            double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
+            double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
+            
+            if (ang >= startAngle*PI_CONV && ang <= endAngle*PI_CONV && dist <= rad) {
+                _putpixel(_x, _y);
+            }
+        }
     }
 }
 
