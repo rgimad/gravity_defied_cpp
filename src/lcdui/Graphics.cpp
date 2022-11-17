@@ -97,7 +97,9 @@ int to_360(int ang) {
     // } else {
     //     ang %= 360;
     // }
-    ang %= 360;
+    if (ang >= 0 && ang <= 360) {
+        return ang;
+    }
     if (ang < 0) {
         ang += 360;
     }
@@ -105,7 +107,7 @@ int to_360(int ang) {
 }
 
 void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
-    // int endAngle = startAngle + arcAngle;
+    int endAngle = startAngle + arcAngle;
     // startAngle = norm_ang(startAngle);
     // endAngle = norm_ang(endAngle);
     // SDL_Log("startAngle = %d, endAngle = %d\n", startAngle, endAngle);
@@ -128,12 +130,20 @@ void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
             // double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
             double rad = b*b/(1 - e*e*cos(ang)*cos(ang));
             double dist = ((_x - x)*(_x - x) + (_y - y)*(_y - y));
+
+            int ang2 = to_360(ang/PI_CONV);
             
-            if (to_360(ang/PI_CONV) >= to_360(startAngle)
-                && to_360(ang/PI_CONV) <= to_360(startAngle + arcAngle)
+            if (ang2 >= to_360(startAngle)
+                && ang2 <= to_360(endAngle)
                 && dist <= rad)
             {
                 _putpixel(_x, _y);
+            }
+
+            if (endAngle > 360) {
+                if (ang2 < endAngle % 360 && dist <= rad) {
+                    _putpixel(_x, _y);
+                }
             }
         }
     }
