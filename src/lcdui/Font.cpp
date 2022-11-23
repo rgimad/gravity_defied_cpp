@@ -25,16 +25,16 @@ int Font::getHeight() {
 }
 
 int Font::charWidth(char c) {
-    return stringWidth(string(1, c));
+    return stringWidth(std::string(1, c));
 }
 
-int Font::stringWidth(string s) {
+int Font::stringWidth(const std::string &s) {
     int width, height;
     if (TTF_SizeText(font, s.c_str(), &width, &height) == -1) throw std::runtime_error(TTF_GetError());
     return width;
 }
 
-int Font::substringWidth(string string, int offset, int len) {
+int Font::substringWidth(const std::string &string, int offset, int len) {
     return stringWidth(string.substr(offset, len));
 }
 

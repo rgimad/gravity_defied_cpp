@@ -8,8 +8,6 @@
 #include "Image.h"
 #include "Font.h"
 
-using namespace std;
-
 constexpr auto PI_CONV = 3.1415926 / 180.0;
 
 class Image;
@@ -33,7 +31,7 @@ public:
         BASELINE = 64
     };
     Graphics(SDL_Renderer *renderer);
-    void drawString(string s, int x, int y, int anchor);
+    void drawString(const std::string &s, int x, int y, int anchor);
     void setColor(int r, int g, int b);
     void setFont(Font *font);
     Font *getFont();

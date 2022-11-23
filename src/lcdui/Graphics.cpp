@@ -5,7 +5,7 @@ Graphics::Graphics(SDL_Renderer *renderer) {
     this->currentColor = {0, 0, 0, 255};
 }
 
-void Graphics::drawString(string s, int x, int y, int anchor) {
+void Graphics::drawString(const std::string &s, int x, int y, int anchor) {
     SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font->font, s.c_str(), currentColor);
     SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
 
@@ -41,7 +41,7 @@ void Graphics::setClip(int x, int y, int w, int h) {
 }
 
 void Graphics::drawChar(char c, int x, int y, int anchor) {
-    drawString(string(1, c), x, y, anchor);
+    drawString(std::string(1, c), x, y, anchor);
 }
 
 void Graphics::fillRect(int x, int y, int w, int h) {
