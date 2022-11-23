@@ -8,4 +8,4 @@ gravity_defied_cpp.exe
 libgravity_defied_cpp.dll.a
 *.dll
 *.code-workspace
-*.ttf
+/*.ttf
