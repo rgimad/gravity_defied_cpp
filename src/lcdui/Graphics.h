@@ -6,6 +6,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include "Image.h"
+#include "Font.h"
 
 constexpr auto PI_CONV = 3.1415926 / 180.0;
 
@@ -14,7 +15,8 @@ class Image;
 class Graphics {
 private:
     SDL_Renderer *renderer;
-    // TODO: FontRenderContext frc;
+    Font *font;
+    SDL_Color currentColor;
     // void _ellipse(int cx, int cy, int xradius, int yradius);
     void _putpixel(int x, int y);
 
@@ -29,12 +31,12 @@ public:
         BASELINE = 64
     };
     Graphics(SDL_Renderer *renderer);
-    // TODO: void drawString(String s, int x, int y, int anchor);
+    void drawString(const std::string &s, int x, int y, int anchor);
     void setColor(int r, int g, int b);
-    // TODO: void setFont(Font font);
-    // TODO: Font getFont();
+    void setFont(Font *font);
+    Font *getFont();
     void setClip(int x, int y, int w, int h);
-    // TODO: void drawChar(char c, int x, int y, int anchor);
+    void drawChar(char c, int x, int y, int anchor);
     void fillRect(int x, int y, int w, int h);
     void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle);

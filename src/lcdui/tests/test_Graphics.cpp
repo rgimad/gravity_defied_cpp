@@ -9,6 +9,10 @@ void test_Graphics() {
         throw std::runtime_error(IMG_GetError());
     }
 
+    if (TTF_Init() == -1) {
+        throw std::runtime_error(TTF_GetError());
+    }
+
     SDL_Window *window = SDL_CreateWindow(
         0,
         SDL_WINDOWPOS_UNDEFINED,
@@ -86,6 +90,13 @@ void test_Graphics() {
     delete img2;
     delete img1;
 
+    Font *font = Font::getFont(0, 1, 0);
+    g.setFont(font);
+    g.setColor(0, 0, 0);
+    g.drawString("Gravity Defied", 200, 10,  Graphics::LEFT | Graphics::TOP);
+    g.drawChar('G', 200, 30,  Graphics::LEFT | Graphics::TOP);
+    delete font;
+
     SDL_RenderPresent(renderer); // Send to screen
 
     // Event loop
@@ -103,4 +114,6 @@ void test_Graphics() {
     SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+    IMG_Quit();
+    TTF_Quit();
 }

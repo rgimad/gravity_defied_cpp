@@ -2,15 +2,46 @@
 
 Graphics::Graphics(SDL_Renderer *renderer) {
     this->renderer = renderer;
+    this->currentColor = {0, 0, 0, 255};
+}
+
+void Graphics::drawString(const std::string &s, int x, int y, int anchor) {
+    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font->font, s.c_str(), currentColor);
+    SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
+
+    int width, height;
+    if (TTF_SizeText(font->font, s.c_str(), &width, &height) == -1) throw std::runtime_error(TTF_GetError());
+
+    x = getAnchorX(x, width, anchor);
+    y = getAnchorY(y, height, anchor);
+    SDL_Rect dstRect{x, y, width, height};
+
+    SDL_RenderCopy(renderer, message, nullptr, &dstRect);
+
+    SDL_FreeSurface(surfaceMessage);
+    SDL_DestroyTexture(message);
 }
 
 void Graphics::setColor(int r, int g, int b) {
+    currentColor = {(Uint8)r, (Uint8)g, (Uint8)b, 255};
     SDL_SetRenderDrawColor(renderer, (Uint8)r, (Uint8)g, (Uint8)b, 255);
+}
+
+void Graphics::setFont(Font *font) {
+    this->font = font;
+}
+
+Font* Graphics::getFont() {
+    return font;
 }
 
 void Graphics::setClip(int x, int y, int w, int h) {
     SDL_Rect clipRect {x, y, w, h};
     SDL_RenderSetClipRect(renderer, &clipRect);
+}
+
+void Graphics::drawChar(char c, int x, int y, int anchor) {
+    drawString(std::string(1, c), x, y, anchor);
 }
 
 void Graphics::fillRect(int x, int y, int w, int h) {
