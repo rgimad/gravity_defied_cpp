@@ -38,10 +38,9 @@ int Font::substringWidth(const std::string &string, int offset, int len) {
     return stringWidth(string.substr(offset, len));
 }
 
-// face: always 0
-// style: 1 or 0
-// size: 0, 8, 16
+// face: now unused
 Font* Font::getFont(int face, int style, int size) {
+    (void)face;
     size = Font::getRealFontSize(size);
     TTF_Font *font = TTF_OpenFont(FONT_PATH, size);
     if (!font) throw std::runtime_error(TTF_GetError());

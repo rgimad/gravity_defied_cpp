@@ -41,6 +41,8 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 # Set the directories that should be included in the build command for this target
 include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
 
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra)
+
 if (WIN32)
     target_link_libraries(
         ${PROJECT_NAME}

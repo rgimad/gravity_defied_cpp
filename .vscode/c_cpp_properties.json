@@ -7,7 +7,8 @@
                 "/usr/include/SDL2",
                 "C:/Users/rgimad/SDL2/include",
                 "C:/Users/rgimad/SDL2/include/SDL2",
-                "C:/Users/rgimad/SDL2_Image/include"
+                "C:/Users/rgimad/SDL2_Image/include",
+                "C:/Users/rgimad/SDL2_ttf/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

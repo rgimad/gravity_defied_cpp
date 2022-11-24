@@ -13,6 +13,16 @@ public:
         SIZE_LARGE = 16
     };
 
+    enum FontStyle {
+        STYLE_PLAIN = 0,
+        STYLE_BOLD = 1,
+        STYLE_ITALLIC = 2
+    };
+
+    enum FontFace {
+        FACE_SYSTEM = 0
+    };
+
     Font(TTF_Font *font, int pointSize);
     ~Font();
 

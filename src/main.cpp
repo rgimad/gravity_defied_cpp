@@ -4,6 +4,7 @@
 
 
 int main (int argc, char ** args) {
+    (void)argc; (void)args;
     try {
         test_Graphics();
     } catch (std::exception &e) {

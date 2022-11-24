@@ -90,7 +90,7 @@ void test_Graphics() {
     delete img2;
     delete img1;
 
-    Font *font = Font::getFont(0, 1, 0);
+    Font *font = Font::getFont(Font::FACE_SYSTEM, Font::STYLE_BOLD, Font::SIZE_MEDIUM);
     g.setFont(font);
     g.setColor(0, 0, 0);
     g.drawString("Gravity Defied", 200, 10,  Graphics::LEFT | Graphics::TOP);
