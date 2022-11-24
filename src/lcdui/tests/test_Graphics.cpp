@@ -82,20 +82,17 @@ void test_Graphics() {
     // comapre with http://www.java2s.com/Tutorial/Java/0261__2D-Graphics/FillArc.htm
     // http://cs111.wellesley.edu/~cs111/archive/cs111_fall06/public_html/labs/lab12/arc.html
 
-    Image *img1 = Image::createImage("assets/splash.png");
-    Image *img2 = Image::createImage("assets/sprites.png");
-    g.drawImage(img1, 150, 150, Graphics::HCENTER | Graphics::VCENTER);
-    g.drawImage(img1, 0, 0, Graphics::HCENTER | Graphics::VCENTER);
-    g.drawImage(img2, 200, 150, Graphics::LEFT | Graphics::TOP);
-    delete img2;
-    delete img1;
+    std::unique_ptr<Image> img1 {Image::createImage("assets/splash.png")},
+        img2 {Image::createImage("assets/sprites.png")};
+    g.drawImage(img1.get(), 150, 150, Graphics::HCENTER | Graphics::VCENTER);
+    g.drawImage(img1.get(), 0, 0, Graphics::HCENTER | Graphics::VCENTER);
+    g.drawImage(img2.get(), 200, 150, Graphics::LEFT | Graphics::TOP);
 
-    Font *font = Font::getFont(Font::FACE_SYSTEM, Font::STYLE_BOLD, Font::SIZE_MEDIUM);
-    g.setFont(font);
+    std::unique_ptr<Font> font {Font::getFont(Font::FACE_SYSTEM, Font::STYLE_BOLD, Font::SIZE_MEDIUM)};
+    g.setFont(font.get());
     g.setColor(0, 0, 0);
     g.drawString("Gravity Defied", 200, 10,  Graphics::LEFT | Graphics::TOP);
     g.drawChar('G', 200, 30,  Graphics::LEFT | Graphics::TOP);
-    delete font;
 
     SDL_RenderPresent(renderer); // Send to screen
 
