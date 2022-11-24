@@ -1,3 +1,9 @@
 {
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "cmake.cmakePath": "C:/Program Files/CMake/bin/cmake.exe",
+    "cmake.generator": "MinGW Makefiles",
+    "files.associations": {
+        "cmath": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "Disabled"
 }

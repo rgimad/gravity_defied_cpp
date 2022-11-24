@@ -4,9 +4,9 @@ cmake_minimum_required(VERSION 3.5)
 project (gravity_defied_cpp C CXX)
 
 if (WIN32)
-    set(SDL2_DIR "C:/Users/rgimad/SDL2")
-    set(SDL2_IMAGE_DIR "C:/Users/rgimad/SDL2_Image")
-    set(SDL2_TTF_DIR "C:/Users/rgimad/SDL2_ttf")
+    set(SDL2_DIR ${PROJECT_SOURCE_DIR}/lib/SDL2-2.24.2/x86_64-w64-mingw32)
+    set(SDL2_IMAGE_DIR ${PROJECT_SOURCE_DIR}/lib/SDL2_image-2.6.2/x86_64-w64-mingw32)
+    set(SDL2_TTF_DIR ${PROJECT_SOURCE_DIR}/lib/SDL2_ttf-2.20.1/x86_64-w64-mingw32)
     set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include;${SDL2_DIR}/include/SDL2")
     set(SDL2_IMAGE_INCLUDE_DIRS "${SDL2_IMAGE_DIR}/include")
     set(SDL2_TTF_INCLUDE_DIRS "${SDL2_TTF_DIR}/include")
@@ -58,5 +58,11 @@ else()
 endif()
 
 # Copy the font to the build directory
-file(COPY assets/FontSansSerif.ttf DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 
+if (WIN32)
+    # Copy SDL dlls to the build directory
+    file(COPY ${SDL2_DIR}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY ${SDL2_IMAGE_DIR}/bin/SDL2_image.dll DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY ${SDL2_TTF_DIR}/bin/SDL2_ttf.dll DESTINATION ${CMAKE_BINARY_DIR})
+endif()

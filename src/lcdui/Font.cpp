@@ -3,7 +3,7 @@
 #include <stdexcept>
 #include <cassert>
 
-#define FONT_PATH "./FontSansSerif.ttf"
+#define FONT_PATH "assets/FontSansSerif.ttf"
 
 Font::Font(TTF_Font *font, int pointSize) {
     assert(font != nullptr);
