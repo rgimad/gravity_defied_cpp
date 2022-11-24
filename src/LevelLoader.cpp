@@ -27,6 +27,10 @@ LevelLoader::LevelLoader() {
     method_87();
 }
 
+std::string LevelLoader::getName(int league, int level) {
+    return league < 3 && level < levelNames[league].size() ? levelNames[league][level] : "---";
+}
+
 void LevelLoader::method_87() {
     method_88(field_125, field_126 + 1);
 }

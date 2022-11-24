@@ -46,7 +46,7 @@ public:
     ~LevelLoader();
 
     // InputStream getResourceAsStream(String var1); // TODO
-    // String getName(int league, int level); // TODO
+    std::string getName(int league, int level);
 
     void method_87();
     int method_88(int var1, int var2);
