@@ -22,17 +22,27 @@ endif()
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
     src/main.cpp
+    src/MathF16.cpp
+    src/GameCanvas.cpp
+    src/Micro.cpp
     src/lcdui/Graphics.cpp
     src/lcdui/Image.cpp
     src/lcdui/Font.cpp
+    src/lcdui/Command.cpp
     src/lcdui/tests/test_Graphics.cpp
+    src/lcdui/tests/test_GameCanvas.cpp
 )
 
 set(HEADERS
+    src/MathF16.h
+    src/GameCanvas.h
+    src/Micro.h
     src/lcdui/Graphics.h
     src/lcdui/Image.h
     src/lcdui/Font.h
+    src/lcdui/Command.h
     src/lcdui/tests/test_Graphics.h
+    src/lcdui/tests/test_GameCanvas.h
 )
 
 # Add an executable with the above sources

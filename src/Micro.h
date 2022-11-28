@@ -11,10 +11,10 @@ private:
     void pauseApp();
 
 public:
-    GameCanvas *gameCanvas;
-    LevelLoader *levelLoader;
-    GamePhysics *gamePhysics;
-    MenuManager *menuManager;
+    // GameCanvas *gameCanvas;
+    // LevelLoader *levelLoader;
+    // GamePhysics *gamePhysics;
+    // MenuManager *menuManager;
     bool field_242 = false;
     int numPhysicsLoops = 2;
     int64_t timeMs = 0;
@@ -24,13 +24,13 @@ public:
     bool field_248 = false;
     static bool field_249;
     static bool isPaused;
-    static bool isInGameMenu;
+    inline static bool isInGameMenu;
     static int gameLoadingStateStage;
 
     Micro();
     ~Micro();
 
-    void gameToMenu();
+    void gameToMenu() {} // TODO
     void menuToGame();
     void init();
     // NOTE: methods readBigFile, readByte, readFile skipped because unused

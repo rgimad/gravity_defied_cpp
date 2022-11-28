@@ -1,9 +1,6 @@
 #include "Command.h"
 
-Command::Command(std::string name, int type, int priority) {
-    this->name = name;
-    this->type = type;
-    this->priority = priority;
+Command::Command(std::string name, int type, int priority) : name(name), type(type), priority(priority) {
 }
 
 /*
