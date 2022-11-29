@@ -52,6 +52,7 @@ void test_GameCanvas() {
 
     std::unique_ptr<Micro> micro = std::make_unique<Micro>();
     std::unique_ptr<GameCanvas> gameCanvas = std::make_unique<GameCanvas>(micro.get());
+    gameCanvas->loadSprites(1 | 2);
 
     int width = Graphics::getWidth()/*, height = Graphics::getHeight()*/;
     int stepX = 50, stepY = 50;
@@ -65,59 +66,66 @@ void test_GameCanvas() {
         }
     };
 
-    auto F16 = [](int x){return x * 65536;};
+    auto F16 = [](float x){return x * 65536;};
 
-    gameCanvas->loadSprites(1 | 2);
+    bool quit = false;
+    int angleF16 = 0;
+    SDL_Event e;
 
-    gameCanvas->field_184 = 0;
-    Micro::field_249 = true;
-    gameCanvas->render_160(&g);
-    gameCanvas->field_184 = 1;
-    Micro::field_249 = false;
-
-    gameCanvas->graphics = &g;
-    gameCanvas->renderStartFlag(x, y);
-    updateXY();
-    gameCanvas->renderFinishFlag(x, y);
-    updateXY();
-    gameCanvas->renderFender(x, y, 0);
-    updateXY();
-    gameCanvas->renderEngine(x, y, 0);
-    updateXY();
-    gameCanvas->drawWheelTires(x, y, 0);
-    updateXY();
-    gameCanvas->drawWheelTires(x, y, 1);
-    updateXY();
-    gameCanvas->drawForthSpriteByCenter(x, y);
-    updateXY();
-    gameCanvas->method_146(x, y, 0);
-    updateXY();
-    gameCanvas->renderBodyPart(F16(x - 10), F16(y - 10), F16(x + 10), F16(y + 10), 0);
-    updateXY();
-    gameCanvas->renderBodyPart(F16(x - 10), F16(y - 10), F16(x + 10), F16(y + 10), 1);
-    updateXY();
-    gameCanvas->renderBodyPart(F16(x - 10), F16(y - 10), F16(x + 10), F16(y + 10), 2);
-    updateXY();
-    gameCanvas->drawLine(x - 10, y - 10, x + 10, y + 10);
-    updateXY();
-    gameCanvas->drawCircle(x, y, 20);
-    updateXY();
-    gameCanvas->fillRect(x, y, 10, 10);
-
-    // TODO: test method_142
-
-    SDL_RenderPresent(renderer); // Send to screen
-
-    // Event loop
-    SDL_Event event;
-    bool flag = true;
-    while (flag) {
-        while (SDL_WaitEvent(&event) != 0) {
-            if (event.type == SDL_QUIT) {
-                flag = false;
-                break;
+    while (!quit) {
+        while (SDL_PollEvent( &e ) != 0){
+            if (e.type == SDL_QUIT) {
+                quit = true;
             }
         }
+
+        SDL_RenderClear(renderer);
+
+        x = stepX, y = stepY;
+
+        gameCanvas->graphics = &g;
+
+        gameCanvas->clearScreenWithWhite();
+
+        gameCanvas->renderEngine(x, y, angleF16);
+        updateXY();
+        gameCanvas->renderStartFlag(x, y);
+        updateXY();
+        gameCanvas->renderFinishFlag(x, y);
+        updateXY();
+        gameCanvas->renderFender(x, y, angleF16);
+        updateXY();
+        gameCanvas->drawWheelTires(x, y, 0);
+        updateXY();
+        gameCanvas->drawWheelTires(x, y, 1);
+        updateXY();
+        gameCanvas->drawForthSpriteByCenter(x, y);
+        updateXY();
+        gameCanvas->method_146(x, y, angleF16);
+        updateXY();
+        gameCanvas->renderBodyPart(F16(x - 10), F16(y - 10), F16(x + 10), F16(y + 10), 0);
+        updateXY();
+        gameCanvas->renderBodyPart(F16(x - 10), F16(y - 10), F16(x + 10), F16(y + 10), 1);
+        updateXY();
+        gameCanvas->renderBodyPart(F16(x - 10), F16(y - 10), F16(x + 10), F16(y + 10), 2);
+        updateXY();
+        gameCanvas->drawLine(x - 10, y - 10, x + 10, y + 10);
+        updateXY();
+        gameCanvas->drawCircle(x, y, 20);
+        updateXY();
+        gameCanvas->fillRect(x, y, 10, 10);
+
+        gameCanvas->field_184 = 0;
+        Micro::field_249 = true;
+        gameCanvas->render_160(&g);
+        gameCanvas->field_184 = 1;
+        Micro::field_249 = false;
+
+        angleF16 += 1000;
+
+        SDL_RenderPresent(renderer);
+
+        SDL_Delay(1);
     }
 
     SDL_DestroyRenderer(renderer);
