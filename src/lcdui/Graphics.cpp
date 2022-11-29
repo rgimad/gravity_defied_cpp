@@ -23,7 +23,10 @@ void Graphics::drawString(const std::string &s, int x, int y, int anchor) {
 }
 
 void Graphics::setColor(int r, int g, int b) {
-    currentColor = {(Uint8)r, (Uint8)g, (Uint8)b, 255};
+    currentColor.r = r;
+    currentColor.g = g;
+    currentColor.b = b;
+    currentColor.a = 255;
     SDL_SetRenderDrawColor(renderer, (Uint8)r, (Uint8)g, (Uint8)b, 255);
 }
 

@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdexcept>
 #include "lcdui/tests/test_Graphics.h"
-#include "lcdui/tests/test_GameCanvas.h"
+#include "tests/test_GameCanvas.h"
 
 int main (int argc, char ** args) {
     (void)argc; (void)args;

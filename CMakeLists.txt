@@ -30,7 +30,7 @@ set(SOURCES
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
     src/lcdui/tests/test_Graphics.cpp
-    src/lcdui/tests/test_GameCanvas.cpp
+    src/tests/test_GameCanvas.cpp
 )
 
 set(HEADERS
@@ -42,7 +42,7 @@ set(HEADERS
     src/lcdui/Font.h
     src/lcdui/Command.h
     src/lcdui/tests/test_Graphics.h
-    src/lcdui/tests/test_GameCanvas.h
+    src/tests/test_GameCanvas.h
 )
 
 # Add an executable with the above sources
