@@ -9,7 +9,8 @@ This project is an attempt to rewrite the game to C++ and SDL2, preserving all f
 # Authors
 
 ### Gravity Defied Cpp authors
-* **[rgimad](https://github.com/rgimad)** - idea & coding.
+* **[rgimad](https://github.com/rgimad)** - idea & coding
+* **[AntonEvmenenko](https://github.com/AntonEvmenenko)** - coding
 
 ### Codebrew GDTR Authors
 
