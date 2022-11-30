@@ -11,3 +11,4 @@ libgravity_defied_cpp.dll.a
 lib/*
 /*.ttf
 build/*
+.vscode/*
