@@ -9,8 +9,7 @@ int main (int argc, char ** args) {
         // test_Graphics();
         test_GameCanvas();
     } catch (std::exception &e) {
-        // std::cout << "Exception: " << e.what() << std::endl;
-        SDL_LogError(0, e.what());
+        std::cout << "Exception: " << e.what() << std::endl;
     }
 
     return 0;

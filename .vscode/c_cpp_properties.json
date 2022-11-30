@@ -1,17 +1,20 @@
 {
     "configurations": [
         {
-            "name": "Windows",
+            "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "C:/msys64/mingw64/include/**",
-                "C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/12.2.0/include/**"
+                "/usr/include/SDL2",
+                "C:/Users/rgimad/SDL2/include",
+                "C:/Users/rgimad/SDL2/include/SDL2",
+                "C:/Users/rgimad/SDL2_Image/include",
+                "C:/Users/rgimad/SDL2_ttf/include"
             ],
             "defines": [],
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64",
-            "configurationProvider": "ms-vscode.cmake-tools"
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4
