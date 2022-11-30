@@ -23,7 +23,10 @@ void Graphics::drawString(const std::string &s, int x, int y, int anchor) {
 }
 
 void Graphics::setColor(int r, int g, int b) {
-    currentColor = {(Uint8)r, (Uint8)g, (Uint8)b, 255};
+    currentColor.r = r;
+    currentColor.g = g;
+    currentColor.b = b;
+    currentColor.a = 255;
     SDL_SetRenderDrawColor(renderer, (Uint8)r, (Uint8)g, (Uint8)b, 255);
 }
 
@@ -221,4 +224,12 @@ int Graphics::getAnchorY(int y, int size, int anchor) {
         return y - size / 2;
     }
     throw std::runtime_error("unknown yanchor = " + std::to_string(anchor));
+}
+
+int Graphics::getWidth() {
+    return 320; // TODO
+}
+
+int Graphics::getHeight() {
+    return 240; // TODO
 }

@@ -22,17 +22,27 @@ endif()
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
     src/main.cpp
+    src/MathF16.cpp
+    src/GameCanvas.cpp
+    src/Micro.cpp
     src/lcdui/Graphics.cpp
     src/lcdui/Image.cpp
     src/lcdui/Font.cpp
+    src/lcdui/Command.cpp
     src/lcdui/tests/test_Graphics.cpp
+    src/tests/test_GameCanvas.cpp
 )
 
 set(HEADERS
+    src/MathF16.h
+    src/GameCanvas.h
+    src/Micro.h
     src/lcdui/Graphics.h
     src/lcdui/Image.h
     src/lcdui/Font.h
+    src/lcdui/Command.h
     src/lcdui/tests/test_Graphics.h
+    src/tests/test_GameCanvas.h
 )
 
 # Add an executable with the above sources
@@ -58,5 +68,11 @@ else()
 endif()
 
 # Copy the font to the build directory
-file(COPY assets/FontSansSerif.ttf DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
 
+if (WIN32)
+    # Copy SDL dlls to the build directory
+    file(COPY ${SDL2_DIR}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY ${SDL2_IMAGE_DIR}/bin/SDL2_image.dll DESTINATION ${CMAKE_BINARY_DIR})
+    file(COPY ${SDL2_TTF_DIR}/bin/SDL2_ttf.dll DESTINATION ${CMAKE_BINARY_DIR})
+endif()
