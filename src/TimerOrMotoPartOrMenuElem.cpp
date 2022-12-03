@@ -9,12 +9,12 @@ TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(int timerNo, Micro *micro) 
     this->timerNo = timerNo;
 }
 
-TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(char *text, GameMenu *gameMenu, IMenuManager *menuManager) {
-    strcpy(this->text, text);
-    strcat(this->text, ">");
-    this->gameMenu = gameMenu;
-    this->menuManager = menuManager;
-}
+// TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(char *text, GameMenu *gameMenu, IMenuManager *menuManager) {
+//     strcpy(this->text, text);
+//     strcat(this->text, ">");
+//     this->gameMenu = gameMenu;
+//     this->menuManager = menuManager;
+// }
 
 void TimerOrMotoPartOrMenuElem::setToZeros() {
     xF16 = yF16 = angleF16 = 0;
@@ -23,7 +23,7 @@ void TimerOrMotoPartOrMenuElem::setToZeros() {
 }
 
 void TimerOrMotoPartOrMenuElem::run() {
-    micro->gameCanvas.method_150(timerNo);
+    // micro->gameCanvas.method_150(timerNo); // TODO
 }
 
 void TimerOrMotoPartOrMenuElem::setText(char *text) {
@@ -40,21 +40,22 @@ bool TimerOrMotoPartOrMenuElem::isNotTextRender() {
 }
 
 void TimerOrMotoPartOrMenuElem::menuElemMethod(int var1) {
-    switch (var1) {
-        case 1:
-        case 2:
-            menuManager->processMenu(this);
-            gameMenu->setGameMenu(menuManager->getGameMenu());
-            menuManager->method_1(gameMenu, false);
-        case 3:
-        default:
-    }
+    // TODO
+    // switch (var1) {
+    //     case 1:
+    //     case 2:
+    //         menuManager->processMenu(this);
+    //         gameMenu->setGameMenu(menuManager->getGameMenu());
+    //         menuManager->method_1(gameMenu, false);
+    //     case 3:
+    //     default:
+    // }
 }
 
-void TimerOrMotoPartOrMenuElem::setGameMenu(GameMenu *gameMenu) {
-    this->gameMenu = gameMenu;
-}
+// void TimerOrMotoPartOrMenuElem::setGameMenu(GameMenu *gameMenu) {
+//     this->gameMenu = gameMenu;
+// }
 
-void TimerOrMotoPartOrMenuElem::render(Graphics *graphics, int y, int x) {
-    graphics->drawString(text, x, y, 20);
-}
+// void TimerOrMotoPartOrMenuElem::render(Graphics *graphics, int y, int x) {
+//     graphics->drawString(text, x, y, 20);
+// }

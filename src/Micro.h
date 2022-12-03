@@ -1,6 +1,9 @@
 #pragma once
 #include <cstdint>
 
+class GameCanvas;
+class GamePhysics;
+
 class Micro {
 private:
     // TODO: static uint8_t singleByteArr[1]; ?
@@ -11,9 +14,9 @@ private:
     void pauseApp();
 
 public:
-    // GameCanvas *gameCanvas;
+    GameCanvas *gameCanvas;
     // LevelLoader *levelLoader;
-    // GamePhysics *gamePhysics;
+    GamePhysics *gamePhysics;
     // MenuManager *menuManager;
     bool field_242 = false;
     int numPhysicsLoops = 2;

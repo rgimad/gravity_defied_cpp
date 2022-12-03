@@ -13,8 +13,6 @@ class GamePhysics;
 
 class GameCanvas {
 private:
-    void repaint();
-    void serviceRepaints();
     void method_164();
     void handleUpdatedInput();
 
@@ -25,7 +23,7 @@ private:
     int engineSpriteHeight;
     int fenderSpriteWidth;
     int fenderSpriteHeight;
-    // GamePhysics *gamePhysics = nullptr;
+    GamePhysics *gamePhysics = nullptr;
     // MenuManager *menuManager = nullptr;
     int field_178 = 0;
     int field_179 = 0;
@@ -99,6 +97,10 @@ public:
     void render_160(Graphics *g); // TODO: rename to drawGame()
     void method_161(int var1, bool mode);
     void method_163(int var1);
+    void paint(Graphics *g);
+    void repaint();
+    void serviceRepaints();
+    void init(GamePhysics *gamePhysics);
 
     int width;
     int height2;

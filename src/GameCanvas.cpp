@@ -1,6 +1,7 @@
 #include "GameCanvas.h"
 
 #include "MathF16.h"
+#include "GamePhysics.h"
 
 void GameCanvas::repaint() {
     // TODO
@@ -70,7 +71,7 @@ void GameCanvas::updateSizeAndRepaint() {
 }
 
 int GameCanvas::loadSprites(int var1) {
-    // synchronized (this.objectForSyncronization) { // TODO
+    // synchronized (objectForSyncronization) { // TODO
         if ((var1 & 1) != 0) {
             try {
                 if (fenderImage == nullptr) {
@@ -391,7 +392,7 @@ void GameCanvas::setColor(int red, int green, int blue) {
 }
 
 void GameCanvas::render_160(Graphics *g) {
-    // synchronized (this.objectForSyncronization) { // TODO
+    // synchronized (objectForSyncronization) { // TODO
         if (Micro::field_249 && !micro->field_242) {
             graphics = g;
 
@@ -420,9 +421,9 @@ void GameCanvas::render_160(Graphics *g) {
                     updateSizeAndRepaint();
                 }
 
-                // gamePhysics->setMotoComponents(); // TODO
-                // setViewPosition(-gamePhysics->getCamPosX() + field_178 + width / 2, gamePhysics->getCamPosY() + field_179 + height2 / 2); // TODO
-                // gamePhysics->renderGame(this); // TODO
+                gamePhysics->setMotoComponents();
+                setViewPosition(-gamePhysics->getCamPosX() + field_178 + width / 2, gamePhysics->getCamPosY() + field_179 + height2 / 2);
+                gamePhysics->renderGame(this);
                 if (isDrawingTime) {
                     drawTime(micro->gameTimeMs / 10L);
                 }
@@ -442,7 +443,7 @@ void GameCanvas::render_160(Graphics *g) {
                     }
                 }
 
-                // var3 = gamePhysics->method_52(); // TODO
+                var3 = gamePhysics->method_52();
                 method_161(var3, false);
             }
 
@@ -462,6 +463,15 @@ void GameCanvas::method_161(int var1, bool mode) {
 void GameCanvas::method_163(int var1) {
     field_232 = var1;
 }
+
+void GameCanvas::paint(Graphics *graphics) {
+    if (Micro::isInGameMenu/* && menuManager != null*/) { // TODO
+        // menuManager.method_202(graphics); // TODO
+    } else {
+        render_160(graphics);
+    }
+}
+
 
 void GameCanvas::method_164() {
     int var1;
@@ -494,7 +504,7 @@ void GameCanvas::handleUpdatedInput() {
         }
     }
 
-    // gamePhysics->method_30(var1, var2); // TODO
+    gamePhysics->method_30(var1, var2);
 }
 
 void GameCanvas::processKeyPressed(int keyCode) {
@@ -526,84 +536,82 @@ int GameCanvas::getGameAction(int key) {
     return 0; // TODO
 }
 
+void GameCanvas::init(GamePhysics *gamePhysics) {
+    this->gamePhysics = gamePhysics;
+    gamePhysics->setMinimalScreenWH(width < height2 ? width : height2);
+}
+
 /*
 
 // TODO
 
-// $FF: renamed from: a (b) void
-public void init(GamePhysics gamePhysics) {
-    this.gamePhysics = gamePhysics;
-    this.gamePhysics.setMinimalScreenWH(this.width < this.height2 ? this.width : this.height2);
-}
-
-
 // $FF: renamed from: a (java.lang.String, int) void
 public void scheduleGameTimerTask(String var1, int delayMs) {
-    this.field_182 = false;
-    ++this.countOfScheduledTimers;
-    this.field_210 = var1;
-    this.timer.schedule(new TimerOrMotoPartOrMenuElem(this.countOfScheduledTimers, this.micro), (int64_t) delayMs);
+    field_182 = false;
+    ++countOfScheduledTimers;
+    field_210 = var1;
+    timer.schedule(new TimerOrMotoPartOrMenuElem(countOfScheduledTimers, micro), (int64_t) delayMs);
 }
 
 // $FF: renamed from: a (m) void
 public void setMenuManager(MenuManager menuManager) {
-    this.menuManager = menuManager;
+    menuManager = menuManager;
 }
 
 // $FF: renamed from: a (javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable) void
 public void method_168(Command var1, Displayable var2) {
-    if (var1 == this.commandMenu) {
-        this.menuManager.field_377 = true;
-        this.micro.gameToMenu();
+    if (var1 == commandMenu) {
+        menuManager.field_377 = true;
+        micro.gameToMenu();
     }
 }
 
 protected void keyRepeated(int var1) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.processNonFireKeyCode(var1);
+    if (Micro.isInGameMenu && menuManager != null) {
+        menuManager.processNonFireKeyCode(var1);
     }
 }
 
 protected synchronized void keyPressed(int var1) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.processKeyCode(var1);
+    if (Micro.isInGameMenu && menuManager != null) {
+        menuManager.processKeyCode(var1);
     }
 
-    this.processKeyPressed(var1);
+    processKeyPressed(var1);
 }
 
 protected synchronized void keyReleased(int var1) {
     if (Micro.isInGameMenu) {
-        MenuManager var10000 = this.menuManager;
+        MenuManager var10000 = menuManager;
     }
 
-    this.processKeyReleased(var1);
+    processKeyReleased(var1);
 }
 
 public void paint(Graphics graphics) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.method_202(graphics);
+    if (Micro.isInGameMenu && menuManager != null) {
+        menuManager.method_202(graphics);
     } else {
-        this.render_160(graphics);
+        render_160(graphics);
     }
 }
 
 public void commandAction(Command var1, Displayable var2) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.method_206(var1, var2);
+    if (Micro.isInGameMenu && menuManager != null) {
+        menuManager.method_206(var1, var2);
     } else {
-        this.method_168(var1, var2);
+        method_168(var1, var2);
     }
 }
 
 // $FF: renamed from: for () void
 public void removeMenuCommand() {
-    this.removeCommand(this.commandMenu);
+    removeCommand(commandMenu);
 }
 
 // $FF: renamed from: byte () void
 public void addMenuCommand() {
-    this.addCommand(this.commandMenu);
+    addCommand(commandMenu);
 }
 
 */

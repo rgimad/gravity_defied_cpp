@@ -20,11 +20,15 @@ LevelLoader::LevelLoader() {
     }
 
     try {
-        loadLevels();
+        // loadLevels(); // TODO
     } catch (std::exception &e) {
         // TODO
     }
-    method_87();
+    // method_87(); // TODO
+}
+
+LevelLoader::~LevelLoader() {
+    // TODO
 }
 
 std::string LevelLoader::getName(int league, int level) {
@@ -47,7 +51,7 @@ int LevelLoader::method_88(int var1, int var2) {
 }
 
 void LevelLoader::method_89(int var1, int var2) {
-    std::ifstream dis("levels.mrg", std::ios::binary);
+    std::ifstream dis("assets/levels.mrg", std::ios::binary);
     dis.seekg(levelOffsetInFile[var1 - 1][var2 - 1]);
     if (gameLevel == nullptr) {
         gameLevel = new GameLevel();
@@ -132,13 +136,13 @@ void LevelLoader::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
         gameCanvas->setColor(0, 170, 0);
         xF16 >>= 1;
         yF16 >>= 1;
-        gameLevel->renderLevel3D(gameCanvas, xF16, yF16);
+        // gameLevel->renderLevel3D(gameCanvas, xF16, yF16); // TODO
     }
 }
 
 void LevelLoader::renderTrackNearestLine(GameCanvas *canvas) {
     canvas->setColor(0, 255, 0);
-    gameLevel->renderTrackNearestGreenLine(canvas);
+    // gameLevel->renderTrackNearestGreenLine(canvas); // TODO
 }
 
 

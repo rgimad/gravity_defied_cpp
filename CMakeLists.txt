@@ -24,6 +24,11 @@ set(SOURCES
     src/main.cpp
     src/MathF16.cpp
     src/GameCanvas.cpp
+    src/GamePhysics.cpp
+    src/TimerOrMotoPartOrMenuElem.cpp
+    src/class_10.cpp
+    src/GameLevel.cpp
+    src/LevelLoader.cpp
     src/Micro.cpp
     src/lcdui/Graphics.cpp
     src/lcdui/Image.cpp
@@ -36,6 +41,11 @@ set(SOURCES
 set(HEADERS
     src/MathF16.h
     src/GameCanvas.h
+    src/GamePhysics.h
+    src/TimerOrMotoPartOrMenuElem.h
+    src/class_10.h
+    src/GameLevel.h
+    src/LevelLoader.h
     src/Micro.h
     src/lcdui/Graphics.h
     src/lcdui/Image.h

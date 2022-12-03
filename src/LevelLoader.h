@@ -7,6 +7,8 @@
 #include <stdexcept>
 
 #include "GamePhysics.h"
+#include "GameCanvas.h"
+#include "GameLevel.h"
 #include "TimerOrMotoPartOrMenuElem.h"
 
 class LevelLoader {
@@ -14,7 +16,7 @@ private:
     std::vector< std::vector<int> > field_121;
     int field_123[3];
     int field_124[3];
-    static std::vector<int> levelOffsetInFile[3];
+    inline static std::vector<int> levelOffsetInFile[3];
 
     int field_132 = 0;
     static int field_133;

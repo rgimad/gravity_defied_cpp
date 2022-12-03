@@ -1,5 +1,7 @@
 #include "GameLevel.h"
 
+#include "LevelLoader.h"
+
 GameLevel::GameLevel() {
     init();
 }
