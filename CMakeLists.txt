@@ -30,6 +30,7 @@ set(SOURCES
     src/GameLevel.cpp
     src/LevelLoader.cpp
     src/Micro.cpp
+    src/TextRender.cpp
     src/lcdui/Graphics.cpp
     src/lcdui/Image.cpp
     src/lcdui/Font.cpp
@@ -47,6 +48,7 @@ set(HEADERS
     src/GameLevel.h
     src/LevelLoader.h
     src/Micro.h
+    src/TextRender.h
     src/lcdui/Graphics.h
     src/lcdui/Image.h
     src/lcdui/Font.h
