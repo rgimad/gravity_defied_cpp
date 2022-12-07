@@ -16,7 +16,7 @@ private:
     std::vector< std::vector<int> > field_121;
     int field_123[3];
     int field_124[3];
-    inline static std::vector<int> levelOffsetInFile[3];
+    inline static std::vector<std::vector<int>> levelOffsetInFile = std::vector<std::vector<int>>(3);
 
     int field_132 = 0;
     static int field_133;
@@ -24,7 +24,7 @@ private:
     static int field_135;
     static int field_136;
 
-    // private void loadLevels() throws IOException // TODO
+    void loadLevels();
 
 public:
     static const int field_114;
@@ -37,7 +37,7 @@ public:
     GameLevel *gameLevel = nullptr;
     int field_125 = 0;
     int field_126 = -1;
-    std::vector<std::string> levelNames[3];
+    std::vector<std::vector<std::string>> levelNames = std::vector<std::vector<std::string>>(3);
     int field_129;
     int field_130;
     int field_131;
@@ -47,7 +47,6 @@ public:
     LevelLoader();
     ~LevelLoader();
 
-    // InputStream getResourceAsStream(String var1); // TODO
     std::string getName(int league, int level);
 
     void method_87();

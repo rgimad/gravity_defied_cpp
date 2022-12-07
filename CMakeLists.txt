@@ -40,6 +40,7 @@ set(SOURCES
 )
 
 set(HEADERS
+    src/Helpers.h
     src/MathF16.h
     src/GameCanvas.h
     src/GamePhysics.h

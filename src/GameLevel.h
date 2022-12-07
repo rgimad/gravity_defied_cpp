@@ -4,8 +4,7 @@
 #include <vector>
 #include <fstream>
 
-#include "GamePhysics.h"
-#include "GameCanvas.h"
+class GameCanvas;
 
 class GameLevel {
 private:
@@ -41,9 +40,9 @@ public:
     void setMinMaxX(int minX, int maxX);
     void method_183(int var1, int var2);
     void method_184(int var1, int var2, int var3);
-    void renderShadow(GameCanvas &gameCanvas, int var2, int var3);
-    /*synchronized*/ void renderLevel3D(GameCanvas &gameCanvas, int xF16, int yF16);
-    /*synchronized*/ void renderTrackNearestGreenLine(GameCanvas &canvas);
+    void renderShadow(GameCanvas *gameCanvas, int var2, int var3);
+    /*synchronized*/ void renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16);
+    /*synchronized*/ void renderTrackNearestGreenLine(GameCanvas *canvas);
     void addPointSimple(int var1, int var2);
     void addPoint(int x, int y);
     /*synchronized*/ void load(std::ifstream &var1);
