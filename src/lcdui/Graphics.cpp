@@ -225,11 +225,3 @@ int Graphics::getAnchorY(int y, int size, int anchor) {
     }
     throw std::runtime_error("unknown yanchor = " + std::to_string(anchor));
 }
-
-int Graphics::getWidth() {
-    return 320; // TODO
-}
-
-int Graphics::getHeight() {
-    return 240; // TODO
-}

@@ -3,14 +3,6 @@
 #include "MathF16.h"
 #include "GamePhysics.h"
 
-void GameCanvas::repaint() {
-    // TODO
-}
-
-void GameCanvas::serviceRepaints() {
-    // TODO
-}
-
 GameCanvas::GameCanvas(Micro *micro) {
     try {
         this->splashImage = Image::createImage("assets/splash.png");
@@ -48,7 +40,7 @@ void GameCanvas::drawSprite(Graphics *g, int spriteNo, int x, int y) {
     if (spritesImage) {
         g->setClip(x, y, spriteSizeX[spriteNo], spriteSizeY[spriteNo]);
         g->drawImage(spritesImage, x - spriteOffsetX[spriteNo], y - spriteOffsetY[spriteNo], 20);
-        g->setClip(0, 0, Graphics::getWidth(), Graphics::getHeight());
+        g->setClip(0, 0, getWidth(), getHeight());
     }
 }
 
@@ -63,9 +55,14 @@ void GameCanvas::requestRepaint(int var1) {
     }
 }
 
+void GameCanvas::method_124(bool var1) {
+    field_205 = var1;
+    updateSizeAndRepaint();
+}
+
 void GameCanvas::updateSizeAndRepaint() {
-    width = Graphics::getWidth();
-    height = height2 = Graphics::getHeight();
+    width = getWidth();
+    height = height2 = getHeight();
 
     repaint();
 }
@@ -152,7 +149,7 @@ Image* GameCanvas::loadImage(std::string imgName) {
 void GameCanvas::setViewPosition(int dx, int dy) {
     dx = dx;
     dy = dy;
-    // gamePhysics->setRenderMinMaxX(-dx, -dx + width); // TODO
+    gamePhysics->setRenderMinMaxX(-dx, -dx + width);
 }
 
 int GameCanvas::getDx() {
@@ -195,7 +192,7 @@ void GameCanvas::renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int 
         y -= bodyPartsSpriteHeight[bodyPartNo] / 2;
         graphics->setClip(x, y, bodyPartsSpriteWidth[bodyPartNo], bodyPartsSpriteHeight[bodyPartNo]);
         graphics->drawImage(bodyPartsImages[bodyPartNo].get(), x - bodyPartsSpriteWidth[bodyPartNo] * (spriteNo % 6), y - bodyPartsSpriteHeight[bodyPartNo] * (spriteNo / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 }
 
@@ -238,7 +235,7 @@ void GameCanvas::method_146(int var1, int var2, int var3) {
         int var6 = addDy(var2) - helmetSpriteHeight / 2;
         graphics->setClip(var5, var6, helmetSpriteWidth, helmetSpriteHeight);
         graphics->drawImage(helmetImage, var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 
 }
@@ -350,7 +347,7 @@ void GameCanvas::renderEngine(int x, int y, int angleF16) {
     if (engineImage != nullptr) {
         graphics->setClip(centerX, centerY, engineSpriteWidth, engineSpriteHeight);
         graphics->drawImage(engineImage, centerX - engineSpriteWidth * (spriteNo % 6), centerY - engineSpriteHeight * (spriteNo / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 }
 
@@ -361,7 +358,7 @@ void GameCanvas::renderFender(int x, int y, int angleF16) {
         int centerY = addDy(y) - fenderSpriteHeight / 2;
         graphics->setClip(centerX, centerY, fenderSpriteWidth, fenderSpriteHeight);
         graphics->drawImage(fenderImage, centerX - fenderSpriteWidth * (spriteNo % 6), centerY - fenderSpriteHeight * (spriteNo / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 }
 
@@ -400,24 +397,24 @@ void GameCanvas::render_160(Graphics *g) {
             if (field_184 != 0) {
                 if (field_184 == 1) {
                     graphics->setColor(255, 255, 255);
-                    graphics->fillRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
+                    graphics->fillRect(0, 0, getWidth(), getHeight());
                     if (logoImage != nullptr) {
-                        graphics->drawImage(logoImage, Graphics::getWidth() / 2, Graphics::getHeight() / 2, 3);
-                        drawSprite(graphics, 16, Graphics::getWidth() - spriteSizeX[16] - 5, Graphics::getHeight() - spriteSizeY[16] - 7);
-                        drawSprite(graphics, 17, Graphics::getWidth() - spriteSizeX[17] - 4, Graphics::getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
+                        graphics->drawImage(logoImage, getWidth() / 2, getHeight() / 2, 3);
+                        drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5, getHeight() - spriteSizeY[16] - 7);
+                        drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
                     }
                 } else {
                     graphics->setColor(255, 255, 255);
-                    graphics->fillRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
+                    graphics->fillRect(0, 0, getWidth(), getHeight());
                     if (splashImage != nullptr) {
-                        graphics->drawImage(splashImage, Graphics::getWidth() / 2, Graphics::getHeight() / 2, 3);
+                        graphics->drawImage(splashImage, getWidth() / 2, getHeight() / 2, 3);
                     }
                 }
 
                 var3 = (int) (((int64_t) (Micro::gameLoadingStateStage << 16) << 32) / 655360L >> 16);
                 method_161(var3, true);
             } else {
-                if (height != Graphics::getHeight()) {
+                if (height != getHeight()) {
                     updateSizeAndRepaint();
                 }
 

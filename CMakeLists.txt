@@ -31,6 +31,8 @@ set(SOURCES
     src/LevelLoader.cpp
     src/Micro.cpp
     src/TextRender.cpp
+    src/lcdui/CanvasImpl.cpp
+    src/lcdui/Canvas.cpp
     src/lcdui/Graphics.cpp
     src/lcdui/Image.cpp
     src/lcdui/Font.cpp
@@ -41,6 +43,7 @@ set(SOURCES
 
 set(HEADERS
     src/Helpers.h
+    src/Displayable.h
     src/MathF16.h
     src/GameCanvas.h
     src/GamePhysics.h
@@ -50,6 +53,8 @@ set(HEADERS
     src/LevelLoader.h
     src/Micro.h
     src/TextRender.h
+    src/lcdui/CanvasImpl.h
+    src/lcdui/Canvas.h
     src/lcdui/Graphics.h
     src/lcdui/Image.h
     src/lcdui/Font.h

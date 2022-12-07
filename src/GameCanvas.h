@@ -1,17 +1,18 @@
 #pragma once
 
-#include <string.h>
+#include <string>
 #include <memory>
 #include <vector>
 
 #include "lcdui/Graphics.h"
 #include "lcdui/Command.h"
+#include "lcdui/Canvas.h"
 
 #include "Micro.h"
 
 class GamePhysics;
 
-class GameCanvas {
+class GameCanvas : public Canvas{
 private:
     void method_164();
     void handleUpdatedInput();
@@ -42,6 +43,7 @@ private:
     int bodyPartsSpriteWidth[3] = {0, 0, 0};
     int bodyPartsSpriteHeight[3] = {0, 0, 0};
     inline static int defaultFontWidth00 = 25;
+    bool field_205 = true;
     int field_206;
     Image *screenBuffer = nullptr;
     std::string field_210 = "";
@@ -66,6 +68,7 @@ public:
     GameCanvas(Micro *micro);
     void drawSprite(Graphics *g, int spriteNo, int x, int y);
     void requestRepaint(int var1);
+    void method_124(bool var1);
     void updateSizeAndRepaint();
     int loadSprites(int var1);
     void method_129();
@@ -98,8 +101,6 @@ public:
     void method_161(int var1, bool mode);
     void method_163(int var1);
     void paint(Graphics *g);
-    void repaint();
-    void serviceRepaints();
     void init(GamePhysics *gamePhysics);
 
     int width;
@@ -108,10 +109,10 @@ public:
     Image *helmetImage = nullptr;
     int helmetSpriteWidth;
     int helmetSpriteHeight;
-    const int spriteOffsetX[18] = {0, 0, 15, 15, 15, 0, 6, 12, 18, 18, 25, 25, 25, 37, 37, 37, 15, 32};
-    const int spriteOffsetY[18] = {10, 25, 16, 20, 10, 0, 0, 0, 8, 0, 0, 6, 12, 0, 6, 12, 29, 18};
-    const int spriteSizeX[18] = {15, 15, 8, 8, 3, 6, 6, 6, 7, 7, 12, 12, 12, 12, 12, 12, 16, 17};
-    const int spriteSizeY[18] = {15, 15, 4, 4, 3, 10, 10, 10, 8, 8, 6, 6, 6, 6, 6, 6, 11, 22};
+    inline static const int spriteOffsetX[18] = {0, 0, 15, 15, 15, 0, 6, 12, 18, 18, 25, 25, 25, 37, 37, 37, 15, 32};
+    inline static const int spriteOffsetY[18] = {10, 25, 16, 20, 10, 0, 0, 0, 8, 0, 0, 6, 12, 0, 6, 12, 29, 18};
+    inline static const int spriteSizeX[18] = {15, 15, 8, 8, 3, 6, 6, 6, 7, 7, 12, 12, 12, 12, 12, 12, 16, 17};
+    inline static const int spriteSizeY[18] = {15, 15, 4, 4, 3, 10, 10, 10, 8, 8, 6, 6, 6, 6, 6, 6, 11, 22};
 
 protected:
     void processKeyPressed(int keyCode);
