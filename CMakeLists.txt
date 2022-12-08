@@ -38,7 +38,10 @@ set(SOURCES
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
     src/lcdui/tests/test_Graphics.cpp
+    src/rms/RecordEnumerationImpl.cpp
+    src/rms/RecordStore.cpp
     src/tests/test_GameCanvas.cpp
+    src/tests/test_rms.cpp
 )
 
 set(HEADERS
@@ -60,7 +63,16 @@ set(HEADERS
     src/lcdui/Font.h
     src/lcdui/Command.h
     src/lcdui/tests/test_Graphics.h
+    src/rms/InvalidRecordIDException.h
+    src/rms/RecordComparator.h
+    src/rms/RecordEnumeration.h
+    src/rms/RecordEnumerationImpl.h
+    src/rms/RecordFilter.h
+    src/rms/RecordStore.h
+    src/rms/RecordStoreException.h
+    src/rms/RecordStoreNotOpenException.h
     src/tests/test_GameCanvas.h
+    src/tests/test_rms.h
 )
 
 # Add an executable with the above sources
@@ -79,7 +91,7 @@ if (WIN32)
         ${SDL2_LIBRARIES_DIR}/libSDL2.dll.a
         ${SDL2_IMAGE_LIBRARIES_DIR}/libSDL2_image.dll.a
         ${SDL2_TTF_LIBRARIES_DIR}/libSDL2_ttf.dll.a
-        -mwindows
+        -mwindows # comment out this line to make std::cout work
     )
 else()
     target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})

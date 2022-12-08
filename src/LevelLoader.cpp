@@ -40,17 +40,17 @@ void LevelLoader::loadLevels() {
     std::vector<int> var4(3);
 
     for (int league = 0; league < 3; ++league) {
-        Helpers::readVariableFromFileStream(&var4[league], dis, true);
+        Helpers::readVariableFromStream(&var4[league], dis, true);
         levelOffsetInFile[league] = std::vector<int>(var4[league]);
         levelNames[league] = std::vector<std::string>(var4[league]);
 
         for (int levelNp = 0; levelNp < var4[league]; ++levelNp) {
             int var7;
-            Helpers::readVariableFromFileStream(&var7, dis, true);
+            Helpers::readVariableFromStream(&var7, dis, true);
             levelOffsetInFile[league][levelNp] = var7;
 
             for (int var8 = 0; var8 < 40; ++var8) {
-                Helpers::readVariableFromFileStream(&var3[var8], dis, true);
+                Helpers::readVariableFromStream(&var3[var8], dis, true);
                 if (var3[var8] == 0) {
                     std::string s = std::string(reinterpret_cast<char*>(var3.data()), var8);
                     std::replace(s.begin(), s.end(), '_', ' ');

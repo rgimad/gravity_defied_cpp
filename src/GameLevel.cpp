@@ -190,39 +190,39 @@ void GameLevel::renderTrackNearestGreenLine(GameCanvas *gameCanvas) {
 void GameLevel::load(std::ifstream &var1) {
     init();
     int8_t c;
-    Helpers::readVariableFromFileStream(&c, var1, true);
+    Helpers::readVariableFromStream(&c, var1, true);
     if (c == 50) {
         char var3[20];
-        Helpers::readVariableFromFileStream(var3, var1, false, 20);
+        Helpers::readVariableFromStream(var3, var1, false, 20);
     }
 
     finishFlagPoint = 0;
     startFlagPoint = 0;
     int pointX, pointY;
     short pointsCount;
-    Helpers::readVariableFromFileStream(&startPosX, var1, true);
-    Helpers::readVariableFromFileStream(&startPosY, var1, true);
-    Helpers::readVariableFromFileStream(&finishPosX, var1, true);
-    Helpers::readVariableFromFileStream(&finishPosY, var1, true);
-    Helpers::readVariableFromFileStream(&pointsCount, var1, true);
-    Helpers::readVariableFromFileStream(&pointX, var1, true);
-    Helpers::readVariableFromFileStream(&pointY, var1, true);
+    Helpers::readVariableFromStream(&startPosX, var1, true);
+    Helpers::readVariableFromStream(&startPosY, var1, true);
+    Helpers::readVariableFromStream(&finishPosX, var1, true);
+    Helpers::readVariableFromStream(&finishPosY, var1, true);
+    Helpers::readVariableFromStream(&pointsCount, var1, true);
+    Helpers::readVariableFromStream(&pointX, var1, true);
+    Helpers::readVariableFromStream(&pointY, var1, true);
     int offsetX = pointX;
     int offsetY = pointY;
     addPointSimple(pointX, pointY);
 
     for (int i = 1; i < pointsCount; ++i) {
         int8_t modeOrDx;
-        Helpers::readVariableFromFileStream(&modeOrDx, var1, true);
+        Helpers::readVariableFromStream(&modeOrDx, var1, true);
         if (modeOrDx == -1) {
             offsetY = 0;
             offsetX = 0;
-            Helpers::readVariableFromFileStream(&pointX, var1, true);
-            Helpers::readVariableFromFileStream(&pointY, var1, true);
+            Helpers::readVariableFromStream(&pointX, var1, true);
+            Helpers::readVariableFromStream(&pointY, var1, true);
         } else {
             pointX = modeOrDx;
             int8_t temp;
-            Helpers::readVariableFromFileStream(&temp, var1, true);
+            Helpers::readVariableFromStream(&temp, var1, true);
             pointY = temp;
         }
 
