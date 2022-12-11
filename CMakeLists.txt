@@ -45,7 +45,6 @@ set(SOURCES
     src/lcdui/tests/test_Graphics.cpp
     src/rms/RecordEnumerationImpl.cpp
     src/rms/RecordStore.cpp
-    src/tests/test_GameCanvas.cpp
     src/tests/test_rms.cpp
 )
 
@@ -82,7 +81,6 @@ set(HEADERS
     src/rms/RecordStore.h
     src/rms/RecordStoreException.h
     src/rms/RecordStoreNotOpenException.h
-    src/tests/test_GameCanvas.h
     src/tests/test_rms.h
 )
 
