@@ -3,9 +3,12 @@
 
 class GameCanvas;
 class GamePhysics;
+class MenuManager;
+class LevelLoader;
 
 class Micro {
 private:
+    int64_t var333333;
     // TODO: static uint8_t singleByteArr[1]; ?
     // Thread *thread = nullptr;
     int64_t goLoadingStep();
@@ -15,9 +18,9 @@ private:
 
 public:
     GameCanvas *gameCanvas;
-    // LevelLoader *levelLoader;
+    LevelLoader *levelLoader;
     GamePhysics *gamePhysics;
-    // MenuManager *menuManager;
+    MenuManager *menuManager;
     bool field_242 = false;
     int numPhysicsLoops = 2;
     int64_t timeMs = 0;
@@ -33,7 +36,7 @@ public:
     Micro();
     ~Micro();
 
-    void gameToMenu() {} // TODO
+    void gameToMenu();
     void menuToGame();
     void init();
     // NOTE: methods readBigFile, readByte, readFile skipped because unused

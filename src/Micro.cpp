@@ -2,6 +2,10 @@
 
 #include "GameCanvas.h"
 #include "GamePhysics.h"
+#include "MenuManager.h"
+#include "LevelLoader.h"
+#include "Helpers.h"
+#include "lcdui/CanvasImpl.h"
 
 bool Micro::field_249 = false;
 bool Micro::isPaused = true;
@@ -19,80 +23,77 @@ void Micro::setNumPhysicsLoops(int value) {
     numPhysicsLoops = value;
 }
 
-/*
-
 void Micro::gameToMenu() {
-    gameCanvas.removeMenuCommand();
+    gameCanvas->removeMenuCommand();
     isInGameMenu = true;
-    menuManager.addOkAndBackCommands();
+    menuManager->addOkAndBackCommands();
 }
 
 void Micro::menuToGame() {
-    menuManager.removeOkAndBackCommands();
+    menuManager->removeOkAndBackCommands();
     isInGameMenu = false;
-    gameCanvas.addMenuCommand();
+    gameCanvas->addMenuCommand();
 }
 
-// $FF: renamed from: a () int64_t
 int64_t Micro::goLoadingStep() {
     ++gameLoadingStateStage;
-    gameCanvas.repaint();
-    int64_t startTimeMillis = System.currentTimeMillis();
+    gameCanvas->repaint();
+    int64_t startTimeMillis = Helpers::currentTimeMillis();
     switch (gameLoadingStateStage) {
         case 1:
             levelLoader = new LevelLoader();
             break;
         case 2:
             gamePhysics = new GamePhysics(levelLoader);
-            gameCanvas.init(gamePhysics);
+            gameCanvas->init(gamePhysics);
             break;
         case 3:
-            menuManager = new MenuManager(this);
-            menuManager.initPart(1);
+            menuManager = new MenuManager(this); // TODO memory leak
+            menuManager->initPart(1);
             break;
         case 4:
-            menuManager.initPart(2);
+            menuManager->initPart(2);
             break;
         case 5:
-            menuManager.initPart(3);
+            menuManager->initPart(3);
             break;
         case 6:
-            menuManager.initPart(4);
+            menuManager->initPart(4);
             break;
         case 7:
-            menuManager.initPart(5);
+            menuManager->initPart(5);
             break;
         case 8:
-            menuManager.initPart(6);
+            menuManager->initPart(6);
             break;
         case 9:
-            menuManager.initPart(7);
+            menuManager->initPart(7);
             break;
         case 10:
-            gameCanvas.setMenuManager(menuManager);
-            gameCanvas.setViewPosition(-50, 150);
+            gameCanvas->setMenuManager(menuManager);
+            gameCanvas->setViewPosition(-50, 150);
             setMode(1);
             break;
         default:
             --gameLoadingStateStage;
 
-            try {
-                Thread.sleep(100L);
-            } catch (InterruptedException var3) {
-            }
+            // try { // TODO check if it's ok
+                Helpers::sleep(100LL);
+            // } catch (InterruptedException var3) {
+            // }
     }
 
-    return System.currentTimeMillis() - startTimeMillis;
+    return Helpers::currentTimeMillis() - startTimeMillis;
 }
 
 void Micro::init() {
     int64_t timeToLoading = 3000L;
-    Thread.yield();
+    // Thread.yield(); // TODO
     gameCanvas = new GameCanvas(this);
-    Display.getDisplay(this).setCurrent(gameCanvas);
-    gameCanvas.requestRepaint(1);
+    // Display.getDisplay(this).setCurrent(gameCanvas); // TODO
+    gameCanvas->requestRepaint(1);
 
-    while (!gameCanvas.isShown()) {
+    while (!gameCanvas->isShown()) {
         goLoadingStep();
     }
 
@@ -102,7 +103,7 @@ void Micro::init() {
         timeToLoading -= deltaTimeMs;
     }
 
-    gameCanvas.requestRepaint(2);
+    gameCanvas->requestRepaint(2);
 
     for (timeToLoading = 3000L; timeToLoading > 0L; timeToLoading -= deltaTimeMs) {
         deltaTimeMs = goLoadingStep();
@@ -112,9 +113,11 @@ void Micro::init() {
         goLoadingStep();
     }
 
-    gameCanvas.requestRepaint(0);
+    gameCanvas->requestRepaint(0);
     isInited = true;
 }
+
+/*
 
 public static byte[] readBigFile(String var0, int var1) {
     byte[] result = null;
@@ -149,37 +152,40 @@ public static InputStream readFile(String var0) {
     return var1;
 }
 
+*/
+
 void Micro::restart(bool var1) {
-    gamePhysics.resetSmth(true);
-    timeMs = 0L;
-    gameTimeMs = 0L;
-    field_246 = 0L;
+    gamePhysics->resetSmth(true);
+    timeMs = 0;
+    gameTimeMs = 0;
+    field_246 = 0;
     if (var1) {
-        gameCanvas.scheduleGameTimerTask(levelLoader.getName(menuManager.getCurrentLevel(), menuManager.getCurrentTrack()), 3000);
+        // gameCanvas->scheduleGameTimerTask(levelLoader.getName(menuManager->getCurrentLevel(), menuManager->getCurrentTrack()), 3000); // TODO
     }
 
-    gameCanvas.method_129();
+    gameCanvas->method_129();
 }
 
-protected void destroyApp(bool var1) {
+void Micro::destroyApp(bool var1) {
     field_249 = false;
-    synchronized (gameCanvas) {
-        ;
-    }
-
     field_242 = true;
-    menuManager.saveSmthToRecordStoreAndCloseIt();
-    notifyDestroyed();
+    menuManager->saveSmthToRecordStoreAndCloseIt();
+    // notifyDestroyed(); // TODO
 }
 
-protected void startApp() {
+
+
+void Micro::startApp() {
     field_249 = true;
     isPaused = false;
-    if (thread == null) {
-        thread = new Thread(this);
-        thread.start();
-    }
+    // if (thread == null) {
+    //     thread = new Thread(this);
+    //     thread.start();
+    // }
+    run();
 }
+
+/*
 
 protected void pauseApp() {
     isPaused = true;
@@ -192,17 +198,16 @@ protected void pauseApp() {
 
 */
 
-/*
-
+// original method
 void Micro::run() {
     if (!isInited) {
         init();
     }
 
-    // gameCanvas->setCommandListener(gameCanvas); // TODO
+    gameCanvas->setCommandListener(gameCanvas);
     restart(false);
-    // menuManager.method_201(0); // TODO
-    if (menuManager.method_196()) {
+    menuManager->method_201(0);
+    if (menuManager->method_196()) {
         restart(true);
     }
 
@@ -210,18 +215,18 @@ void Micro::run() {
 
     while (field_249) {
         int var5;
-        if (gamePhysics->method_21() != menuManager.method_210()) {
-            var5 = gameCanvas->loadSprites(menuManager.method_210());
+        if (gamePhysics->method_21() != menuManager->method_210()) {
+            var5 = gameCanvas->loadSprites(menuManager->method_210());
             gamePhysics->method_22(var5);
-            menuManager.method_211(var5);
+            menuManager->method_211(var5);
         }
 
         bool var10000;
         bool var10001;
         try {
             if (isInGameMenu) {
-                menuManager.method_201(1);
-                if (menuManager.method_196()) {
+                menuManager->method_201(1);
+                if (menuManager->method_196()) {
                     restart(true);
                 }
             }
@@ -232,36 +237,36 @@ void Micro::run() {
                 }
 
                 if (timeMs == 0L) {
-                    timeMs = System.currentTimeMillis();
+                    timeMs = Helpers::currentTimeMillis();
                 }
 
                 if ((var5 = gamePhysics->updatePhysics()) == 3 && field_246 == 0L) {
-                    field_246 = System.currentTimeMillis() + 3000L;
-                    gameCanvas->scheduleGameTimerTask("Crashed", 3000);
+                    field_246 = Helpers::currentTimeMillis() + 3000L;
+                    // gameCanvas->scheduleGameTimerTask("Crashed", 3000); // TODO
                     gameCanvas->repaint();
                     gameCanvas->serviceRepaints();
                 }
 
-                if (field_246 != 0L && field_246 < System.currentTimeMillis()) {
+                if (field_246 != 0L && field_246 < Helpers::currentTimeMillis()) {
                     restart(true);
                 }
 
                 if (var5 == 5) {
-                    gameCanvas->scheduleGameTimerTask("Crashed", 3000);
+                    // gameCanvas->scheduleGameTimerTask("Crashed", 3000); // TODO
                     gameCanvas->repaint();
                     gameCanvas->serviceRepaints();
 
-                    try {
+                    // try {
                         int64_t var7 = 1000L;
                         if (field_246 > 0L) {
-                            var7 = Math.min(field_246 - System.currentTimeMillis(), 1000L);
+                            var7 = std::min(field_246 - Helpers::currentTimeMillis(), 1000LL);
                         }
 
                         if (var7 > 0L) {
-                            Thread.sleep(var7);
+                            Helpers::sleep(var7);
                         }
-                    } catch (InterruptedException var12) {
-                    }
+                    // } catch (InterruptedException var12) { // TODO check if it's ok
+                    // }
 
                     restart(true);
                 } else if (var5 == 4) {
@@ -273,9 +278,9 @@ void Micro::run() {
                     }
 
                     goalLoop();
-                    menuManager.method_215(gameTimeMs / 10L);
-                    menuManager.method_201(2);
-                    if (menuManager.method_196()) {
+                    menuManager->method_215(gameTimeMs / 10L);
+                    menuManager->method_201(2);
+                    if (menuManager->method_196()) {
                         restart(true);
                     }
 
@@ -288,7 +293,7 @@ void Micro::run() {
             }
 
             var10000 = field_249;
-        } catch (Exception var15) {
+        } catch (std::exception &var15) {
             var10001 = false;
             continue;
         }
@@ -300,21 +305,23 @@ void Micro::run() {
         try {
             gamePhysics->method_53();
             int64_t var1;
-            if ((var1 = System.currentTimeMillis()) - var3 < 30L) {
-                try {
-                    synchronized (this) {
-                        wait(Math.max(30L - (var1 - var3), 1L));
-                    }
-                } catch (InterruptedException var11) {
-                }
+            if ((var1 = Helpers::currentTimeMillis()) - var3 < 30L) {
+                // TODO check if this replacement is ok
+                // try {
+                //     synchronized (this) {
+                //         wait(Math.max(30L - (var1 - var3), 1L));
+                //     }
+                // } catch (InterruptedException var11) {
+                // }
+                Helpers::sleep(std::max(30LL - (var1 - var3), 1LL));
 
-                var3 = System.currentTimeMillis();
+                var3 = Helpers::currentTimeMillis();
             } else {
                 var3 = var1;
             }
 
             gameCanvas->repaint();
-        } catch (Exception var14) {
+        } catch (std::exception &var14) {
             var10001 = false;
         }
     }
@@ -322,50 +329,48 @@ void Micro::run() {
     destroyApp(true);
 }
 
-*/
-
-/*
-
 void Micro::goalLoop() {
     int64_t var4 = 0L;
-    if (!gamePhysics.field_69) {
-        gameCanvas.scheduleGameTimerTask("Wheelie!", 1000);
+    if (!gamePhysics->field_69) {
+        // gameCanvas->scheduleGameTimerTask("Wheelie!", 1000); // TODO
     } else {
-        gameCanvas.scheduleGameTimerTask("Finished", 1000);
+        // gameCanvas->scheduleGameTimerTask("Finished", 1000); // TODO
     }
 
-    for (int64_t timeMs = System.currentTimeMillis() + 1000L; timeMs > System.currentTimeMillis(); gameCanvas.repaint()) {
+    for (int64_t timeMs = Helpers::currentTimeMillis() + 1000L; timeMs > Helpers::currentTimeMillis(); gameCanvas->repaint()) {
         if (isInGameMenu) {
-            gameCanvas.repaint();
+            gameCanvas->repaint();
             return;
         }
 
         for (int i = numPhysicsLoops; i > 0; --i) {
-            if (gamePhysics.updatePhysics() == 5) {
-                try {
+            if (gamePhysics->updatePhysics() == 5) {
+                // try { // TODO check if it's ok
                     int64_t deltaTime;
-                    if ((deltaTime = timeMs - System.currentTimeMillis()) > 0L) {
-                        Thread.sleep(deltaTime);
+                    if ((deltaTime = timeMs - Helpers::currentTimeMillis()) > 0L) {
+                        Helpers::sleep(deltaTime);
                     }
 
                     return;
-                } catch (InterruptedException var12) {
-                    return;
-                }
+                // } catch (InterruptedException var12) {
+                    // return;
+                // }
             }
         }
 
-        gamePhysics.method_53();
+        gamePhysics->method_53();
         int64_t var2;
-        if ((var2 = System.currentTimeMillis()) - var4 < 30L) {
-            try {
-                synchronized (this) {
-                    wait(Math.max(30L - (var2 - var4), 1L));
-                }
-            } catch (InterruptedException var14) {
-            }
+        if ((var2 = Helpers::currentTimeMillis()) - var4 < 30L) {
+            // TODO check if it's ok
+            // try {
+            //     synchronized (this) {
+            //         wait(Math.max(30L - (var2 - var4), 1L));
+            //     }
+            // } catch (InterruptedException var14) {
+            // }
+            Helpers::sleep(std::max(30L - (var2 - var4), 1LL));
 
-            var4 = System.currentTimeMillis();
+            var4 = Helpers::currentTimeMillis();
         } else {
             var4 = var2;
         }
@@ -373,7 +378,5 @@ void Micro::goalLoop() {
 }
 
 void Micro::setMode(int mode) {
-    gamePhysics.setMode(mode);
+    gamePhysics->setMode(mode);
 }
-
-*/
