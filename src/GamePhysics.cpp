@@ -3,6 +3,7 @@
 #include "LevelLoader.h"
 #include "class_10.h"
 #include "MathF16.h"
+#include <algorithm>
 
 GamePhysics::GamePhysics(LevelLoader *levelLoader) {
     for (int var2 = 0; var2 < 6; ++var2) {
@@ -720,9 +721,8 @@ void GamePhysics::method_45(int var1) {
 
 int GamePhysics::method_46(int var1) {
     int8_t var2 = 2;
-    // TODO
-    int var4 = (var4 = field_29[1]->motoComponents[var1]->xF16 < field_29[2]->motoComponents[var1]->xF16 ? field_29[2]->motoComponents[var1]->xF16 : field_29[1]->motoComponents[var1]->xF16) < field_29[5]->motoComponents[var1]->xF16 ? field_29[5]->motoComponents[var1]->xF16 : var4;
-    int var5 = (var5 = field_29[1]->motoComponents[var1]->xF16 < field_29[2]->motoComponents[var1]->xF16 ? field_29[1]->motoComponents[var1]->xF16 : field_29[2]->motoComponents[var1]->xF16) < field_29[5]->motoComponents[var1]->xF16 ? var5 : field_29[5]->motoComponents[var1]->xF16;
+    int var4 = std::max({field_29[1]->motoComponents[var1]->xF16, field_29[2]->motoComponents[var1]->xF16, field_29[5]->motoComponents[var1]->xF16});
+    int var5 = std::min({field_29[1]->motoComponents[var1]->xF16, field_29[2]->motoComponents[var1]->xF16, field_29[5]->motoComponents[var1]->xF16});
     levelLoader->method_100(var5 - const175_1_half[0], var4 + const175_1_half[0], field_29[5]->motoComponents[var1]->yF16);
     int var6 = field_29[1]->motoComponents[var1]->xF16 - field_29[2]->motoComponents[var1]->xF16;
     int var7 = field_29[1]->motoComponents[var1]->yF16 - field_29[2]->motoComponents[var1]->yF16;

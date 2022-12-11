@@ -74,7 +74,7 @@ void GameMenu::method_70() {
         if (!vector.empty()) {
             field_95 = 0;
 
-            for (int var1 = 0; var1 < vector.size() && var1 < field_107; ++var1) {
+            for (int var1 = 0; var1 < static_cast<int>(vector.size()) && var1 < field_107; ++var1) {
                 if (vector[var1]->isNotTextRender()) {
                     field_95 = var1;
                     break;
@@ -125,7 +125,7 @@ void GameMenu::addMenuElement(IGameMenuElement *var1) {
         var2 += 4;
     }
 
-    for (int var3 = 0; var3 < vector.size() - 1; ++var3) {
+    for (int var3 = 0; var3 < static_cast<int>(vector.size()) - 1; ++var3) {
         if (vector[var3]->isNotTextRender()) {
             var2 += font2->getBaselinePosition() + field_103;
         } else {
@@ -167,7 +167,7 @@ void GameMenu::processGameActionDown() {
         }
 
         ++field_95;
-        if (field_95 > vector.size() - 1) {
+        if (field_95 > static_cast<int>(vector.size()) - 1) {
             method_70();
             return;
         }
@@ -184,7 +184,7 @@ void GameMenu::processGameActionDown() {
 
         if (var3) {
             field_95 = var2;
-        } else if (field_106 < vector.size() - 1) {
+        } else if (field_106 < static_cast<int>(vector.size()) - 1) {
             ++field_106;
             ++field_105;
         } else {
@@ -194,7 +194,7 @@ void GameMenu::processGameActionDown() {
         if (field_95 > field_106) {
             ++field_105;
             ++field_106;
-            if (field_106 > vector.size() - 1) {
+            if (field_106 > static_cast<int>(vector.size()) - 1) {
                 field_106 = vector.size() - 1;
             }
 
@@ -216,7 +216,6 @@ void GameMenu::processGameActionUp() {
             return;
         }
     } else if (vector.size() != 0) {
-        IGameMenuElement *var4 = vector[field_95];
         --field_95;
         if (field_95 < 0) {
             method_71();
@@ -236,7 +235,7 @@ void GameMenu::processGameActionUp() {
         if (!var3) {
             if (field_105 > 0) {
                 --field_105;
-                if (vector.size() > field_107 - 1) {
+                if (static_cast<int>(vector.size()) > field_107 - 1) {
                     --field_106;
                     return;
                 }
@@ -255,7 +254,7 @@ void GameMenu::processGameActionUp() {
                 field_105 = 0;
             }
 
-            if (vector.size() > field_107 - 1) {
+            if (static_cast<int>(vector.size()) > field_107 - 1) {
                 --field_106;
             }
         }
@@ -289,7 +288,7 @@ void GameMenu::processGameActionUpd(int var1) {
 
     } else {
         if (field_95 != -1) {
-            for (int var2 = field_95; var2 < vector.size(); ++var2) {
+            for (int var2 = field_95; var2 < static_cast<int>(vector.size()); ++var2) {
                 IGameMenuElement *var3;
                 if ((var3 = vector[var2]) != nullptr && var3->isNotTextRender()) {
                     var3->menuElemMethod(var1);
@@ -362,7 +361,7 @@ void GameMenu::render_76(Graphics *graphics) {
             }
         }
 
-        if (vector.size() > field_106 && field_106 != vector.size() - 1) {
+        if (static_cast<int>(vector.size()) > field_106 && field_106 != static_cast<int>(vector.size()) - 1) {
             if (GameCanvas::spriteSizeY[3] + var2 > canvasHeight) {
                 micro->gameCanvas->drawSprite(graphics, 3, xPos - 3, canvasHeight - GameCanvas::spriteSizeY[3]);
                 return;

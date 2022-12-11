@@ -39,6 +39,7 @@ bool TextRender::isNotTextRender() {
 }
 
 void TextRender::menuElemMethod(int var1) {
+    (void)var1;
 }
 
 void TextRender::render(Graphics *graphics, int y, int x) {

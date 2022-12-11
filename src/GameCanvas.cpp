@@ -555,6 +555,7 @@ void GameCanvas::setMenuManager(MenuManager *menuManager) {
 }
 
 void GameCanvas::method_168(Command *var1, Displayable *var2) {
+    (void)var2;
     if (var1 == commandMenu) {
         menuManager->field_377 = true;
         micro->gameToMenu();

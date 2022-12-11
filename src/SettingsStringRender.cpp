@@ -47,11 +47,11 @@ void SettingsStringRender::setFlags(bool hasSprite, bool isDrawSprite8) {
 
 void SettingsStringRender::setOptionsList(std::vector<std::string> var1) {
     optionsList = var1;
-    if (currentOptionPos > optionsList.size() - 1) {
+    if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
         currentOptionPos = optionsList.size() - 1;
     }
 
-    if (maxAvailableOption > optionsList.size() - 1) {
+    if (maxAvailableOption > static_cast<int>(optionsList.size()) - 1) {
         maxAvailableOption = optionsList.size() - 1;
     }
 
@@ -63,7 +63,7 @@ void SettingsStringRender::init() {
     currentGameMenu = new GameMenu(text, micro, parentGameMenu, std::vector<int8_t>());
     settingsStringRenders = std::vector<SettingsStringRender*>(optionsList.size()); // TODO check if it's correct
 
-    for (int var1 = 0; var1 < settingsStringRenders.size(); ++var1) {
+    for (int var1 = 0; var1 < static_cast<int>(settingsStringRenders.size()); ++var1) {
         if (var1 > maxAvailableOption) {
             settingsStringRenders[var1] = new SettingsStringRender(optionsList[var1], 0, this, std::vector<std::string>(), false, micro, parentGameMenu, true);
             settingsStringRenders[var1]->setFlags(true, true);
@@ -132,7 +132,7 @@ void SettingsStringRender::menuElemMethod(int var1) {
                 }
 
                 ++currentOptionPos;
-                if (currentOptionPos > optionsList.size() - 1) {
+                if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
                     currentOptionPos = optionsList.size() - 1;
                 } else {
                     menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
@@ -196,12 +196,12 @@ void SettingsStringRender::render(Graphics *graphics, int y, int x) {
 
 void SettingsStringRender::setAvailableOptions(int maxAvailableOption) {
     maxAvailableOption = maxAvailableOption;
-    if (maxAvailableOption > optionsList.size() - 1) {
+    if (maxAvailableOption > static_cast<int>(optionsList.size()) - 1) {
         maxAvailableOption = optionsList.size() - 1;
     }
 
     if (currentGameMenu != nullptr) {
-        for (int i = 0; i < settingsStringRenders.size(); ++i) {
+        for (int i = 0; i < static_cast<int>(settingsStringRenders.size()); ++i) {
             if (i > maxAvailableOption) {
                 settingsStringRenders[i]->setFlags(true, true);
             } else {
@@ -226,7 +226,7 @@ std::vector<std::string> SettingsStringRender::getOptionsList() {
 
 void SettingsStringRender::setCurentOptionPos(int pos) {
     currentOptionPos = pos;
-    if (currentOptionPos > optionsList.size() - 1) {
+    if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
         currentOptionPos = 0;
     }
 
@@ -246,13 +246,14 @@ GameMenu* SettingsStringRender::getGameMenu() {
 }
 
 void SettingsStringRender::method_1(GameMenu *var1, bool var2) {
+    (void)var1; (void)var2;
 }
 
 void SettingsStringRender::saveSmthToRecordStoreAndCloseIt() {
 }
 
 void SettingsStringRender::processMenu(IGameMenuElement *var1) {
-    for (int var2 = 0; var2 < settingsStringRenders.size(); ++var2) {
+    for (int var2 = 0; var2 < static_cast<int>(settingsStringRenders.size()); ++var2) {
         if (var1 == settingsStringRenders[var2]) {
             currentOptionPos = var2;
             selectCurrentOptionName();

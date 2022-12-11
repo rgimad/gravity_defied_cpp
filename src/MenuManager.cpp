@@ -660,6 +660,7 @@ void MenuManager::processKeyCode(int keyCode) {
 }
 
 void MenuManager::method_206(Command *var1, Displayable *var2) {
+    (void)var2;
     if (var1 == commandOk) {
         if (currentGameMenu != nullptr) {
             currentGameMenu->processGameActionUpd(1);

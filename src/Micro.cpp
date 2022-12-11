@@ -167,6 +167,7 @@ void Micro::restart(bool var1) {
 }
 
 void Micro::destroyApp(bool var1) {
+    (void)var1;
     field_249 = false;
     field_242 = true;
     menuManager->saveSmthToRecordStoreAndCloseIt();
@@ -222,7 +223,6 @@ void Micro::run() {
         }
 
         bool var10000;
-        bool var10001;
         try {
             if (isInGameMenu) {
                 menuManager->method_201(1);
@@ -294,7 +294,6 @@ void Micro::run() {
 
             var10000 = field_249;
         } catch (std::exception &var15) {
-            var10001 = false;
             continue;
         }
 
@@ -322,7 +321,6 @@ void Micro::run() {
 
             gameCanvas->repaint();
         } catch (std::exception &var14) {
-            var10001 = false;
         }
     }
 
