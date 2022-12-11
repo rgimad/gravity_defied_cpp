@@ -44,6 +44,4 @@ public:
     void drawImage(Image *image, int x, int y, int anchor);
     static int getAnchorX(int x, int size, int anchor);
     static int getAnchorY(int y, int size, int anchor);
-    static int getWidth();
-    static int getHeight();
 };

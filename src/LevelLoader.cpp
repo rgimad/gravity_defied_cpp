@@ -1,5 +1,7 @@
 #include "LevelLoader.h"
 
+#include "Helpers.h"
+
 int LevelLoader::field_133 = 0;
 int LevelLoader::field_134 = 0;
 int LevelLoader::field_135 = 0;
@@ -15,20 +17,53 @@ bool LevelLoader::isEnabledShadows = true;
 
 LevelLoader::LevelLoader() {
     for (int i = 0; i < 3; ++i) {
-        field_123[i] = (int) ((int64_t) (GamePhysics::const175_1_half[i] + 19660 >> 1) * (int64_t) (GamePhysics::const175_1_half[i] + 19660 >> 1) >> 16);
-        field_124[i] = (int) ((int64_t) (GamePhysics::const175_1_half[i] - 19660 >> 1) * (int64_t) (GamePhysics::const175_1_half[i] - 19660 >> 1) >> 16);
+        field_123[i] = (int) ((int64_t) ((GamePhysics::const175_1_half[i] + 19660) >> 1) * (int64_t) ((GamePhysics::const175_1_half[i] + 19660) >> 1) >> 16);
+        field_124[i] = (int) ((int64_t) ((GamePhysics::const175_1_half[i] - 19660) >> 1) * (int64_t) ((GamePhysics::const175_1_half[i] - 19660) >> 1) >> 16);
     }
 
     try {
         loadLevels();
     } catch (std::exception &e) {
-        // TODO
     }
     method_87();
 }
 
+LevelLoader::~LevelLoader() {
+}
+
+void LevelLoader::loadLevels() {
+    std::ifstream dis("assets/levels.mrg", std::ios::binary);
+
+    std::vector<int8_t> var3(40);
+    std::vector<int> var4(3);
+
+    for (int league = 0; league < 3; ++league) {
+        Helpers::readVariableFromStream(&var4[league], dis, true);
+        levelOffsetInFile[league] = std::vector<int>(var4[league]);
+        levelNames[league] = std::vector<std::string>(var4[league]);
+
+        for (int levelNp = 0; levelNp < var4[league]; ++levelNp) {
+            int var7;
+            Helpers::readVariableFromStream(&var7, dis, true);
+            levelOffsetInFile[league][levelNp] = var7;
+
+            for (int var8 = 0; var8 < 40; ++var8) {
+                Helpers::readVariableFromStream(&var3[var8], dis, true);
+                if (var3[var8] == 0) {
+                    std::string s = std::string(reinterpret_cast<char*>(var3.data()), var8);
+                    std::replace(s.begin(), s.end(), '_', ' ');
+                    levelNames[league][levelNp] = s;
+                    break;
+                }
+            }
+        }
+    }
+
+}
+
+
 std::string LevelLoader::getName(int league, int level) {
-    return league < 3 && level < levelNames[league].size() ? levelNames[league][level] : "---";
+    return league < 3 && level < static_cast<int>(levelNames[league].size()) ? levelNames[league][level] : "---";
 }
 
 void LevelLoader::method_87() {
@@ -38,7 +73,7 @@ void LevelLoader::method_87() {
 int LevelLoader::method_88(int var1, int var2) {
     field_125 = var1;
     field_126 = var2;
-    if (field_126 >= levelNames[field_125].size()) {
+    if (field_126 >= static_cast<int>(levelNames[field_125].size())) {
         field_126 = 0;
     }
 
@@ -47,7 +82,7 @@ int LevelLoader::method_88(int var1, int var2) {
 }
 
 void LevelLoader::method_89(int var1, int var2) {
-    std::ifstream dis("levels.mrg", std::ios::binary);
+    std::ifstream dis("assets/levels.mrg", std::ios::binary);
     dis.seekg(levelOffsetInFile[var1 - 1][var2 - 1]);
     if (gameLevel == nullptr) {
         gameLevel = new GameLevel();
@@ -59,6 +94,7 @@ void LevelLoader::method_89(int var1, int var2) {
 
 
 void LevelLoader::method_90(int var1) {
+    (void)var1;
     field_129 = gameLevel->startPosX << 1;
     field_130 = gameLevel->startPosY << 1;
 }
@@ -143,7 +179,7 @@ void LevelLoader::renderTrackNearestLine(GameCanvas *canvas) {
 
 
 void LevelLoader::method_100(int var1, int var2, int var3) {
-    gameLevel->method_184(var1 + 98304 >> 1, var2 - 98304 >> 1, var3 >> 1);
+    gameLevel->method_184((var1 + 98304) >> 1, (var2 - 98304) >> 1, var3 >> 1);
     var2 >>= 1;
     var1 >>= 1;
     field_134 = field_134 < gameLevel->pointsCount - 1 ? field_134 : gameLevel->pointsCount - 1;

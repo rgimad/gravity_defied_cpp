@@ -1,12 +1,17 @@
 #pragma once
 
-#include <cstring>
+#include <string>
 
 #include "Micro.h"
+#include "IGameMenuElement.h"
 
-class TimerOrMotoPartOrMenuElem { // TODO  extends TimerTask implements IGameMenuElement
+class Graphics;
+class GameMenu;
+class IMenuManager;
+
+class TimerOrMotoPartOrMenuElem : public IGameMenuElement {
 private:
-    char *text;
+    std::string text;
     GameMenu *gameMenu;
     IMenuManager *menuManager;
 
@@ -25,11 +30,10 @@ public:
 
     TimerOrMotoPartOrMenuElem();
     TimerOrMotoPartOrMenuElem(int timerNo, Micro *micro) ;
-    TimerOrMotoPartOrMenuElem(char *text, GameMenu *gameMenu, IMenuManager *menuManager);
+    TimerOrMotoPartOrMenuElem(std::string text, GameMenu *gameMenu, IMenuManager *menuManager);
     void setToZeros();
-    void run();
-    void setText(char *text);
-    char* getText();
+    void setText(std::string text);
+    std::string getText();
     bool isNotTextRender();
     void menuElemMethod(int var1);
     void setGameMenu(GameMenu *gameMenu);

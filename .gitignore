@@ -12,3 +12,4 @@ lib/*
 /*.ttf
 build/*
 .vscode/*
+tools/*

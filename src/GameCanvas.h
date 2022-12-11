@@ -1,22 +1,25 @@
 #pragma once
 
-#include <string.h>
+#include <string>
 #include <memory>
 #include <vector>
 
 #include "lcdui/Graphics.h"
 #include "lcdui/Command.h"
+#include "lcdui/Canvas.h"
+#include "lcdui/CommandListener.h"
 
 #include "Micro.h"
+#include "Timer.h"
 
 class GamePhysics;
+class MenuManager;
 
-class GameCanvas {
+class GameCanvas : public Canvas, public CommandListener {
 private:
-    void repaint();
-    void serviceRepaints();
     void method_164();
     void handleUpdatedInput();
+    void processTimers();
 
     Graphics *graphics = nullptr;
     int dx;
@@ -25,14 +28,13 @@ private:
     int engineSpriteHeight;
     int fenderSpriteWidth;
     int fenderSpriteHeight;
-    // GamePhysics *gamePhysics = nullptr;
-    // MenuManager *menuManager = nullptr;
+    GamePhysics *gamePhysics = nullptr;
+    MenuManager *menuManager = nullptr;
     int field_178 = 0;
     int field_179 = 0;
     Micro *micro = nullptr;
     Font *font = nullptr;
-    bool field_182 = false;
-    bool isDrawingTime = true;
+    bool timerTriggered = false;
     int field_184 = 1;
     Image *splashImage = nullptr;
     Image *logoImage = nullptr;
@@ -44,13 +46,13 @@ private:
     int bodyPartsSpriteWidth[3] = {0, 0, 0};
     int bodyPartsSpriteHeight[3] = {0, 0, 0};
     inline static int defaultFontWidth00 = 25;
+    bool field_205 = true;
     int field_206;
     Image *screenBuffer = nullptr;
-    std::string field_210 = "";
-    int countOfScheduledTimers = 0;
-    // Timer timer = new Timer();
+    std::string timerMessage = "";
+    int timerId = 0;
+    std::vector<Timer> timers;
     Command *commandMenu;
-    // Object objectForSyncronization = new Object();
     inline static std::string stringWithTime = "";
     std::vector<std::string> time10MsToStringCache = std::vector<std::string>(100);
     int timeInSeconds = -1;
@@ -68,6 +70,7 @@ public:
     GameCanvas(Micro *micro);
     void drawSprite(Graphics *g, int spriteNo, int x, int y);
     void requestRepaint(int var1);
+    void method_124(bool var1);
     void updateSizeAndRepaint();
     int loadSprites(int var1);
     void method_129();
@@ -84,7 +87,7 @@ public:
     void drawCircle(int x, int y, int size);
     void fillRect(int x, int y, int w, int h);
     void drawForthSpriteByCenter(int centerX, int centerY);
-    void method_146(int var1, int var2, int var3);
+    void drawHelmet(int var1, int var2, int var3);
     void drawTime(int64_t time10Ms);
     void method_150(int var1);
     static void method_151();
@@ -96,9 +99,21 @@ public:
     void renderFender(int x, int y, int angleF16);
     void clearScreenWithWhite();
     void setColor(int red, int green, int blue);
-    void render_160(Graphics *g); // TODO: rename to drawGame()
+    void drawGame(Graphics *g);
     void method_161(int var1, bool mode);
     void method_163(int var1);
+    void paint(Graphics *g);
+    void init(GamePhysics *gamePhysics);
+    void processKeyPressed(int keyCode);
+    void processKeyReleased(int keyCode);
+    void scheduleGameTimerTask(std::string var1, int delayMs);
+    void setMenuManager(MenuManager *menuManager);
+    void method_168(Command *var1, Displayable *var2);
+    void keyPressed(int var1);
+    void keyReleased(int var1);
+    void commandAction(Command *var1, Displayable *var2);
+    void removeMenuCommand();
+    void addMenuCommand();
 
     int width;
     int height2;
@@ -106,13 +121,9 @@ public:
     Image *helmetImage = nullptr;
     int helmetSpriteWidth;
     int helmetSpriteHeight;
-    const int spriteOffsetX[18] = {0, 0, 15, 15, 15, 0, 6, 12, 18, 18, 25, 25, 25, 37, 37, 37, 15, 32};
-    const int spriteOffsetY[18] = {10, 25, 16, 20, 10, 0, 0, 0, 8, 0, 0, 6, 12, 0, 6, 12, 29, 18};
-    const int spriteSizeX[18] = {15, 15, 8, 8, 3, 6, 6, 6, 7, 7, 12, 12, 12, 12, 12, 12, 16, 17};
-    const int spriteSizeY[18] = {15, 15, 4, 4, 3, 10, 10, 10, 8, 8, 6, 6, 6, 6, 6, 6, 11, 22};
-
-protected:
-    void processKeyPressed(int keyCode);
-    void processKeyReleased(int keyCode);
-    int getGameAction(int key);
+    bool isDrawingTime = true;
+    inline static const int spriteOffsetX[18] = {0, 0, 15, 15, 15, 0, 6, 12, 18, 18, 25, 25, 25, 37, 37, 37, 15, 32};
+    inline static const int spriteOffsetY[18] = {10, 25, 16, 20, 10, 0, 0, 0, 8, 0, 0, 6, 12, 0, 6, 12, 29, 18};
+    inline static const int spriteSizeX[18] = {15, 15, 8, 8, 3, 6, 6, 6, 7, 7, 12, 12, 12, 12, 12, 12, 16, 17};
+    inline static const int spriteSizeY[18] = {15, 15, 4, 4, 3, 10, 10, 10, 8, 8, 6, 6, 6, 6, 6, 6, 11, 22};
 };

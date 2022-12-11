@@ -1,14 +1,9 @@
 #include "GameCanvas.h"
 
 #include "MathF16.h"
-
-void GameCanvas::repaint() {
-    // TODO
-}
-
-void GameCanvas::serviceRepaints() {
-    // TODO
-}
+#include "GamePhysics.h"
+#include "MenuManager.h"
+#include "lcdui/CanvasImpl.h"
 
 GameCanvas::GameCanvas(Micro *micro) {
     try {
@@ -17,7 +12,7 @@ GameCanvas::GameCanvas(Micro *micro) {
     } catch (std::exception &e) {
     }
 
-    repaint();
+    // repaint();
     this->micro = micro;
     updateSizeAndRepaint();
     font = Font::getFont(64, 1, 0);
@@ -47,7 +42,7 @@ void GameCanvas::drawSprite(Graphics *g, int spriteNo, int x, int y) {
     if (spritesImage) {
         g->setClip(x, y, spriteSizeX[spriteNo], spriteSizeY[spriteNo]);
         g->drawImage(spritesImage, x - spriteOffsetX[spriteNo], y - spriteOffsetY[spriteNo], 20);
-        g->setClip(0, 0, Graphics::getWidth(), Graphics::getHeight());
+        g->setClip(0, 0, getWidth(), getHeight());
     }
 }
 
@@ -62,15 +57,20 @@ void GameCanvas::requestRepaint(int var1) {
     }
 }
 
+void GameCanvas::method_124(bool var1) {
+    field_205 = var1;
+    updateSizeAndRepaint();
+}
+
 void GameCanvas::updateSizeAndRepaint() {
-    width = Graphics::getWidth();
-    height = height2 = Graphics::getHeight();
+    width = getWidth();
+    height = height2 = getHeight();
 
     repaint();
 }
 
 int GameCanvas::loadSprites(int var1) {
-    // synchronized (this.objectForSyncronization) { // TODO
+    // synchronized (objectForSyncronization) {
         if ((var1 & 1) != 0) {
             try {
                 if (fenderImage == nullptr) {
@@ -149,9 +149,9 @@ Image* GameCanvas::loadImage(std::string imgName) {
 }
 
 void GameCanvas::setViewPosition(int dx, int dy) {
-    dx = dx;
-    dy = dy;
-    // gamePhysics->setRenderMinMaxX(-dx, -dx + width); // TODO
+    this->dx = dx;
+    this->dy = dy;
+    gamePhysics->setRenderMinMaxX(-dx, -dx + width);
 }
 
 int GameCanvas::getDx() {
@@ -194,7 +194,7 @@ void GameCanvas::renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int 
         y -= bodyPartsSpriteHeight[bodyPartNo] / 2;
         graphics->setClip(x, y, bodyPartsSpriteWidth[bodyPartNo], bodyPartsSpriteHeight[bodyPartNo]);
         graphics->drawImage(bodyPartsImages[bodyPartNo].get(), x - bodyPartsSpriteWidth[bodyPartNo] * (spriteNo % 6), y - bodyPartsSpriteHeight[bodyPartNo] * (spriteNo / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 }
 
@@ -229,15 +229,14 @@ void GameCanvas::drawForthSpriteByCenter(int centerX, int centerY) {
     drawSprite(graphics, 4, addDx(centerX - halfSizeX), addDy(centerY + halfSizeY));
 }
 
-// TODO rename to drawHelmet(int x, int y, int angleF16)
-void GameCanvas::method_146(int var1, int var2, int var3) {
-    int var4 = calcSpriteNo(var3, -102943, 411774, 32, true);
+void GameCanvas::drawHelmet(int x, int y, int angleF16) {
+    int var4 = calcSpriteNo(angleF16, -102943, 411774, 32, true);
     if (helmetImage != nullptr) {
-        int var5 = addDx(var1) - helmetSpriteWidth / 2;
-        int var6 = addDy(var2) - helmetSpriteHeight / 2;
+        int var5 = addDx(x) - helmetSpriteWidth / 2;
+        int var6 = addDy(y) - helmetSpriteHeight / 2;
         graphics->setClip(var5, var6, helmetSpriteWidth, helmetSpriteHeight);
         graphics->drawImage(helmetImage, var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 
 }
@@ -280,14 +279,14 @@ void GameCanvas::drawTime(int64_t time10Ms) {
 }
 
 void GameCanvas::method_150(int var1) {
-    if (countOfScheduledTimers == var1) {
-        field_182 = true;
+    if (timerId == var1) {
+        timerTriggered = true;
     }
 }
 
 void GameCanvas::method_151() {
     field_226 += 655;
-    int var0 = 32768 + ((MathF16::sinF16(field_226) < 0 ? -MathF16::sinF16(field_226) : MathF16::sinF16(field_226)) >> 1); // TODO check if it works properly
+    int var0 = 32768 + ((MathF16::sinF16(field_226) < 0 ? -MathF16::sinF16(field_226) : MathF16::sinF16(field_226)) >> 1);
     flagAnimationTime += (int) (6553L * (int64_t) var0 >> 16);
 }
 
@@ -349,7 +348,7 @@ void GameCanvas::renderEngine(int x, int y, int angleF16) {
     if (engineImage != nullptr) {
         graphics->setClip(centerX, centerY, engineSpriteWidth, engineSpriteHeight);
         graphics->drawImage(engineImage, centerX - engineSpriteWidth * (spriteNo % 6), centerY - engineSpriteHeight * (spriteNo / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 }
 
@@ -360,7 +359,7 @@ void GameCanvas::renderFender(int x, int y, int angleF16) {
         int centerY = addDy(y) - fenderSpriteHeight / 2;
         graphics->setClip(centerX, centerY, fenderSpriteWidth, fenderSpriteHeight);
         graphics->drawImage(fenderImage, centerX - fenderSpriteWidth * (spriteNo % 6), centerY - fenderSpriteHeight * (spriteNo / 6), 20);
-        graphics->setClip(0, 0, width, Graphics::getHeight());
+        graphics->setClip(0, 0, width, getHeight());
     }
 }
 
@@ -390,8 +389,8 @@ void GameCanvas::setColor(int red, int green, int blue) {
     graphics->setColor(red, green, blue);
 }
 
-void GameCanvas::render_160(Graphics *g) {
-    // synchronized (this.objectForSyncronization) { // TODO
+void GameCanvas::drawGame(Graphics *g) {
+    // synchronized (objectForSyncronization) {
         if (Micro::field_249 && !micro->field_242) {
             graphics = g;
 
@@ -399,50 +398,50 @@ void GameCanvas::render_160(Graphics *g) {
             if (field_184 != 0) {
                 if (field_184 == 1) {
                     graphics->setColor(255, 255, 255);
-                    graphics->fillRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
+                    graphics->fillRect(0, 0, getWidth(), getHeight());
                     if (logoImage != nullptr) {
-                        graphics->drawImage(logoImage, Graphics::getWidth() / 2, Graphics::getHeight() / 2, 3);
-                        drawSprite(graphics, 16, Graphics::getWidth() - spriteSizeX[16] - 5, Graphics::getHeight() - spriteSizeY[16] - 7);
-                        drawSprite(graphics, 17, Graphics::getWidth() - spriteSizeX[17] - 4, Graphics::getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
+                        graphics->drawImage(logoImage, getWidth() / 2, getHeight() / 2, 3);
+                        drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5, getHeight() - spriteSizeY[16] - 7);
+                        drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
                     }
                 } else {
                     graphics->setColor(255, 255, 255);
-                    graphics->fillRect(0, 0, Graphics::getWidth(), Graphics::getHeight());
+                    graphics->fillRect(0, 0, getWidth(), getHeight());
                     if (splashImage != nullptr) {
-                        graphics->drawImage(splashImage, Graphics::getWidth() / 2, Graphics::getHeight() / 2, 3);
+                        graphics->drawImage(splashImage, getWidth() / 2, getHeight() / 2, 3);
                     }
                 }
 
                 var3 = (int) (((int64_t) (Micro::gameLoadingStateStage << 16) << 32) / 655360L >> 16);
                 method_161(var3, true);
             } else {
-                if (height != Graphics::getHeight()) {
+                if (height != getHeight()) {
                     updateSizeAndRepaint();
                 }
 
-                // gamePhysics->setMotoComponents(); // TODO
-                // setViewPosition(-gamePhysics->getCamPosX() + field_178 + width / 2, gamePhysics->getCamPosY() + field_179 + height2 / 2); // TODO
-                // gamePhysics->renderGame(this); // TODO
+                gamePhysics->setMotoComponents();
+                setViewPosition(-gamePhysics->getCamPosX() + field_178 + width / 2, gamePhysics->getCamPosY() + field_179 + height2 / 2);
+                gamePhysics->renderGame(this);
                 if (isDrawingTime) {
                     drawTime(micro->gameTimeMs / 10L);
                 }
 
-                if (!field_210.empty()) {
+                if (!timerMessage.empty()) {
                     setColor(0, 0, 0);
                     graphics->setFont(font);
                     if (height2 <= 128) {
-                        graphics->drawString(field_210, width / 2, 1, 17);
+                        graphics->drawString(timerMessage, width / 2, 1, 17);
                     } else {
-                        graphics->drawString(field_210, width / 2, height2 / 4, 33);
+                        graphics->drawString(timerMessage, width / 2, height2 / 4, 33);
                     }
 
-                    if (field_182) {
-                        field_182 = false;
-                        field_210 = "";
+                    if (timerTriggered) {
+                        timerTriggered = false;
+                        timerMessage = "";
                     }
                 }
 
-                // var3 = gamePhysics->method_52(); // TODO
+                var3 = gamePhysics->method_52();
                 method_161(var3, false);
             }
 
@@ -462,6 +461,16 @@ void GameCanvas::method_161(int var1, bool mode) {
 void GameCanvas::method_163(int var1) {
     field_232 = var1;
 }
+
+void GameCanvas::paint(Graphics *graphics) {
+    processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
+    if (Micro::isInGameMenu && menuManager != nullptr) {
+        menuManager->method_202(graphics);
+    } else {
+        drawGame(graphics);
+    }
+}
+
 
 void GameCanvas::method_164() {
     int var1;
@@ -494,7 +503,18 @@ void GameCanvas::handleUpdatedInput() {
         }
     }
 
-    // gamePhysics->method_30(var1, var2); // TODO
+    gamePhysics->method_30(var1, var2);
+}
+
+void GameCanvas::processTimers() {
+    for (auto i = timers.begin(); i != timers.end(); ) {
+        if (i->ready()) {
+            method_150(i->getId());
+            i = timers.erase(i);
+        } else {
+            i++;
+        }
+    }
 }
 
 void GameCanvas::processKeyPressed(int keyCode) {
@@ -522,88 +542,54 @@ void GameCanvas::processKeyReleased(int keyCode) {
     handleUpdatedInput();
 }
 
-int GameCanvas::getGameAction(int key) {
-    return 0; // TODO
+void GameCanvas::init(GamePhysics *gamePhysics) {
+    this->gamePhysics = gamePhysics;
+    gamePhysics->setMinimalScreenWH(width < height2 ? width : height2);
 }
 
-/*
-
-// TODO
-
-// $FF: renamed from: a (b) void
-public void init(GamePhysics gamePhysics) {
-    this.gamePhysics = gamePhysics;
-    this.gamePhysics.setMinimalScreenWH(this.width < this.height2 ? this.width : this.height2);
+void GameCanvas::scheduleGameTimerTask(std::string timerMessage, int delayMs) {
+    timerTriggered = false;
+    ++timerId;
+    this->timerMessage = timerMessage;
+    timers.push_back(Timer(timerId, delayMs));
 }
 
-
-// $FF: renamed from: a (java.lang.String, int) void
-public void scheduleGameTimerTask(String var1, int delayMs) {
-    this.field_182 = false;
-    ++this.countOfScheduledTimers;
-    this.field_210 = var1;
-    this.timer.schedule(new TimerOrMotoPartOrMenuElem(this.countOfScheduledTimers, this.micro), (int64_t) delayMs);
+void GameCanvas::setMenuManager(MenuManager *menuManager) {
+    this->menuManager = menuManager;
 }
 
-// $FF: renamed from: a (m) void
-public void setMenuManager(MenuManager menuManager) {
-    this.menuManager = menuManager;
-}
-
-// $FF: renamed from: a (javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable) void
-public void method_168(Command var1, Displayable var2) {
-    if (var1 == this.commandMenu) {
-        this.menuManager.field_377 = true;
-        this.micro.gameToMenu();
+void GameCanvas::method_168(Command *var1, Displayable *var2) {
+    (void)var2;
+    if (var1 == commandMenu) {
+        menuManager->field_377 = true;
+        micro->gameToMenu();
     }
 }
 
-protected void keyRepeated(int var1) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.processNonFireKeyCode(var1);
-    }
-}
-
-protected synchronized void keyPressed(int var1) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.processKeyCode(var1);
+void GameCanvas::keyPressed(int var1) {
+    if (Micro::isInGameMenu && menuManager != nullptr) {
+        menuManager->processKeyCode(var1);
     }
 
-    this.processKeyPressed(var1);
+    processKeyPressed(var1);
 }
 
-protected synchronized void keyReleased(int var1) {
-    if (Micro.isInGameMenu) {
-        MenuManager var10000 = this.menuManager;
-    }
-
-    this.processKeyReleased(var1);
+void GameCanvas::keyReleased(int var1) {
+    processKeyReleased(var1);
 }
 
-public void paint(Graphics graphics) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.method_202(graphics);
+void GameCanvas::commandAction(Command *var1, Displayable *var2) {
+    if (Micro::isInGameMenu && menuManager != nullptr) {
+        menuManager->method_206(var1, var2);
     } else {
-        this.render_160(graphics);
+        method_168(var1, var2);
     }
 }
 
-public void commandAction(Command var1, Displayable var2) {
-    if (Micro.isInGameMenu && this.menuManager != null) {
-        this.menuManager.method_206(var1, var2);
-    } else {
-        this.method_168(var1, var2);
-    }
+void GameCanvas::removeMenuCommand() {
+    removeCommand(commandMenu);
 }
 
-// $FF: renamed from: for () void
-public void removeMenuCommand() {
-    this.removeCommand(this.commandMenu);
+void GameCanvas::addMenuCommand() {
+    addCommand(commandMenu);
 }
-
-// $FF: renamed from: byte () void
-public void addMenuCommand() {
-    this.addCommand(this.commandMenu);
-}
-
-*/

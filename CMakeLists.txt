@@ -21,28 +21,69 @@ endif()
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
+    src/Helpers.cpp
     src/main.cpp
     src/MathF16.cpp
     src/GameCanvas.cpp
+    src/GamePhysics.cpp
+    src/TimerOrMotoPartOrMenuElem.cpp
+    src/class_10.cpp
+    src/GameLevel.cpp
+    src/LevelLoader.cpp
     src/Micro.cpp
+    src/TextRender.cpp
+    src/GameMenu.cpp
+    src/SettingsStringRender.cpp
+    src/MenuManager.cpp
+    src/RecordManager.cpp
+    src/Timer.cpp
+    src/lcdui/CanvasImpl.cpp
+    src/lcdui/Canvas.cpp
     src/lcdui/Graphics.cpp
     src/lcdui/Image.cpp
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
     src/lcdui/tests/test_Graphics.cpp
-    src/tests/test_GameCanvas.cpp
+    src/rms/RecordEnumerationImpl.cpp
+    src/rms/RecordStore.cpp
+    src/tests/test_rms.cpp
 )
 
 set(HEADERS
+    src/Helpers.h
+    src/Displayable.h
     src/MathF16.h
     src/GameCanvas.h
+    src/GamePhysics.h
+    src/TimerOrMotoPartOrMenuElem.h
+    src/class_10.h
+    src/GameLevel.h
+    src/LevelLoader.h
     src/Micro.h
+    src/TextRender.h
+    src/GameMenu.h
+    src/SettingsStringRender.h
+    src/MenuManager.h
+    src/RecordManager.h
+    src/Timer.h
+    src/IGameMenuElement.h
+    src/lcdui/CanvasImpl.h
+    src/lcdui/Canvas.h
     src/lcdui/Graphics.h
     src/lcdui/Image.h
     src/lcdui/Font.h
     src/lcdui/Command.h
+    src/lcdui/CommandListener.h
     src/lcdui/tests/test_Graphics.h
-    src/tests/test_GameCanvas.h
+    src/rms/InvalidRecordIDException.h
+    src/rms/RecordComparator.h
+    src/rms/RecordEnumeration.h
+    src/rms/RecordEnumerationImpl.h
+    src/rms/RecordFilter.h
+    src/rms/RecordStore.h
+    src/rms/RecordStoreException.h
+    src/rms/RecordStoreNotOpenException.h
+    src/tests/test_rms.h
 )
 
 # Add an executable with the above sources
@@ -61,7 +102,7 @@ if (WIN32)
         ${SDL2_LIBRARIES_DIR}/libSDL2.dll.a
         ${SDL2_IMAGE_LIBRARIES_DIR}/libSDL2_image.dll.a
         ${SDL2_TTF_LIBRARIES_DIR}/libSDL2_ttf.dll.a
-        -mwindows
+        -mwindows # comment out this line to make std::cout work
     )
 else()
     target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})

@@ -1,5 +1,9 @@
 #include "TimerOrMotoPartOrMenuElem.h"
 
+#include "IMenuManager.h"
+#include "GameMenu.h"
+#include "lcdui/Graphics.h"
+
 TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem() {
     setToZeros();
 }
@@ -9,9 +13,8 @@ TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(int timerNo, Micro *micro) 
     this->timerNo = timerNo;
 }
 
-TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(char *text, GameMenu *gameMenu, IMenuManager *menuManager) {
-    strcpy(this->text, text);
-    strcat(this->text, ">");
+TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(std::string text, GameMenu *gameMenu, IMenuManager *menuManager) {
+    this->text = text + ">";
     this->gameMenu = gameMenu;
     this->menuManager = menuManager;
 }
@@ -22,16 +25,11 @@ void TimerOrMotoPartOrMenuElem::setToZeros() {
     field_385 = field_386 = field_387 = 0;
 }
 
-void TimerOrMotoPartOrMenuElem::run() {
-    micro->gameCanvas.method_150(timerNo);
+void TimerOrMotoPartOrMenuElem::setText(std::string text) {
+    this->text = text + ">";
 }
 
-void TimerOrMotoPartOrMenuElem::setText(char *text) {
-    strcpy(this->text, text);
-    strcat(this->text, ">");
-}
-
-char* TimerOrMotoPartOrMenuElem::getText() {
+std::string TimerOrMotoPartOrMenuElem::getText() {
     return text;
 }
 
@@ -48,6 +46,7 @@ void TimerOrMotoPartOrMenuElem::menuElemMethod(int var1) {
             menuManager->method_1(gameMenu, false);
         case 3:
         default:
+            break;
     }
 }
 

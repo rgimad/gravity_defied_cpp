@@ -18,6 +18,8 @@ public:
     Command(std::string name, int type, int priority);
     ~Command();
 
+    friend bool operator==(const Command& l, const Command& r);
+
     const std::string name;
     const int type;
     const int priority;
