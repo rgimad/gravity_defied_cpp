@@ -2,6 +2,8 @@
 
 #include "MathF16.h"
 #include "GamePhysics.h"
+#include "MenuManager.h"
+#include "lcdui/CanvasImpl.h"
 
 GameCanvas::GameCanvas(Micro *micro) {
     try {
@@ -10,7 +12,7 @@ GameCanvas::GameCanvas(Micro *micro) {
     } catch (std::exception &e) {
     }
 
-    repaint();
+    // repaint(); // TODO
     this->micro = micro;
     updateSizeAndRepaint();
     font = Font::getFont(64, 1, 0);
@@ -147,8 +149,8 @@ Image* GameCanvas::loadImage(std::string imgName) {
 }
 
 void GameCanvas::setViewPosition(int dx, int dy) {
-    dx = dx;
-    dy = dy;
+    this->dx = dx;
+    this->dy = dy;
     gamePhysics->setRenderMinMaxX(-dx, -dx + width);
 }
 
@@ -462,8 +464,8 @@ void GameCanvas::method_163(int var1) {
 }
 
 void GameCanvas::paint(Graphics *graphics) {
-    if (Micro::isInGameMenu/* && menuManager != null*/) { // TODO
-        // menuManager.method_202(graphics); // TODO
+    if (Micro::isInGameMenu && menuManager != nullptr) {
+        menuManager->method_202(graphics);
     } else {
         render_160(graphics);
     }
@@ -529,10 +531,6 @@ void GameCanvas::processKeyReleased(int keyCode) {
     handleUpdatedInput();
 }
 
-int GameCanvas::getGameAction(int key) {
-    return 0; // TODO
-}
-
 void GameCanvas::init(GamePhysics *gamePhysics) {
     this->gamePhysics = gamePhysics;
     gamePhysics->setMinimalScreenWH(width < height2 ? width : height2);
@@ -550,18 +548,20 @@ public void scheduleGameTimerTask(String var1, int delayMs) {
     timer.schedule(new TimerOrMotoPartOrMenuElem(countOfScheduledTimers, micro), (int64_t) delayMs);
 }
 
-// $FF: renamed from: a (m) void
-public void setMenuManager(MenuManager menuManager) {
-    menuManager = menuManager;
+*/
+
+void GameCanvas::setMenuManager(MenuManager *menuManager) {
+    this->menuManager = menuManager;
 }
 
-// $FF: renamed from: a (javax.microedition.lcdui.Command, javax.microedition.lcdui.Displayable) void
-public void method_168(Command var1, Displayable var2) {
+void GameCanvas::method_168(Command *var1, Displayable *var2) {
     if (var1 == commandMenu) {
-        menuManager.field_377 = true;
-        micro.gameToMenu();
+        menuManager->field_377 = true;
+        micro->gameToMenu();
     }
 }
+
+/*
 
 protected void keyRepeated(int var1) {
     if (Micro.isInGameMenu && menuManager != null) {
@@ -569,46 +569,32 @@ protected void keyRepeated(int var1) {
     }
 }
 
-protected synchronized void keyPressed(int var1) {
-    if (Micro.isInGameMenu && menuManager != null) {
-        menuManager.processKeyCode(var1);
+*/
+
+void GameCanvas::keyPressed(int var1) {
+    if (Micro::isInGameMenu && menuManager != nullptr) {
+        menuManager->processKeyCode(var1);
     }
 
     processKeyPressed(var1);
 }
 
-protected synchronized void keyReleased(int var1) {
-    if (Micro.isInGameMenu) {
-        MenuManager var10000 = menuManager;
-    }
-
+void GameCanvas::keyReleased(int var1) {
     processKeyReleased(var1);
 }
 
-public void paint(Graphics graphics) {
-    if (Micro.isInGameMenu && menuManager != null) {
-        menuManager.method_202(graphics);
-    } else {
-        render_160(graphics);
-    }
-}
-
-public void commandAction(Command var1, Displayable var2) {
-    if (Micro.isInGameMenu && menuManager != null) {
-        menuManager.method_206(var1, var2);
+void GameCanvas::commandAction(Command *var1, Displayable *var2) {
+    if (Micro::isInGameMenu && menuManager != nullptr) {
+        menuManager->method_206(var1, var2);
     } else {
         method_168(var1, var2);
     }
 }
 
-// $FF: renamed from: for () void
-public void removeMenuCommand() {
+void GameCanvas::removeMenuCommand() {
     removeCommand(commandMenu);
 }
 
-// $FF: renamed from: byte () void
-public void addMenuCommand() {
+void GameCanvas::addMenuCommand() {
     addCommand(commandMenu);
 }
-
-*/

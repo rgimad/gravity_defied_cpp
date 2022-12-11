@@ -20,6 +20,7 @@ public:
     void setRecord(int index, std::vector<int8_t> bytes);
     void reset();
     int nextRecordId();
+    void destroy();
 
     void serialize(std::ostream& os);
     void deserialize(std::istream& is);

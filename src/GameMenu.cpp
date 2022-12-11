@@ -10,7 +10,7 @@
 GameMenu::GameMenu(std::string var1, Micro *micro, GameMenu *var3, std::vector<int8_t> var4) {
     field_94 = var1;
     field_95 = -1;
-    micro = micro;
+    this->micro = micro;
     gameMenu = var3;
     canvasWidth = micro->gameCanvas->getWidth();
     canvasHeight = micro->gameCanvas->getHeight();
@@ -373,8 +373,8 @@ void GameMenu::render_76(Graphics *graphics) {
     }
 }
 
-void GameMenu::setGameMenu(GameMenu gameMenu) {
-    gameMenu = gameMenu;
+void GameMenu::setGameMenu(GameMenu *gameMenu) {
+    this->gameMenu = gameMenu;
 }
 
 GameMenu* GameMenu::getGameMenu() {

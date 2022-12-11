@@ -45,6 +45,10 @@ int RecordEnumerationImpl::nextRecordId() {
     return currentPos;
 }
 
+void RecordEnumerationImpl::destroy() {
+    data.clear();
+}
+
 void RecordEnumerationImpl::serialize(std::ostream& os) {
     size_t temp = data.size();
     Helpers::writeVariableToStream(&currentPos, os);

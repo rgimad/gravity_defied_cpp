@@ -21,6 +21,7 @@ endif()
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
+    src/Helpers.cpp
     src/main.cpp
     src/MathF16.cpp
     src/GameCanvas.cpp
@@ -31,6 +32,10 @@ set(SOURCES
     src/LevelLoader.cpp
     src/Micro.cpp
     src/TextRender.cpp
+    src/GameMenu.cpp
+    src/SettingsStringRender.cpp
+    src/MenuManager.cpp
+    src/RecordManager.cpp
     src/lcdui/CanvasImpl.cpp
     src/lcdui/Canvas.cpp
     src/lcdui/Graphics.cpp
@@ -56,12 +61,18 @@ set(HEADERS
     src/LevelLoader.h
     src/Micro.h
     src/TextRender.h
+    src/GameMenu.h
+    src/SettingsStringRender.h
+    src/MenuManager.h
+    src/RecordManager.h
+    src/IGameMenuElement.h
     src/lcdui/CanvasImpl.h
     src/lcdui/Canvas.h
     src/lcdui/Graphics.h
     src/lcdui/Image.h
     src/lcdui/Font.h
     src/lcdui/Command.h
+    src/lcdui/CommandListener.h
     src/lcdui/tests/test_Graphics.h
     src/rms/InvalidRecordIDException.h
     src/rms/RecordComparator.h

@@ -4,6 +4,7 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
 #include <stdexcept>
+#include <iostream>
 
 #include "Canvas.h"
 
@@ -70,18 +71,57 @@ SDL_Renderer* CanvasImpl::getRenderer() {
     return renderer;
 }
 
-bool CanvasImpl::quit() {
+void CanvasImpl::processEvents() {
     SDL_Event e;
 
-    while (SDL_PollEvent( &e ) != 0){
-        if (e.type == SDL_QUIT) {
-            return true;
+    while (SDL_PollEvent(&e) != 0){
+        switch (e.type) {
+            case SDL_QUIT:
+                exit(0); // TODO improve
+                break;
+            case SDL_KEYDOWN:
+                {
+                    int keyCode = convertKeyCharToKeyCode(e.key.keysym.sym);
+                    // std::cout << "Key pressed: " << keyCode << std::endl;
+                    if (keyCode != 0) {
+                        canvas->publicKeyPressed(keyCode);
+                    }
+                }
+                break;
+            case SDL_KEYUP:
+                {
+                    int keyCode = convertKeyCharToKeyCode(e.key.keysym.sym);
+                    // std::cout << "Key released: " << keyCode << std::endl;
+                    if (keyCode != 0) {
+                        canvas->publicKeyReleased(keyCode);
+                    } else {
+                        // TODO
+                        // if (keyEvent.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                        //     canvas.pressedEsc();
+                        // }
+                    }
+                }
+                break;
+            default:
+                break;
         }
     }
-
-    return false;
 }
 
-void CanvasImpl::delay(int ms) {
-    SDL_Delay(ms);
+int CanvasImpl::convertKeyCharToKeyCode(SDL_Keycode keyCode) {
+    switch (keyCode) {
+        case SDLK_RETURN:
+            return Canvas::Keys::FIRE;
+        case SDLK_LEFT:
+            return Canvas::Keys::LEFT;
+        case SDLK_RIGHT:
+            return Canvas::Keys::RIGHT;
+        case SDLK_UP:
+            return Canvas::Keys::UP;
+        case SDLK_DOWN:
+            return Canvas::Keys::DOWN;
+        default:
+            std::cout << "unknown keyEvent: " << keyCode << std::endl;
+            return 0;
+    }
 }

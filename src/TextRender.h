@@ -2,11 +2,13 @@
 
 #include <string>
 
+#include "IGameMenuElement.h"
+
 class Micro;
 class Font;
 class Graphics;
 
-class TextRender {
+class TextRender : public IGameMenuElement{
 private:
     std::string text;
     inline static Font *defaultFont;

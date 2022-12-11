@@ -18,6 +18,8 @@ private:
     const int width = 240;
     const int height = 320;
 
+    static int convertKeyCharToKeyCode(SDL_Keycode keyCode);
+
 public:
     CanvasImpl(Canvas *canvas);
     ~CanvasImpl();
@@ -27,6 +29,5 @@ public:
     int getHeight();
 
     SDL_Renderer* getRenderer();
-    bool quit();
-    void delay(int ms);
+    void processEvents();
 };

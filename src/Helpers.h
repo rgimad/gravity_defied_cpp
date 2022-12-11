@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <iostream>
 #include <numeric>
+#include <vector>
 
 namespace Helpers {
     template <class T>
@@ -48,4 +49,7 @@ namespace Helpers {
 
         return result;
     }
+
+    int64_t currentTimeMillis();
+    void sleep(int64_t ms);
 };

@@ -1,5 +1,9 @@
 #include "TimerOrMotoPartOrMenuElem.h"
 
+#include "IMenuManager.h"
+#include "GameMenu.h"
+#include "lcdui/Graphics.h"
+
 TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem() {
     setToZeros();
 }
@@ -9,12 +13,11 @@ TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(int timerNo, Micro *micro) 
     this->timerNo = timerNo;
 }
 
-// TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(char *text, GameMenu *gameMenu, IMenuManager *menuManager) {
-//     strcpy(this->text, text);
-//     strcat(this->text, ">");
-//     this->gameMenu = gameMenu;
-//     this->menuManager = menuManager;
-// }
+TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem(std::string text, GameMenu *gameMenu, IMenuManager *menuManager) {
+    this->text = text + ">";
+    this->gameMenu = gameMenu;
+    this->menuManager = menuManager;
+}
 
 void TimerOrMotoPartOrMenuElem::setToZeros() {
     xF16 = yF16 = angleF16 = 0;
@@ -26,12 +29,11 @@ void TimerOrMotoPartOrMenuElem::run() {
     // micro->gameCanvas.method_150(timerNo); // TODO
 }
 
-void TimerOrMotoPartOrMenuElem::setText(char *text) {
-    strcpy(this->text, text);
-    strcat(this->text, ">");
+void TimerOrMotoPartOrMenuElem::setText(std::string text) {
+    this->text = text + ">";
 }
 
-char* TimerOrMotoPartOrMenuElem::getText() {
+std::string TimerOrMotoPartOrMenuElem::getText() {
     return text;
 }
 
@@ -40,22 +42,22 @@ bool TimerOrMotoPartOrMenuElem::isNotTextRender() {
 }
 
 void TimerOrMotoPartOrMenuElem::menuElemMethod(int var1) {
-    // TODO
-    // switch (var1) {
-    //     case 1:
-    //     case 2:
-    //         menuManager->processMenu(this);
-    //         gameMenu->setGameMenu(menuManager->getGameMenu());
-    //         menuManager->method_1(gameMenu, false);
-    //     case 3:
-    //     default:
-    // }
+    switch (var1) {
+        case 1:
+        case 2:
+            menuManager->processMenu(this);
+            gameMenu->setGameMenu(menuManager->getGameMenu());
+            menuManager->method_1(gameMenu, false);
+        case 3:
+        default:
+            break;
+    }
 }
 
-// void TimerOrMotoPartOrMenuElem::setGameMenu(GameMenu *gameMenu) {
-//     this->gameMenu = gameMenu;
-// }
+void TimerOrMotoPartOrMenuElem::setGameMenu(GameMenu *gameMenu) {
+    this->gameMenu = gameMenu;
+}
 
-// void TimerOrMotoPartOrMenuElem::render(Graphics *graphics, int y, int x) {
-//     graphics->drawString(text, x, y, 20);
-// }
+void TimerOrMotoPartOrMenuElem::render(Graphics *graphics, int y, int x) {
+    graphics->drawString(text, x, y, 20);
+}

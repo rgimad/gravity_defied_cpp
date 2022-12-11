@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 
 #include "TimerOrMotoPartOrMenuElem.h"
 
@@ -11,7 +12,7 @@ public:
     int field_258;
     int field_259;
     int field_260;
-    std::vector<TimerOrMotoPartOrMenuElem> motoComponents;
+    std::vector<std::unique_ptr<TimerOrMotoPartOrMenuElem>> motoComponents = std::vector<std::unique_ptr<TimerOrMotoPartOrMenuElem>>(6);
 
     class_10();
     ~class_10();

@@ -44,7 +44,7 @@ public:
     void processGameActionUp();
     void processGameActionUpd(int var1);
     void render_76(Graphics *graphics);
-    void setGameMenu(GameMenu gameMenu);
+    void setGameMenu(GameMenu *gameMenu);
     GameMenu* getGameMenu();
     int method_79();
     void clearVector();
