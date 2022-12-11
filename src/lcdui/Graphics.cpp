@@ -52,28 +52,55 @@ void Graphics::fillRect(int x, int y, int w, int h) {
     SDL_RenderFillRect(renderer, &rect);
 }
 
-void Graphics::drawArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
+/**
+ * Draws the outline of a circular or elliptical arc covering the specified rectangle,
+ * using the current color and stroke style. The resulting arc begins at startAngle
+ * and extends for arcAngle degrees, using the current color. Angles are interpreted
+ * such that 0 degrees is at the 3 o'clock position. A positive value indicates a
+ * counter-clockwise rotation while a negative value indicates a clockwise rotation.
+ *
+ * The center of the arc is the center of the rectangle whose origin is (x, y) and
+ * whose size is specified by the width and height arguments.
+ *
+ * The resulting arc covers an area width + 1 pixels wide by height + 1 pixels tall.
+ * If either width or height is less than zero, nothing is drawn.
+ *
+ * The angles are specified relative to the non-square extents of the bounding rectangle
+ * such that 45 degrees always falls on the line from the center of the ellipse to the
+ * upper right corner of the bounding rectangle. As a result, if the bounding rectangle
+ * is noticeably longer in one axis than the other, the angles to the start and end of
+ * the arc segment will be skewed farther along the longer axis of the bounds.
+ *
+ * Parameters:
+ * x - the x coordinate of the upper-left corner of the arc to be drawn
+ * y - the y coordinate of the upper-left corner of the arc to be drawn
+ * width - the width of the arc to be drawn
+ * height - the height of the arc to be drawn
+ * startAngle - the beginning angle
+ * arcAngle - the angular extent of the arc, relative to the start angle
+ */
+void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int arcAngle) {
     // Draws an elliptical arc left-top at (x, y), with axes given by
     // xradius and yradius, traveling from startAngle to endangle.
     // Bresenham-based if complete
-    int xradius = w/2, yradius = h/2;
+    int xradius = width/2, yradius = heigth/2;
     x += xradius;
     y += yradius;
     if (xradius == 0 && yradius == 0) {
         return;
     }
-    if (arcAngle < startAngle)
-        arcAngle += 360;
+
     // draw complete ellipse if (0, 360) specified
     // if (startAngle == 0 && arcAngle == 360) {
     //     _ellipse(x, y, xradius, yradius);
     //     return;
     // }
-    for (int angle = startAngle; angle < arcAngle; angle++) {
+
+    for (int angle = startAngle; angle < startAngle + arcAngle; angle++) {
         drawLine(x + int(xradius * cos (angle * PI_CONV)),
-                y - int(yradius * sin (angle * PI_CONV)),
-                x + int(xradius * cos ((angle + 1) * PI_CONV)),
-                y - int(yradius * sin ((angle + 1) * PI_CONV)));
+                 y - int(yradius * sin (angle * PI_CONV)),
+                 x + int(xradius * cos ((angle + 1) * PI_CONV)),
+                 y - int(yradius * sin ((angle + 1) * PI_CONV)));
     }
 }
 
