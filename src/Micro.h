@@ -13,7 +13,6 @@ private:
     // Thread *thread = nullptr;
     int64_t goLoadingStep();
     void destroyApp(bool var1);
-    void startApp();
     void pauseApp();
 
 public:
@@ -35,6 +34,8 @@ public:
 
     Micro();
     ~Micro();
+
+    void startApp();
 
     void gameToMenu();
     void menuToGame();
