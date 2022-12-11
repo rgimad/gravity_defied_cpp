@@ -14,14 +14,13 @@
 
 MenuManager::MenuManager(Micro *var1) {
     micro = var1;
-    field_376 = new TextRender("", var1); // TODO memory leak
+    field_376 = std::make_unique<TextRender>("", var1);
 }
 
 void MenuManager::initPart(int var1) {
     int var4;
     switch (var1) {
         case 1:
-            // field_359 = new Object(); // TODO
             field_341 = {65, 65, 65};
             field_374 = {"On", "Off"};
             field_375 = {"Keyset 1", "Keyset 2", "Keyset 3"};
@@ -75,7 +74,6 @@ void MenuManager::initPart(int var1) {
                     records->destroy();
                 }
 
-                // TODO check if it works
                 var3 = method_216(16, (int8_t) -1);
                 if (!var3.empty() && var3[0] != -1) {
                     for (var4 = 0; var4 < 3; ++var4) {
@@ -241,10 +239,10 @@ void MenuManager::initPart(int var1) {
             field_320 = new TimerOrMotoPartOrMenuElem("Keys", field_319, this);
             addTextRender(field_319, "- " + field_375[0] + " -");
             addTextRender(field_319, "UP accelerates, DOWN brakes, RIGHT leans forward and LEFT leans backward. 1 accelerates and leans backward. 3 accelerates and leans forward. 7 brakes and leans backward. 9 brakes and leans forward.");
-            field_319->addMenuElement(field_376);
+            field_319->addMenuElement(field_376.get());
             addTextRender(field_319, "- " + field_375[1] + " -");
             addTextRender(field_319, "1 accelerates, 4 brakes, 6 leans forward and 5 leans backward.");
-            field_319->addMenuElement(field_376);
+            field_319->addMenuElement(field_376.get());
             addTextRender(field_319, "- " + field_375[2] + " -");
             addTextRender(field_319, "3 accelerates, 6 brakes, 5 leans forward and 4 leans backward.");
             field_319->addMenuElement(settingStringBack);
@@ -266,25 +264,25 @@ void MenuManager::initPart(int var1) {
 
             addTextRender(gameMenuOptions2, "Perspective: On/Off");
             addTextRender(gameMenuOptions2, "Default: <On>. Turns on and off the perspective view of the tracks.");
-            gameMenuOptions2->addMenuElement(field_376);
+            gameMenuOptions2->addMenuElement(field_376.get());
             addTextRender(gameMenuOptions2, "Shadows: On/Off");
             addTextRender(gameMenuOptions2, "Default: <On>. Turns on and off the shadows.");
-            gameMenuOptions2->addMenuElement(field_376);
+            gameMenuOptions2->addMenuElement(field_376.get());
             addTextRender(gameMenuOptions2, "Driver Sprite: On / Off");
             addTextRender(gameMenuOptions2, "Default: <On>. <On> uses a texture for the driver. <Off> uses line graphics.");
-            gameMenuOptions2->addMenuElement(field_376);
+            gameMenuOptions2->addMenuElement(field_376.get());
             addTextRender(gameMenuOptions2, "Bike Sprite: On / Off");
             addTextRender(gameMenuOptions2, "Default: <On>. <On> uses a texture for the bike. <Off> uses line graphics.");
-            gameMenuOptions2->addMenuElement(field_376);
+            gameMenuOptions2->addMenuElement(field_376.get());
             addTextRender(gameMenuOptions2, "Input: Keyset 1,2,3 ");
             addTextRender(gameMenuOptions2, "Default: <1>. Determines which type of input should be used when playing. See \"Keys\" in the help menu for more info.");
-            gameMenuOptions2->addMenuElement(field_376);
+            gameMenuOptions2->addMenuElement(field_376.get());
             addTextRender(gameMenuOptions2, "Look ahead: On/Off");
             addTextRender(gameMenuOptions2, "Default: <On>. Turns on and off smart camera movement.");
-            gameMenuOptions2->addMenuElement(field_376);
+            gameMenuOptions2->addMenuElement(field_376.get());
             addTextRender(gameMenuOptions2, "Clear highscore");
             addTextRender(gameMenuOptions2, "Lets you clear the highscores. Here you can also do a \"Full Reset\" which will reset the game to original state (clear settings, highscores, unlocked levels and leagues).");
-            gameMenuOptions2->addMenuElement(field_376);
+            gameMenuOptions2->addMenuElement(field_376.get());
             gameMenuOptions2->addMenuElement(settingStringBack);
             gameMenuHelp->addMenuElement(field_326);
             gameMenuHelp->addMenuElement(settingStringBack);
@@ -317,12 +315,11 @@ void MenuManager::initPart(int var1) {
 }
 
 void MenuManager::addTextRender(GameMenu *gameMenu, std::string text) {
-    // TODO
-    // TextRender[] var3 = TextRender.makeMultilineTextRenders(text, micro);
+    std::vector<TextRender*> var3 = TextRender::makeMultilineTextRenders(text, micro); // TODO memory leak
 
-    // for (int var4 = 0; var4 < var3.length; ++var4) {
-    //     gameMenu->addMenuElement(var3[var4]);
-    // }
+    for (std::size_t var4 = 0; var4 < var3.size(); ++var4) {
+        gameMenu->addMenuElement(var3[var4]);
+    }
 }
 
 int MenuManager::getCurrentLevel() {
@@ -348,7 +345,6 @@ void MenuManager::method_197() {
     field_356 = false;
     gameMenuFinished->clearVector();
     gameMenuFinished->addMenuElement(new TextRender("Time: " + field_340, micro));
-    // System.gc(); // TODO
     std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
 
     for (std::size_t var2 = 0; var2 < var1.size(); ++var2) {
@@ -399,7 +395,6 @@ void MenuManager::method_197() {
 
     int var3 = getCountOfRecordStoresWithPrefix(settingStringLevel->getCurrentOptionPos());
     addTextRender(gameMenuFinished, var3 + " of " + std::to_string(levelNames[settingStringLevel->getCurrentOptionPos()].size()) + " tracks in " + field_361[settingStringLevel->getCurrentOptionPos()] + " completed.");
-    // System.gc(); // TODO
     if (!field_356) {
         field_333->setText("Restart: " + micro->levelLoader->getName(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos()));
         field_334->setText("Next: " + micro->levelLoader->getName(field_354, field_355 + 1));
@@ -503,7 +498,6 @@ void MenuManager::method_201(int var1) {
                     gameMenuFinished->addMenuElement(field_336);
                     method_1(gameMenuFinished, false);
                     field_377 = false;
-                    // System.gc(); // TODO
                 } else {
                     method_197();
                 }
@@ -521,20 +515,9 @@ void MenuManager::method_201(int var1) {
     micro->gamePhysics->method_53();
     micro->gameToMenu();
 
-    // Micro micro; // TODO check if it's ok
     while (Micro::isInGameMenu && Micro::field_249 && currentGameMenu != nullptr) {
-        // TODO remove this properly
-        // if (Micro::isPaused) {
-        //     while (Micro::isPaused) {
-        //         try {
-        //             Thread.sleep(100L);
-        //         } catch (InterruptedException var18) {
-        //         }
-        //     }
-        // }
-
         int64_t var20;
-        if (/* micro->gamePhysics->isGenerateInputAI*/ false) { // TODO
+        if (micro->gamePhysics->isGenerateInputAI) {
             int var9;
             if ((var9 = micro->gamePhysics->updatePhysics()) != 0 && var9 != 4) {
                 micro->gamePhysics->resetSmth(true);
@@ -543,7 +526,6 @@ void MenuManager::method_201(int var1) {
             micro->gamePhysics->method_53();
             repaint();
             if ((var20 = Helpers::currentTimeMillis()) - var6 < (int64_t) var8) {
-                // TODO
                 // try {
                 //     synchronized (field_359) {
                 //         field_359.wait((int64_t) var8 - (var20 - var6) < 1L ? 1L : (int64_t) var8 - (var20 - var6));
@@ -559,7 +541,6 @@ void MenuManager::method_201(int var1) {
         } else {
             var8 = 50;
             if ((var20 = Helpers::currentTimeMillis()) - var6 < (int64_t) var8) {
-                // TODO
                 // try {
                 //     Object var21;
                 //     synchronized (var21 = new Object()) {
@@ -567,7 +548,6 @@ void MenuManager::method_201(int var1) {
                 //     }
                 // } catch (InterruptedException var14) {
                 // }
-
                 Helpers::sleep((int64_t) var8 - (var20 - var6) < 1L ? 1L : (int64_t) var8 - (var20 - var6));
 
                 var6 = Helpers::currentTimeMillis();
@@ -575,14 +555,12 @@ void MenuManager::method_201(int var1) {
                 var6 = var20;
             }
 
-            // micro = micro; // TODO check if it's ok
             if (Micro::isInGameMenu) {
                 repaint();
             }
         }
     }
 
-    // micro = micro; // TODO check if it's ok
     micro->timeMs += Helpers::currentTimeMillis() - currentTimeMillis;
     micro->gameCanvas->isDrawingTime = true;
     if (currentGameMenu == nullptr) {
@@ -593,7 +571,7 @@ void MenuManager::method_201(int var1) {
 
 void MenuManager::method_202(Graphics *var1) {
     if (currentGameMenu != nullptr && !field_377) {
-        micro->gameCanvas->render_160(var1);
+        micro->gameCanvas->drawGame(var1);
         fillCanvasWithImage(var1);
         currentGameMenu->render_76(var1);
     }
@@ -744,7 +722,6 @@ void MenuManager::method_207(int var1) {
     }
 
     gameMenuHighscore->addMenuElement(settingStringBack);
-    // System.gc(); // TODO
 }
 
 void MenuManager::saveSmthToRecordStoreAndCloseIt() {
@@ -1098,7 +1075,6 @@ void MenuManager::exit() {
     availableLeagues = 0;
     method_208();
     recordManager->deleteRecordStores();
-    // micro->notifyDestroyed(); // TODO
 }
 
 void MenuManager::removeOkAndBackCommands() {
@@ -1115,19 +1091,18 @@ void MenuManager::addOkAndBackCommands() {
 }
 
 int MenuManager::getCountOfRecordStoresWithPrefix(int prefixNumber) {
-    // std::vector<std::string> storeNames = RecordStore::listRecordStores();
-    // if (recordManager != nullptr && !storeNames.empty()) {
-    //     int count = 0;
+    std::vector<std::string> storeNames = RecordStore::listRecordStores();
+    if (recordManager != nullptr && !storeNames.empty()) {
+        int count = 0;
 
-    //     for (std::size_t i = 0; i < storeNames.size(); ++i) {
-    //         if (storeNames[i].startsWith("" + prefixNumber)) {
-    //             ++count;
-    //         }
-    //     }
+        for (std::size_t i = 0; i < storeNames.size(); ++i) {
+            if (storeNames[i].find(std::to_string(prefixNumber), 0) == 0) {
+                ++count;
+            }
+        }
 
-    //     return count;
-    // } else {
-    //     return 0;
-    // }
-    return 0; // TODO uncomment code above
+        return count;
+    } else {
+        return 0;
+    }
 }

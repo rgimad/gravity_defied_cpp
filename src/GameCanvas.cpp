@@ -12,7 +12,7 @@ GameCanvas::GameCanvas(Micro *micro) {
     } catch (std::exception &e) {
     }
 
-    // repaint(); // TODO
+    // repaint();
     this->micro = micro;
     updateSizeAndRepaint();
     font = Font::getFont(64, 1, 0);
@@ -70,7 +70,7 @@ void GameCanvas::updateSizeAndRepaint() {
 }
 
 int GameCanvas::loadSprites(int var1) {
-    // synchronized (objectForSyncronization) { // TODO
+    // synchronized (objectForSyncronization) {
         if ((var1 & 1) != 0) {
             try {
                 if (fenderImage == nullptr) {
@@ -229,12 +229,11 @@ void GameCanvas::drawForthSpriteByCenter(int centerX, int centerY) {
     drawSprite(graphics, 4, addDx(centerX - halfSizeX), addDy(centerY + halfSizeY));
 }
 
-// TODO rename to drawHelmet(int x, int y, int angleF16)
-void GameCanvas::method_146(int var1, int var2, int var3) {
-    int var4 = calcSpriteNo(var3, -102943, 411774, 32, true);
+void GameCanvas::drawHelmet(int x, int y, int angleF16) {
+    int var4 = calcSpriteNo(angleF16, -102943, 411774, 32, true);
     if (helmetImage != nullptr) {
-        int var5 = addDx(var1) - helmetSpriteWidth / 2;
-        int var6 = addDy(var2) - helmetSpriteHeight / 2;
+        int var5 = addDx(x) - helmetSpriteWidth / 2;
+        int var6 = addDy(y) - helmetSpriteHeight / 2;
         graphics->setClip(var5, var6, helmetSpriteWidth, helmetSpriteHeight);
         graphics->drawImage(helmetImage, var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
         graphics->setClip(0, 0, width, getHeight());
@@ -287,7 +286,7 @@ void GameCanvas::method_150(int var1) {
 
 void GameCanvas::method_151() {
     field_226 += 655;
-    int var0 = 32768 + ((MathF16::sinF16(field_226) < 0 ? -MathF16::sinF16(field_226) : MathF16::sinF16(field_226)) >> 1); // TODO check if it works properly
+    int var0 = 32768 + ((MathF16::sinF16(field_226) < 0 ? -MathF16::sinF16(field_226) : MathF16::sinF16(field_226)) >> 1);
     flagAnimationTime += (int) (6553L * (int64_t) var0 >> 16);
 }
 
@@ -390,8 +389,8 @@ void GameCanvas::setColor(int red, int green, int blue) {
     graphics->setColor(red, green, blue);
 }
 
-void GameCanvas::render_160(Graphics *g) {
-    // synchronized (objectForSyncronization) { // TODO
+void GameCanvas::drawGame(Graphics *g) {
+    // synchronized (objectForSyncronization) {
         if (Micro::field_249 && !micro->field_242) {
             graphics = g;
 
@@ -467,7 +466,7 @@ void GameCanvas::paint(Graphics *graphics) {
     if (Micro::isInGameMenu && menuManager != nullptr) {
         menuManager->method_202(graphics);
     } else {
-        render_160(graphics);
+        drawGame(graphics);
     }
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "Displayable.h"
 
@@ -12,6 +13,8 @@ private:
     std::unique_ptr<CanvasImpl> impl;
     std::unique_ptr<Graphics> graphics; // TODO improve
     CommandListener *commandListener;
+
+    std::vector<Command*> currentCommands;
 
 public:
     enum Keys {
@@ -36,6 +39,7 @@ public:
     void setCommandListener(CommandListener *listener);
     void publicKeyPressed(int keyCode);
     void publicKeyReleased(int keyCode);
+    void pressedEsc();
     virtual void paint(Graphics *g) = 0;
     virtual void keyPressed(int keyCode) = 0;
     virtual void keyReleased(int keyCode) = 0;

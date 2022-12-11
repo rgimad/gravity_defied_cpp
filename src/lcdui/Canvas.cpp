@@ -1,9 +1,12 @@
 #include "Canvas.h"
 
 #include <stdexcept>
+#include <algorithm>
 
 #include "CanvasImpl.h"
 #include "Graphics.h"
+#include "Command.h"
+#include "CommandListener.h"
 
 Canvas::Canvas() {
     impl = std::make_unique<CanvasImpl>(this);
@@ -11,7 +14,7 @@ Canvas::Canvas() {
 }
 
 Canvas::~Canvas() {
-    // TODO
+
 }
 
 int Canvas::getWidth() {
@@ -54,11 +57,18 @@ int Canvas::getGameAction(int keyCode) {
 }
 
 void Canvas::removeCommand(Command *command) {
-    // TODO
+    auto f = [&command](const Command *i){return *i == *command;};
+    auto position = std::find_if(currentCommands.cbegin(), currentCommands.cend(), f);
+    if (position != currentCommands.cend()) {
+        currentCommands.erase(position);
+    }
 }
 
 void Canvas::addCommand(Command *command) {
-    // TODO
+    auto f = [&command](const Command *i){return *i == *command;};
+    if (std::find_if(currentCommands.cbegin(), currentCommands.cend(), f) == currentCommands.cend()) {
+        currentCommands.push_back(command);
+    }
 }
 
 void Canvas::setCommandListener(CommandListener *listener) {
@@ -71,4 +81,13 @@ void Canvas::publicKeyPressed(int keyCode) {
 
 void Canvas::publicKeyReleased(int keyCode) {
     keyReleased(keyCode);
+}
+
+void Canvas::pressedEsc() {
+    for (auto command = currentCommands.begin(); command != currentCommands.end(); command++) {
+        if ((*command)->type == Command::Type::BACK || currentCommands.size() == 1) {
+            commandListener->commandAction(*command, this);
+            return;
+        }
+    }
 }

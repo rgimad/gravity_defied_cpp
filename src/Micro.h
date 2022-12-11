@@ -8,12 +8,8 @@ class LevelLoader;
 
 class Micro {
 private:
-    int64_t var333333;
-    // TODO: static uint8_t singleByteArr[1]; ?
-    // Thread *thread = nullptr;
     int64_t goLoadingStep();
     void destroyApp(bool var1);
-    void pauseApp();
 
 public:
     GameCanvas *gameCanvas;
@@ -28,7 +24,6 @@ public:
     bool isInited = false;
     bool field_248 = false;
     static bool field_249;
-    static bool isPaused;
     inline static bool isInGameMenu;
     static int gameLoadingStateStage;
 
@@ -40,7 +35,6 @@ public:
     void gameToMenu();
     void menuToGame();
     void init();
-    // NOTE: methods readBigFile, readByte, readFile skipped because unused
     void restart(bool var1);
     void run();
     void goalLoop();

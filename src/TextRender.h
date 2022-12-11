@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "IGameMenuElement.h"
 
@@ -30,7 +31,7 @@ public:
     bool isNotTextRender();
     void menuElemMethod(int var1);
     void render(Graphics *graphics, int y, int x);
-    // static TextRender[] makeMultilineTextRenders(std::string text, Micro micro); // TODO
+    static std::vector<TextRender*> makeMultilineTextRenders(std::string text, Micro *micro);
     void setDx(int var1);
     void setDrawSprite(bool isDrawSprite, int spriteNo);
 };

@@ -154,9 +154,6 @@ void GamePhysics::method_26(bool var1) {
 
     for (int var3 = 0; var3 < 6; ++var3) {
         for (int var4 = 0; var4 < 6; ++var4) {
-            // TODO check if it's correct
-            // TimerOrMotoPartOrMenuElem[] var10000 = field_29[var3].motoComponents;
-            // var10000[var4].yF16 += var2;
             field_29[var3]->motoComponents[var4]->yF16 += var2;
         }
     }
@@ -303,7 +300,6 @@ void GamePhysics::setInputFromAI() {
     int var1 = field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16;
     int var2 = field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16;
     int var3 = getSmthLikeMaxAbs(var1, var2);
-    // int var10000 = (int) (((int64_t) var1 << 32) / (int64_t) var3 >> 16); // TODO remove
     var2 = (int) (((int64_t) var2 << 32) / (int64_t) var3 >> 16);
     isInputBreak = false;
     if (var2 < 0) {
@@ -515,8 +511,6 @@ int GamePhysics::method_39(int var1) {
             }
 
             if (var5 == 0) {
-                // TODO check if it works
-                // continue label77;
                 goto label77;
             }
 
@@ -559,9 +553,6 @@ void GamePhysics::method_40(int var1) {
     TimerOrMotoPartOrMenuElem *var3;
     int var4;
     for (var4 = 0; var4 < 6; ++var4) {
-        // TODO check if it works
-        // class_10 var2;
-        // (var3 = (var2 = field_29[var4])->motoComponents[var1]).field_385 = 0;
         class_10 *var2 = field_29[var4].get();
         var3 = var2->motoComponents[var1].get();
         var3->field_385 = 0;
@@ -615,11 +606,6 @@ void GamePhysics::method_40(int var1) {
         if ((var10 = getSmthLikeMaxAbs(var6, var7)) > 1966080) {
             int var8 = (int) (((int64_t) var6 << 32) / (int64_t) var10 >> 16);
             int var9 = (int) (((int64_t) var7 << 32) / (int64_t) var10 >> 16);
-            // TODO check if it's correct
-            // TimerOrMotoPartOrMenuElem[] var10000 = field_29[var11].motoComponents;
-            // var10000[var1].field_382 -= var8;
-            // var10000 = field_29[var11].motoComponents;
-            // var10000[var1].field_383 -= var9;
             field_29[var11]->motoComponents[var1]->field_382 -= var8;
             field_29[var11]->motoComponents[var1]->field_383 -= var9;
         }
@@ -852,7 +838,7 @@ int GamePhysics::method_52() {
 }
 
 void GamePhysics::method_53() {
-    // synchronized (field_29) { // TODO
+    // synchronized (field_29) {
         for (int var2 = 0; var2 < 6; ++var2) {
             field_29[var2]->motoComponents[5]->xF16 = field_29[var2]->motoComponents[index01]->xF16;
             field_29[var2]->motoComponents[5]->yF16 = field_29[var2]->motoComponents[index01]->yF16;
@@ -866,7 +852,7 @@ void GamePhysics::method_53() {
 }
 
 void GamePhysics::setMotoComponents() {
-    // synchronized (field_29) { // TODO
+    // synchronized (field_29) {
         for (int i = 0; i < 6; ++i) {
             motoComponents[i]->xF16 = field_29[i]->motoComponents[5]->xF16;
             motoComponents[i]->yF16 = field_29[i]->motoComponents[5]->yF16;
@@ -1086,7 +1072,7 @@ void GamePhysics::renderSmth(GameCanvas *gameCanvas, int var2, int var3, int var
             var30 += 20588;
         }
 
-        gameCanvas->method_146(circleXF16 << 2 >> 16, circleYF16 << 2 >> 16, var30);
+        gameCanvas->drawHelmet(circleXF16 << 2 >> 16, circleYF16 << 2 >> 16, var30);
     } else {
         gameCanvas->setColor(0, 0, 0);
         gameCanvas->drawLineF16(xF16, yF16, x2F16, y2F16);
@@ -1137,7 +1123,7 @@ void GamePhysics::renderMotoAsLines(GameCanvas *gameCanvas, int var2, int var3, 
     int var35 = var31 + (int) ((int64_t) var4 * 114688L >> 16) - (int) ((int64_t) var2 * 32768L >> 16);
     int var36 = var32 + (int) ((int64_t) var5 * 114688L >> 16) - (int) ((int64_t) var3 * 32768L >> 16);
     gameCanvas->setColor(50, 50, 50);
-    gameCanvas->drawCircle(var21 << 2 >> 16, var22 << 2 >> 16, (32768 + 32768) << 2 >> 16); // TODO check overflow
+    gameCanvas->drawCircle(var21 << 2 >> 16, var22 << 2 >> 16, (32768 + 32768) << 2 >> 16);
     if (!field_35) {
         gameCanvas->drawLineF16(var9, var10, var17, var18);
         gameCanvas->drawLineF16(var11, var12, var15, var16);

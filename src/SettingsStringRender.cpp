@@ -61,7 +61,7 @@ void SettingsStringRender::setOptionsList(std::vector<std::string> var1) {
 
 void SettingsStringRender::init() {
     currentGameMenu = new GameMenu(text, micro, parentGameMenu, std::vector<int8_t>());
-    settingsStringRenders = std::vector<SettingsStringRender*>(optionsList.size()); // TODO check if it's correct
+    settingsStringRenders = std::vector<SettingsStringRender*>(optionsList.size());
 
     for (int var1 = 0; var1 < static_cast<int>(settingsStringRenders.size()); ++var1) {
         if (var1 > maxAvailableOption) {
@@ -71,7 +71,7 @@ void SettingsStringRender::init() {
             settingsStringRenders[var1] = new SettingsStringRender(optionsList[var1], 0, this, std::vector<std::string>(), false, micro, parentGameMenu, true);
         }
 
-        currentGameMenu->addMenuElement(static_cast<IGameMenuElement*>(settingsStringRenders[var1])); // TODO check
+        currentGameMenu->addMenuElement(settingsStringRenders[var1]);
     }
 
 }
@@ -113,19 +113,19 @@ void SettingsStringRender::menuElemMethod(int var1) {
                         selectedOptionName = "On";
                     }
 
-                    menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
+                    menuManager->processMenu(this);
                     return;
                 }
 
                 field_147 = true;
-                menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
+                menuManager->processMenu(this);
                 return;
             case 2:
                 if (field_146) {
                     if (currentOptionPos == 1) {
                         currentOptionPos = 0;
                         selectedOptionName = "On";
-                        menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
+                        menuManager->processMenu(this);
                     }
 
                     return;
@@ -135,7 +135,7 @@ void SettingsStringRender::menuElemMethod(int var1) {
                 if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
                     currentOptionPos = optionsList.size() - 1;
                 } else {
-                    menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
+                    menuManager->processMenu(this);
                 }
 
                 selectCurrentOptionName();
@@ -145,7 +145,7 @@ void SettingsStringRender::menuElemMethod(int var1) {
                     if (currentOptionPos == 0) {
                         currentOptionPos = 1;
                         selectedOptionName = "Off";
-                        menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
+                        menuManager->processMenu(this);
                     }
 
                     return;
@@ -156,7 +156,7 @@ void SettingsStringRender::menuElemMethod(int var1) {
                     currentOptionPos = 0;
                 } else {
                     selectCurrentOptionName();
-                    menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
+                    menuManager->processMenu(this);
                 }
 
                 selectCurrentOptionName();
@@ -262,7 +262,7 @@ void SettingsStringRender::processMenu(IGameMenuElement *var1) {
     }
 
     menuManager->method_1(parentGameMenu, true);
-    menuManager->processMenu(static_cast<IGameMenuElement*>(this)); // TODO check
+    menuManager->processMenu(this);
 }
 
 std::vector<SettingsStringRender*> SettingsStringRender::getSettingsStringRenders() {

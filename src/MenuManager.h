@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include "IMenuManager.h"
 
@@ -98,7 +99,6 @@ private:
     int field_355 = 0;
     bool field_356 = false;
     bool field_357 = false;
-    // Object field_359; // TODO
     std::vector<std::string> field_361 = {"Easy", "Medium", "Pro"};
     int64_t field_362 = 0L;
     int8_t isDisablePerspective = 0;
@@ -114,7 +114,7 @@ private:
     int8_t field_373 = 0;
     std::vector<std::string> field_374;
     std::vector<std::string> field_375;
-    TextRender *field_376 = nullptr;
+    std::unique_ptr<TextRender> field_376;
     // Alert alert = nullptr; // TODO
 
     void addTextRender(GameMenu *gameMenu, std::string text);
@@ -146,7 +146,7 @@ public:
     GameMenu* getGameMenu();
     void method_1(GameMenu *gm, bool var2);
     void method_207(int var1);
-    void saveSmthToRecordStoreAndCloseIt(); // TODO synchronized
+    /* synchronized */ void saveSmthToRecordStoreAndCloseIt();
     void method_208();
     void run();
     void showAlert(std::string title, std::string alertText, Image *image);
@@ -159,6 +159,6 @@ public:
     void method_215(int64_t var1);
     void removeOkAndBackCommands();
     void addOkAndBackCommands();
-    void method_202(Graphics *var1); // TODO synchronized
+    /* synchronized */ void method_202(Graphics *var1);
     void processKeyCode(int keyCode);
 };

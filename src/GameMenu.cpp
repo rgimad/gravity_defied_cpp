@@ -4,6 +4,7 @@
 #include "TextRender.h"
 #include "IGameMenuElement.h"
 #include "GameCanvas.h"
+#include "MenuManager.h"
 #include "lcdui/Font.h"
 #include "lcdui/Graphics.h"
 
@@ -114,7 +115,7 @@ void GameMenu::method_71() {
 void GameMenu::addMenuElement(IGameMenuElement *var1) {
     int var2 = field_101;
     field_107 = 1;
-    vector.push_back(var1);
+    vector.push_back(std::unique_ptr<IGameMenuElement>(var1));
     if (field_94 != "") {
         var2 = font->getBaselinePosition() + 2;
     }
@@ -266,7 +267,7 @@ void GameMenu::processGameActionUpd(int var1) {
         switch (var1) {
             case 1:
                 if (nameCursorPos == 2) {
-                    // micro->menuManager->method_1(gameMenu, false); // TODO
+                    micro->menuManager->method_1(gameMenu, false);
                     return;
                 }
 
@@ -290,7 +291,7 @@ void GameMenu::processGameActionUpd(int var1) {
         if (field_95 != -1) {
             for (int var2 = field_95; var2 < static_cast<int>(vector.size()); ++var2) {
                 IGameMenuElement *var3;
-                if ((var3 = vector[var2]) != nullptr && var3->isNotTextRender()) {
+                if ((var3 = vector[var2].get()) != nullptr && var3->isNotTextRender()) {
                     var3->menuElemMethod(var1);
                     return;
                 }
@@ -339,7 +340,7 @@ void GameMenu::render_76(Graphics *graphics) {
         graphics->setFont(font2);
 
         for (i = field_105; i < field_106 + 1; ++i) {
-            IGameMenuElement *var4 = vector[i];
+            IGameMenuElement *var4 = vector[i].get();
             graphics->setColor(0, 0, 0);
             var4->render(graphics, var2, field_104);
             if (i == field_95 && var4->isNotTextRender()) {
@@ -392,7 +393,7 @@ void GameMenu::clearVector() {
 }
 
 std::string GameMenu::makeString() {
-    return ""; // TODO replace back to new std::string(strArr);
+    return std::string(reinterpret_cast<char*>(strArr.data()));
 }
 
 std::vector<int8_t> GameMenu::getStrArr() {

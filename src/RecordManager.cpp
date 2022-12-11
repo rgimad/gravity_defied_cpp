@@ -9,7 +9,7 @@ void RecordManager::method_8(int var1, int var2) {
     resetRecordsTime();
 
     try {
-        str = "" + std::to_string(var1) + std::to_string(var2); // TODO check if it works
+        str = std::to_string(var1) + std::to_string(var2);
         recordStore = RecordStore::openRecordStore(str, true);
     } catch (RecordStoreException &var9) {
         return;

@@ -86,7 +86,7 @@ public:
     void drawCircle(int x, int y, int size);
     void fillRect(int x, int y, int w, int h);
     void drawForthSpriteByCenter(int centerX, int centerY);
-    void method_146(int var1, int var2, int var3);
+    void drawHelmet(int var1, int var2, int var3);
     void drawTime(int64_t time10Ms);
     void method_150(int var1);
     static void method_151();
@@ -98,7 +98,7 @@ public:
     void renderFender(int x, int y, int angleF16);
     void clearScreenWithWhite();
     void setColor(int red, int green, int blue);
-    void render_160(Graphics *g); // TODO: rename to drawGame()
+    void drawGame(Graphics *g);
     void method_161(int var1, bool mode);
     void method_163(int var1);
     void paint(Graphics *g);

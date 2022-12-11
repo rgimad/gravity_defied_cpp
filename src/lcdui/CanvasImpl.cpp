@@ -90,15 +90,16 @@ void CanvasImpl::processEvents() {
                 break;
             case SDL_KEYUP:
                 {
-                    int keyCode = convertKeyCharToKeyCode(e.key.keysym.sym);
+                    int sdlCode = e.key.keysym.sym;
+                    int keyCode = convertKeyCharToKeyCode(sdlCode);
                     // std::cout << "Key released: " << keyCode << std::endl;
                     if (keyCode != 0) {
                         canvas->publicKeyReleased(keyCode);
                     } else {
-                        // TODO
-                        // if (keyEvent.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                        //     canvas.pressedEsc();
-                        // }
+                        if (sdlCode == SDLK_ESCAPE) {
+                            // std::cout << "ESC released" << std::endl;
+                            canvas->pressedEsc();
+                        }
                     }
                 }
                 break;

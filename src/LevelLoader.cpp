@@ -24,13 +24,11 @@ LevelLoader::LevelLoader() {
     try {
         loadLevels();
     } catch (std::exception &e) {
-        // TODO
     }
     method_87();
 }
 
 LevelLoader::~LevelLoader() {
-    // TODO
 }
 
 void LevelLoader::loadLevels() {

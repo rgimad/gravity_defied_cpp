@@ -8,7 +8,6 @@
 #include "lcdui/CanvasImpl.h"
 
 bool Micro::field_249 = false;
-bool Micro::isPaused = true;
 int Micro::gameLoadingStateStage = 0;
 
 Micro::Micro() {
@@ -16,7 +15,7 @@ Micro::Micro() {
 }
 
 Micro::~Micro() {
-    // TODO
+
 }
 
 void Micro::setNumPhysicsLoops(int value) {
@@ -48,7 +47,7 @@ int64_t Micro::goLoadingStep() {
             gameCanvas->init(gamePhysics);
             break;
         case 3:
-            menuManager = new MenuManager(this); // TODO memory leak
+            menuManager = new MenuManager(this);
             menuManager->initPart(1);
             break;
         case 4:
@@ -77,10 +76,11 @@ int64_t Micro::goLoadingStep() {
         default:
             --gameLoadingStateStage;
 
-            // try { // TODO check if it's ok
-                Helpers::sleep(100LL);
+            // try {
+            //     Thread.sleep(100L);
             // } catch (InterruptedException var3) {
             // }
+            Helpers::sleep(100LL);
     }
 
     return Helpers::currentTimeMillis() - startTimeMillis;
@@ -88,9 +88,8 @@ int64_t Micro::goLoadingStep() {
 
 void Micro::init() {
     int64_t timeToLoading = 3000L;
-    // Thread.yield(); // TODO
+    // Thread.yield();
     gameCanvas = new GameCanvas(this);
-    // Display.getDisplay(this).setCurrent(gameCanvas); // TODO
     gameCanvas->requestRepaint(1);
 
     while (!gameCanvas->isShown()) {
@@ -117,43 +116,6 @@ void Micro::init() {
     isInited = true;
 }
 
-/*
-
-public static byte[] readBigFile(String var0, int var1) {
-    byte[] result = null;
-
-    try {
-        InputStream var3 = new Object().getClass().getResourceAsStream("/" + var0);
-        result = new byte[var1];
-        var3.read(result, 0, var1);
-    } catch (IOException var4) {
-    }
-
-    return result;
-}
-
-public static byte readByte(InputStream var0) {
-    try {
-        var0.read(singleByteArr, 0, 1);
-    } catch (IOException var1) {
-    }
-
-    return singleByteArr[0];
-}
-
-public static InputStream readFile(String var0) {
-    InputStream var1;
-    if (var0.charAt(0) == '/') {
-        var1 = var0.getClass().getResourceAsStream(var0);
-    } else {
-        var1 = var0.getClass().getResourceAsStream("/" + var0);
-    }
-
-    return var1;
-}
-
-*/
-
 void Micro::restart(bool var1) {
     gamePhysics->resetSmth(true);
     timeMs = 0;
@@ -171,33 +133,18 @@ void Micro::destroyApp(bool var1) {
     field_249 = false;
     field_242 = true;
     menuManager->saveSmthToRecordStoreAndCloseIt();
-    // notifyDestroyed(); // TODO
 }
 
 
 
 void Micro::startApp() {
     field_249 = true;
-    isPaused = false;
     // if (thread == null) {
     //     thread = new Thread(this);
     //     thread.start();
     // }
     run();
 }
-
-/*
-
-protected void pauseApp() {
-    isPaused = true;
-    if (!isInGameMenu) {
-        gameToMenu();
-    }
-
-    System.gc();
-}
-
-*/
 
 // original method
 void Micro::run() {
@@ -305,7 +252,6 @@ void Micro::run() {
             gamePhysics->method_53();
             int64_t var1;
             if ((var1 = Helpers::currentTimeMillis()) - var3 < 30L) {
-                // TODO check if this replacement is ok
                 // try {
                 //     synchronized (this) {
                 //         wait(Math.max(30L - (var1 - var3), 1L));
@@ -343,23 +289,28 @@ void Micro::goalLoop() {
 
         for (int i = numPhysicsLoops; i > 0; --i) {
             if (gamePhysics->updatePhysics() == 5) {
-                // try { // TODO check if it's ok
-                    int64_t deltaTime;
-                    if ((deltaTime = timeMs - Helpers::currentTimeMillis()) > 0L) {
-                        Helpers::sleep(deltaTime);
-                    }
+                // try {
+                //     long deltaTime;
+                //     if ((deltaTime = timeMs - System.currentTimeMillis()) > 0L) {
+                //         Thread.sleep(deltaTime);
+                //     }
 
-                    return;
+                //     return;
                 // } catch (InterruptedException var12) {
-                    // return;
+                //     return;
                 // }
+                int64_t deltaTime;
+                if ((deltaTime = timeMs - Helpers::currentTimeMillis()) > 0L) {
+                    Helpers::sleep(deltaTime);
+                }
+
+                return;
             }
         }
 
         gamePhysics->method_53();
         int64_t var2;
         if ((var2 = Helpers::currentTimeMillis()) - var4 < 30L) {
-            // TODO check if it's ok
             // try {
             //     synchronized (this) {
             //         wait(Math.max(30L - (var2 - var4), 1L));

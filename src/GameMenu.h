@@ -2,10 +2,12 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+
+#include "IGameMenuElement.h"
 
 class Micro;
 class Font;
-class IGameMenuElement;
 class Graphics;
 
 class GameMenu {
@@ -13,7 +15,7 @@ private:
     GameMenu *gameMenu;
     std::string field_94;
     int field_95;
-    std::vector<IGameMenuElement*> vector;
+    std::vector<std::unique_ptr<IGameMenuElement>> vector;
     Micro *micro;
     Font *font;
     Font *font2;
@@ -49,6 +51,6 @@ public:
     int method_79();
     void clearVector();
     std::string makeString();
-    std::vector<int8_t> getStrArr(); // TODO int8_t[] was replaced to std::vector<int8_t>. is it ok?
+    std::vector<int8_t> getStrArr();
     void method_83(int var1);
 };
