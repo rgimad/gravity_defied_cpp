@@ -2,6 +2,7 @@
 
 #include "IMenuManager.h"
 #include "GameMenu.h"
+#include "GameCanvas.h"
 #include "lcdui/Graphics.h"
 
 TimerOrMotoPartOrMenuElem::TimerOrMotoPartOrMenuElem() {
@@ -26,7 +27,7 @@ void TimerOrMotoPartOrMenuElem::setToZeros() {
 }
 
 void TimerOrMotoPartOrMenuElem::run() {
-    // micro->gameCanvas.method_150(timerNo); // TODO
+    micro->gameCanvas->method_150(timerNo);
 }
 
 void TimerOrMotoPartOrMenuElem::setText(std::string text) {

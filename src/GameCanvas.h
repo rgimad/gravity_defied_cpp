@@ -10,6 +10,7 @@
 #include "lcdui/CommandListener.h"
 
 #include "Micro.h"
+#include "Timer.h"
 
 class GamePhysics;
 class MenuManager;
@@ -18,6 +19,7 @@ class GameCanvas : public Canvas, public CommandListener {
 private:
     void method_164();
     void handleUpdatedInput();
+    void processTimers();
 
     Graphics *graphics = nullptr;
     int dx;
@@ -32,7 +34,7 @@ private:
     int field_179 = 0;
     Micro *micro = nullptr;
     Font *font = nullptr;
-    bool field_182 = false;
+    bool timerTriggered = false;
     int field_184 = 1;
     Image *splashImage = nullptr;
     Image *logoImage = nullptr;
@@ -47,11 +49,10 @@ private:
     bool field_205 = true;
     int field_206;
     Image *screenBuffer = nullptr;
-    std::string field_210 = "";
-    int countOfScheduledTimers = 0;
-    // Timer timer = new Timer();
+    std::string timerMessage = "";
+    int timerId = 0;
+    std::vector<Timer> timers;
     Command *commandMenu;
-    // Object objectForSyncronization = new Object();
     inline static std::string stringWithTime = "";
     std::vector<std::string> time10MsToStringCache = std::vector<std::string>(100);
     int timeInSeconds = -1;
@@ -105,6 +106,7 @@ public:
     void init(GamePhysics *gamePhysics);
     void processKeyPressed(int keyCode);
     void processKeyReleased(int keyCode);
+    void scheduleGameTimerTask(std::string var1, int delayMs);
     void setMenuManager(MenuManager *menuManager);
     void method_168(Command *var1, Displayable *var2);
     void keyPressed(int var1);

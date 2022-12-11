@@ -279,8 +279,8 @@ void GameCanvas::drawTime(int64_t time10Ms) {
 }
 
 void GameCanvas::method_150(int var1) {
-    if (countOfScheduledTimers == var1) {
-        field_182 = true;
+    if (timerId == var1) {
+        timerTriggered = true;
     }
 }
 
@@ -426,18 +426,18 @@ void GameCanvas::drawGame(Graphics *g) {
                     drawTime(micro->gameTimeMs / 10L);
                 }
 
-                if (!field_210.empty()) {
+                if (!timerMessage.empty()) {
                     setColor(0, 0, 0);
                     graphics->setFont(font);
                     if (height2 <= 128) {
-                        graphics->drawString(field_210, width / 2, 1, 17);
+                        graphics->drawString(timerMessage, width / 2, 1, 17);
                     } else {
-                        graphics->drawString(field_210, width / 2, height2 / 4, 33);
+                        graphics->drawString(timerMessage, width / 2, height2 / 4, 33);
                     }
 
-                    if (field_182) {
-                        field_182 = false;
-                        field_210 = "";
+                    if (timerTriggered) {
+                        timerTriggered = false;
+                        timerMessage = "";
                     }
                 }
 
@@ -463,6 +463,7 @@ void GameCanvas::method_163(int var1) {
 }
 
 void GameCanvas::paint(Graphics *graphics) {
+    processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
     if (Micro::isInGameMenu && menuManager != nullptr) {
         menuManager->method_202(graphics);
     } else {
@@ -505,6 +506,17 @@ void GameCanvas::handleUpdatedInput() {
     gamePhysics->method_30(var1, var2);
 }
 
+void GameCanvas::processTimers() {
+    for (auto i = timers.begin(); i != timers.end(); ) {
+        if (i->ready()) {
+            method_150(i->getId());
+            i = timers.erase(i);
+        } else {
+            i++;
+        }
+    }
+}
+
 void GameCanvas::processKeyPressed(int keyCode) {
     int action = getGameAction(keyCode);
     int numKey;
@@ -535,19 +547,12 @@ void GameCanvas::init(GamePhysics *gamePhysics) {
     gamePhysics->setMinimalScreenWH(width < height2 ? width : height2);
 }
 
-/*
-
-// TODO
-
-// $FF: renamed from: a (java.lang.String, int) void
-public void scheduleGameTimerTask(String var1, int delayMs) {
-    field_182 = false;
-    ++countOfScheduledTimers;
-    field_210 = var1;
-    timer.schedule(new TimerOrMotoPartOrMenuElem(countOfScheduledTimers, micro), (int64_t) delayMs);
+void GameCanvas::scheduleGameTimerTask(std::string timerMessage, int delayMs) {
+    timerTriggered = false;
+    ++timerId;
+    this->timerMessage = timerMessage;
+    timers.push_back(Timer(timerId, delayMs));
 }
-
-*/
 
 void GameCanvas::setMenuManager(MenuManager *menuManager) {
     this->menuManager = menuManager;
@@ -560,16 +565,6 @@ void GameCanvas::method_168(Command *var1, Displayable *var2) {
         micro->gameToMenu();
     }
 }
-
-/*
-
-protected void keyRepeated(int var1) {
-    if (Micro.isInGameMenu && menuManager != null) {
-        menuManager.processNonFireKeyCode(var1);
-    }
-}
-
-*/
 
 void GameCanvas::keyPressed(int var1) {
     if (Micro::isInGameMenu && menuManager != nullptr) {

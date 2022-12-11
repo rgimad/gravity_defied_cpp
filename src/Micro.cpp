@@ -122,7 +122,7 @@ void Micro::restart(bool var1) {
     gameTimeMs = 0;
     field_246 = 0;
     if (var1) {
-        // gameCanvas->scheduleGameTimerTask(levelLoader.getName(menuManager->getCurrentLevel(), menuManager->getCurrentTrack()), 3000); // TODO
+        gameCanvas->scheduleGameTimerTask(levelLoader->getName(menuManager->getCurrentLevel(), menuManager->getCurrentTrack()), 3000);
     }
 
     gameCanvas->method_129();
@@ -189,7 +189,7 @@ void Micro::run() {
 
                 if ((var5 = gamePhysics->updatePhysics()) == 3 && field_246 == 0L) {
                     field_246 = Helpers::currentTimeMillis() + 3000L;
-                    // gameCanvas->scheduleGameTimerTask("Crashed", 3000); // TODO
+                    gameCanvas->scheduleGameTimerTask("Crashed", 3000);
                     gameCanvas->repaint();
                     gameCanvas->serviceRepaints();
                 }
@@ -199,7 +199,7 @@ void Micro::run() {
                 }
 
                 if (var5 == 5) {
-                    // gameCanvas->scheduleGameTimerTask("Crashed", 3000); // TODO
+                    gameCanvas->scheduleGameTimerTask("Crashed", 3000);
                     gameCanvas->repaint();
                     gameCanvas->serviceRepaints();
 
@@ -276,9 +276,9 @@ void Micro::run() {
 void Micro::goalLoop() {
     int64_t var4 = 0L;
     if (!gamePhysics->field_69) {
-        // gameCanvas->scheduleGameTimerTask("Wheelie!", 1000); // TODO
+        gameCanvas->scheduleGameTimerTask("Wheelie!", 1000);
     } else {
-        // gameCanvas->scheduleGameTimerTask("Finished", 1000); // TODO
+        gameCanvas->scheduleGameTimerTask("Finished", 1000);
     }
 
     for (int64_t timeMs = Helpers::currentTimeMillis() + 1000L; timeMs > Helpers::currentTimeMillis(); gameCanvas->repaint()) {

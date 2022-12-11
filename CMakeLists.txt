@@ -36,6 +36,7 @@ set(SOURCES
     src/SettingsStringRender.cpp
     src/MenuManager.cpp
     src/RecordManager.cpp
+    src/Timer.cpp
     src/lcdui/CanvasImpl.cpp
     src/lcdui/Canvas.cpp
     src/lcdui/Graphics.cpp
@@ -64,6 +65,7 @@ set(HEADERS
     src/SettingsStringRender.h
     src/MenuManager.h
     src/RecordManager.h
+    src/Timer.h
     src/IGameMenuElement.h
     src/lcdui/CanvasImpl.h
     src/lcdui/Canvas.h
