@@ -204,16 +204,24 @@ void Micro::run() {
                     gameCanvas->serviceRepaints();
 
                     // try {
-                        int64_t var7 = 1000L;
-                        if (field_246 > 0L) {
-                            var7 = std::min(field_246 - Helpers::currentTimeMillis(), 1000LL);
-                        }
+                    //     long var7 = 1000L;
+                    //     if (this.field_246 > 0L) {
+                    //         var7 = Math.min(this.field_246 - System.currentTimeMillis(), 1000L);
+                    //     }
 
-                        if (var7 > 0L) {
-                            Helpers::sleep(var7);
-                        }
-                    // } catch (InterruptedException var12) { // TODO check if it's ok
+                    //     if (var7 > 0L) {
+                    //         Thread.sleep(var7);
+                    //     }
+                    // } catch (InterruptedException var12) {
                     // }
+                    int64_t var7 = 1000L;
+                    if (field_246 > 0L) {
+                        var7 = std::min(field_246 - Helpers::currentTimeMillis(), 1000LL);
+                    }
+
+                    if (var7 > 0L) {
+                        Helpers::sleep(var7);
+                    }
 
                     restart(true);
                 } else if (var5 == 4) {

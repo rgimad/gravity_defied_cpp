@@ -82,9 +82,9 @@ void SettingsStringRender::setParentGameMenu(GameMenu *parentGameMenu) {
 
 void SettingsStringRender::setText(std::string text) {
     if (useColon) {
-        text = text;
+        this->text = text;
     } else {
-        text = text + ":";
+        this->text = text + ":";
     }
 }
 

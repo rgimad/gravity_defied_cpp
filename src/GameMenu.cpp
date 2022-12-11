@@ -115,7 +115,7 @@ void GameMenu::method_71() {
 void GameMenu::addMenuElement(IGameMenuElement *var1) {
     int var2 = field_101;
     field_107 = 1;
-    vector.push_back(std::unique_ptr<IGameMenuElement>(var1));
+    vector.push_back(var1);
     if (field_94 != "") {
         var2 = font->getBaselinePosition() + 2;
     }
@@ -291,7 +291,7 @@ void GameMenu::processGameActionUpd(int var1) {
         if (field_95 != -1) {
             for (int var2 = field_95; var2 < static_cast<int>(vector.size()); ++var2) {
                 IGameMenuElement *var3;
-                if ((var3 = vector[var2].get()) != nullptr && var3->isNotTextRender()) {
+                if ((var3 = vector[var2]) != nullptr && var3->isNotTextRender()) {
                     var3->menuElemMethod(var1);
                     return;
                 }
@@ -340,7 +340,7 @@ void GameMenu::render_76(Graphics *graphics) {
         graphics->setFont(font2);
 
         for (i = field_105; i < field_106 + 1; ++i) {
-            IGameMenuElement *var4 = vector[i].get();
+            IGameMenuElement *var4 = vector[i];
             graphics->setColor(0, 0, 0);
             var4->render(graphics, var2, field_104);
             if (i == field_95 && var4->isNotTextRender()) {

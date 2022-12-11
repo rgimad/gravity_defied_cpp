@@ -15,7 +15,7 @@ private:
     GameMenu *gameMenu;
     std::string field_94;
     int field_95;
-    std::vector<std::unique_ptr<IGameMenuElement>> vector;
+    std::vector<IGameMenuElement*> vector;
     Micro *micro;
     Font *font;
     Font *font2;

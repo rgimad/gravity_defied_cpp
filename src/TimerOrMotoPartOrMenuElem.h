@@ -9,7 +9,7 @@ class Graphics;
 class GameMenu;
 class IMenuManager;
 
-class TimerOrMotoPartOrMenuElem : public IGameMenuElement { // TODO  extends TimerTask implements IGameMenuElement
+class TimerOrMotoPartOrMenuElem : public IGameMenuElement {
 private:
     std::string text;
     GameMenu *gameMenu;
@@ -32,7 +32,6 @@ public:
     TimerOrMotoPartOrMenuElem(int timerNo, Micro *micro) ;
     TimerOrMotoPartOrMenuElem(std::string text, GameMenu *gameMenu, IMenuManager *menuManager);
     void setToZeros();
-    void run();
     void setText(std::string text);
     std::string getText();
     bool isNotTextRender();

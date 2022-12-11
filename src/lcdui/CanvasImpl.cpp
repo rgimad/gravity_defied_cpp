@@ -77,7 +77,7 @@ void CanvasImpl::processEvents() {
     while (SDL_PollEvent(&e) != 0){
         switch (e.type) {
             case SDL_QUIT:
-                exit(0); // TODO improve
+                exit(0); // IMPROVE This is a super dumb way to finish the game, but it works
                 break;
             case SDL_KEYDOWN:
                 {

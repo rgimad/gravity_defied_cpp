@@ -11,7 +11,7 @@ class Graphics;
 class Canvas : public Displayable {
 private:
     std::unique_ptr<CanvasImpl> impl;
-    std::unique_ptr<Graphics> graphics; // TODO improve
+    std::unique_ptr<Graphics> graphics; // IMPROVE this is probably not the best place for graphics
     CommandListener *commandListener;
 
     std::vector<Command*> currentCommands;

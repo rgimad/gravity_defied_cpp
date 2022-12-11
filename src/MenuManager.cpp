@@ -121,14 +121,13 @@ void MenuManager::initPart(int var1) {
             }
 
             try {
-                field_345[field_370] = field_369;
-            } catch (std::exception &var6) { // TODO check if it makes sense
+                field_345.at(field_370) = field_369;
+            } catch (std::exception &var6) {
                 field_370 = 0;
                 field_369 = 0;
                 field_345[field_370] = field_369;
             }
 
-            // LevelLoader *var10000 = micro->levelLoader;
             LevelLoader::isEnabledPerspective = isDisablePerspective == 0;
             LevelLoader::isEnabledShadows = isDisabledShadows == 0;
             micro->gamePhysics->setEnableLookAhead(isDisableLookAhead == 0);
@@ -184,8 +183,8 @@ void MenuManager::initPart(int var1) {
             settingsStringLeague = new SettingsStringRender("League", field_371, this, leagueNames, false, micro, gameMenuPlay, false);
 
             try {
-                settingsStringTrack->setAvailableOptions(field_342[field_370]);
-            } catch (std::exception &var5) { // TODO check if it makes sense
+                settingsStringTrack->setAvailableOptions(field_342.at(field_370));
+            } catch (std::exception &var5) {
                 settingsStringTrack->setAvailableOptions(0);
             }
 
@@ -306,7 +305,7 @@ void MenuManager::initPart(int var1) {
             try {
                 rasterImage = Image::createImage("assets/raster.png");
                 return;
-            } catch (std::exception &var10) { // TODO check if it makes sense
+            } catch (std::exception &var10) {
                 rasterImage = Image::createImage(1, 1);
             }
         default:
@@ -315,7 +314,7 @@ void MenuManager::initPart(int var1) {
 }
 
 void MenuManager::addTextRender(GameMenu *gameMenu, std::string text) {
-    std::vector<TextRender*> var3 = TextRender::makeMultilineTextRenders(text, micro); // TODO memory leak
+    std::vector<TextRender*> var3 = TextRender::makeMultilineTextRenders(text, micro);
 
     for (std::size_t var4 = 0; var4 < var3.size(); ++var4) {
         gameMenu->addMenuElement(var3[var4]);
@@ -702,7 +701,7 @@ void MenuManager::method_207(int var1) {
 
     for (std::size_t var3 = 0; var3 < var2.size(); ++var3) {
         if (var2[var3] != "") {
-            TextRender *var4 = new TextRender("" + std::to_string(var3 + 1) + "." + var2[var3], micro); // TODO memory leak
+            TextRender *var4 = new TextRender(std::to_string(var3 + 1) + "." + var2[var3], micro);
             var4->setDx(GameCanvas::spriteSizeX[5] + 1);
             if (var3 == 0) {
                 var4->setDrawSprite(true, 5);

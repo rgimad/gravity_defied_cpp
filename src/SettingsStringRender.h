@@ -10,7 +10,7 @@ class GameMenu;
 class Micro;
 class Graphics;
 
-class SettingsStringRender : public IMenuManager, public IGameMenuElement { // TODO multiple inheritance
+class SettingsStringRender : public IMenuManager, public IGameMenuElement {
 private:
     std::vector<std::string> optionsList;
     int currentOptionPos;
@@ -23,7 +23,7 @@ private:
     bool field_147 = false;
     std::string selectedOptionName;
     Micro *micro = nullptr;
-    std::vector<SettingsStringRender*> settingsStringRenders; // TODO change to smart pointer maybe
+    std::vector<SettingsStringRender*> settingsStringRenders;
     bool hasSprite;
     bool isDrawSprite8;
     bool useColon;
