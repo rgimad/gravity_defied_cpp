@@ -95,6 +95,7 @@ include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_I
 target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -std=c++17)
 
 if (WIN32)
+    target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
     target_link_libraries(
         ${PROJECT_NAME}
         -lmingw32
