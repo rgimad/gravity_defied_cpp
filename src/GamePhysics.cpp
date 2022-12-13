@@ -511,6 +511,7 @@ int GamePhysics::method_39(int var1) {
             }
 
             if (var5 == 0) {
+                var4 = (var3 + var4) >> 1;
                 goto label77;
             }
 
