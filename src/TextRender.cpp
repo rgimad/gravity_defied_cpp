@@ -31,7 +31,7 @@ void TextRender::setMaxArea(int w, int h) {
 }
 
 void TextRender::setText(std::string text) {
-    text = text;
+    this->text = text;
 }
 
 bool TextRender::isNotTextRender() {
@@ -90,6 +90,6 @@ void TextRender::setDx(int var1) {
 }
 
 void TextRender::setDrawSprite(bool isDrawSprite, int spriteNo) {
-    isDrawSprite = isDrawSprite;
-    spriteNo = spriteNo;
+    this->isDrawSprite = isDrawSprite;
+    this->spriteNo = spriteNo;
 }
