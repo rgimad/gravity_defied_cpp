@@ -144,24 +144,27 @@ void MenuManager::initPart(int var1) {
             field_360 = field_371;
             return;
         case 4:
-            gameMenuMain = new GameMenu("Main", micro, nullptr, std::vector<int8_t>());
-            gameMenuPlay = new GameMenu("Play", micro, gameMenuMain, std::vector<int8_t>());
-            gameMenuOptions = new GameMenu("Options", micro, gameMenuMain, std::vector<int8_t>());
-            gameMenuAbout = new GameMenu("About", micro, gameMenuMain, std::vector<int8_t>());
-            gameMenuHelp = new GameMenu("Help", micro, gameMenuMain, std::vector<int8_t>());
-            settingStringBack = new SettingsStringRender("Back", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-            settingStringGoToMain = new SettingsStringRender("Go to Main", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-            settingStringContinue = new SettingsStringRender("Continue", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-            settingStringPlayMenu = new SettingsStringRender("Play Menu", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-            if (gameMenuAbout->xPos + Font::getFont(32, 1, 8)->stringWidth("http://www.codebrew.se/") >= getCanvasWidth()) { // TODO memory leak (Font)
-                textRenderCodeBrewLink = new TextRender("www.codebrew.se", micro);
-            } else {
-                textRenderCodeBrewLink = new TextRender("http://www.codebrew.se/", micro);
-            }
+            {
+                gameMenuMain = new GameMenu("Main", micro, nullptr, std::vector<int8_t>());
+                gameMenuPlay = new GameMenu("Play", micro, gameMenuMain, std::vector<int8_t>());
+                gameMenuOptions = new GameMenu("Options", micro, gameMenuMain, std::vector<int8_t>());
+                gameMenuAbout = new GameMenu("About", micro, gameMenuMain, std::vector<int8_t>());
+                gameMenuHelp = new GameMenu("Help", micro, gameMenuMain, std::vector<int8_t>());
+                settingStringBack = new SettingsStringRender("Back", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
+                settingStringGoToMain = new SettingsStringRender("Go to Main", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
+                settingStringContinue = new SettingsStringRender("Continue", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
+                settingStringPlayMenu = new SettingsStringRender("Play Menu", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
+                std::unique_ptr<Font> tempFont(Font::getFont(32, 1, 8));
+                if (gameMenuAbout->xPos + tempFont->stringWidth("http://www.codebrew.se/") >= getCanvasWidth()) {
+                    textRenderCodeBrewLink = new TextRender("www.codebrew.se", micro);
+                } else {
+                    textRenderCodeBrewLink = new TextRender("http://www.codebrew.se/", micro);
+                }
 
-            textRenderCodeBrewLink->setFont(Font::getFont(32, 1, 8)); // TODO memory leak (Font)
-            gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay, std::vector<int8_t>());
-            gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay, std::vector<int8_t>());
+                textRenderCodeBrewLink->setFont(Font::getFont(32, 1, 8));
+                gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay, std::vector<int8_t>());
+                gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay, std::vector<int8_t>());
+            }
             return;
         case 5:
             gameMenuIngame = new GameMenu("Ingame", micro, gameMenuPlay, std::vector<int8_t>());

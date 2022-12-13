@@ -18,7 +18,7 @@ int TextRender::getBaselinePosition() {
 }
 
 void TextRender::setFont(Font *value) {
-    font = value;
+    font.reset(value);
 }
 
 void TextRender::setDefaultFont(Font *value) {
@@ -46,7 +46,7 @@ void TextRender::render(Graphics *graphics, int y, int x) {
     Font *preservedFont = graphics->getFont();
     graphics->setFont(defaultFont);
     if (font != nullptr) {
-        graphics->setFont(font);
+        graphics->setFont(font.get());
     }
 
     graphics->drawString(text, x + dx, y, 20);

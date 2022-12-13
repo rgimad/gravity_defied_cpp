@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "IGameMenuElement.h"
 
@@ -13,7 +14,7 @@ class TextRender : public IGameMenuElement{
 private:
     std::string text;
     inline static Font *defaultFont;
-    Font *font;
+    std::unique_ptr<Font> font;
     int dx = 0;
     inline static int fieldMaxWidth = 100;
     inline static int fieldMaxHeightUnused = 100;
