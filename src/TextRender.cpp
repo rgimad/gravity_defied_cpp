@@ -18,7 +18,7 @@ int TextRender::getBaselinePosition() {
 }
 
 void TextRender::setFont(Font *value) {
-    font = value;
+    font.reset(value);
 }
 
 void TextRender::setDefaultFont(Font *value) {
@@ -31,7 +31,7 @@ void TextRender::setMaxArea(int w, int h) {
 }
 
 void TextRender::setText(std::string text) {
-    text = text;
+    this->text = text;
 }
 
 bool TextRender::isNotTextRender() {
@@ -46,7 +46,7 @@ void TextRender::render(Graphics *graphics, int y, int x) {
     Font *preservedFont = graphics->getFont();
     graphics->setFont(defaultFont);
     if (font != nullptr) {
-        graphics->setFont(font);
+        graphics->setFont(font.get());
     }
 
     graphics->drawString(text, x + dx, y, 20);
@@ -90,6 +90,6 @@ void TextRender::setDx(int var1) {
 }
 
 void TextRender::setDrawSprite(bool isDrawSprite, int spriteNo) {
-    isDrawSprite = isDrawSprite;
-    spriteNo = spriteNo;
+    this->isDrawSprite = isDrawSprite;
+    this->spriteNo = spriteNo;
 }

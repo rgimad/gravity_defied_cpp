@@ -121,7 +121,7 @@ int LevelLoader::method_95(int var1) {
 
 void LevelLoader::method_96(GameLevel *gameLevel) {
     field_131 = INT_MIN;
-    gameLevel = gameLevel;
+    this->gameLevel = gameLevel;
     int var2 = gameLevel->pointsCount;
     if (field_121.empty() || field_132 < var2) {
         field_132 = var2 < 100 ? 100 : var2;

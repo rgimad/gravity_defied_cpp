@@ -41,8 +41,8 @@ SettingsStringRender::SettingsStringRender(std::string text, int isDisabled, IMe
 }
 
 void SettingsStringRender::setFlags(bool hasSprite, bool isDrawSprite8) {
-    hasSprite = hasSprite;
-    isDrawSprite8 = isDrawSprite8;
+    this->hasSprite = hasSprite;
+    this->isDrawSprite8 = isDrawSprite8;
 }
 
 void SettingsStringRender::setOptionsList(std::vector<std::string> var1) {
@@ -195,7 +195,7 @@ void SettingsStringRender::render(Graphics *graphics, int y, int x) {
 }
 
 void SettingsStringRender::setAvailableOptions(int maxAvailableOption) {
-    maxAvailableOption = maxAvailableOption;
+    this->maxAvailableOption = maxAvailableOption;
     if (maxAvailableOption > static_cast<int>(optionsList.size()) - 1) {
         maxAvailableOption = optionsList.size() - 1;
     }
