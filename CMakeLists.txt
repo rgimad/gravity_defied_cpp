@@ -43,9 +43,9 @@ set(SOURCES
     src/lcdui/Image.cpp
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
-    src/lcdui/tests/test_Graphics.cpp
     src/rms/RecordEnumerationImpl.cpp
     src/rms/RecordStore.cpp
+    src/tests/test_Graphics.cpp
     src/tests/test_rms.cpp
 )
 
@@ -74,7 +74,6 @@ set(HEADERS
     src/lcdui/Font.h
     src/lcdui/Command.h
     src/lcdui/CommandListener.h
-    src/lcdui/tests/test_Graphics.h
     src/rms/InvalidRecordIDException.h
     src/rms/RecordComparator.h
     src/rms/RecordEnumeration.h
@@ -83,6 +82,7 @@ set(HEADERS
     src/rms/RecordStore.h
     src/rms/RecordStoreException.h
     src/rms/RecordStoreNotOpenException.h
+    src/tests/test_Graphics.h
     src/tests/test_rms.h
 )
 

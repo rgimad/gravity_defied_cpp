@@ -5,8 +5,8 @@
 #include <stdexcept>
 #include <memory>
 
-#include "../Graphics.h"
-#include "../Image.h"
-#include "../Font.h"
+#include "../lcdui/Graphics.h"
+#include "../lcdui/Image.h"
+#include "../lcdui/Font.h"
 
 void test_Graphics();
