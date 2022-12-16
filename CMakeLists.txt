@@ -21,7 +21,7 @@ endif()
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
-    src/Helpers.cpp
+    src/utils/Time.cpp
     src/main.cpp
     src/MathF16.cpp
     src/GameCanvas.cpp
@@ -50,7 +50,9 @@ set(SOURCES
 )
 
 set(HEADERS
-    src/Helpers.h
+    src/utils/Stream.h
+    src/utils/Time.h
+    src/utils/String.h
     src/Displayable.h
     src/MathF16.h
     src/GameCanvas.h

@@ -7,7 +7,7 @@
 #include <numeric>
 
 #include "RecordStoreException.h"
-#include "../Helpers.h"
+#include "../utils/String.h"
 
 RecordStore::RecordStore(std::filesystem::path filePath, RecordEnumerationImpl *records) {
     // assert(std::filesystem::exists(filePath));
@@ -90,7 +90,7 @@ std::vector<std::string> RecordStore::listRecordStores() {
     for (const auto & entry : std::filesystem::directory_iterator(recordStoreDir))
         result.push_back(entry.path().filename().string());
 
-    log("listRecordStores() = {" + Helpers::join(result, ", ") + "}");
+    log("listRecordStores() = {" + String::join(result, ", ") + "}");
 
     return result;
 }

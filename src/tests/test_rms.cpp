@@ -6,7 +6,7 @@
 #include <numeric>
 
 #include "../rms/RecordStore.h"
-#include "../Helpers.h"
+#include "../utils/String.h"
 
 void test_rms() {
     std::vector<std::string> records = RecordStore::listRecordStores();
@@ -27,7 +27,7 @@ void test_rms() {
         for (int i = 0; i < re->numRecords(); ++i) {
             int recordId = re->nextRecordId();
             std::vector<int8_t> record = re->nextRecord();
-            std::cout << "Record " << std::to_string(recordId) << ": {" << Helpers::join(record, ", ") << "}" <<  std::endl;
+            std::cout << "Record " << std::to_string(recordId) << ": {" << String::join(record, ", ") << "}" <<  std::endl;
         }
     }
 }
