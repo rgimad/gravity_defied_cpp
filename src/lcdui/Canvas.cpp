@@ -59,18 +59,11 @@ int Canvas::getGameAction(int keyCode) {
 }
 
 void Canvas::removeCommand(Command *command) {
-    auto f = [&command](const Command *i){return *i == *command;};
-    auto position = std::find_if(currentCommands.cbegin(), currentCommands.cend(), f);
-    if (position != currentCommands.cend()) {
-        currentCommands.erase(position);
-    }
+    currentCommands.erase(command);
 }
 
 void Canvas::addCommand(Command *command) {
-    auto f = [&command](const Command *i){return *i == *command;};
-    if (std::find_if(currentCommands.cbegin(), currentCommands.cend(), f) == currentCommands.cend()) {
-        currentCommands.push_back(command);
-    }
+    currentCommands.insert(command);
 }
 
 void Canvas::setCommandListener(CommandListener *listener) {
@@ -86,9 +79,9 @@ void Canvas::publicKeyReleased(int keyCode) {
 }
 
 void Canvas::pressedEsc() {
-    for (auto command = currentCommands.begin(); command != currentCommands.end(); command++) {
-        if ((*command)->type == Command::Type::BACK || currentCommands.size() == 1) {
-            commandListener->commandAction(*command, this);
+    for (const auto &command : currentCommands) {
+        if (command->type == Command::Type::BACK || currentCommands.size() == 1) {
+            commandListener->commandAction(command, this);
             return;
         }
     }
