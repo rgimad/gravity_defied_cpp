@@ -216,7 +216,7 @@ void Micro::run() {
                     // }
                     int64_t var7 = 1000L;
                     if (field_246 > 0L) {
-                        var7 = std::min(field_246 - Time::currentTimeMillis(), 1000LL);
+                        var7 = std::min(field_246 - Time::currentTimeMillis(), static_cast<int64_t>(1000));
                     }
 
                     if (var7 > 0L) {
@@ -325,7 +325,7 @@ void Micro::goalLoop() {
             //     }
             // } catch (InterruptedException var14) {
             // }
-            Time::sleep(std::max(30L - (var2 - var4), 1LL));
+            Time::sleep(std::max(30LL - (var2 - var4), 1LL));
 
             var4 = Time::currentTimeMillis();
         } else {
