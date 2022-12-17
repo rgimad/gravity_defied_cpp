@@ -1,5 +1,7 @@
 #include "LevelLoader.h"
 
+#include <climits>
+
 #include "utils/Stream.h"
 
 int LevelLoader::field_133 = 0;
