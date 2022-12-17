@@ -2,8 +2,10 @@
 
 #include <memory>
 #include <vector>
+#include <unordered_set>
 
 #include "Displayable.h"
+#include "Command.h"
 
 class CanvasImpl;
 class Graphics;
@@ -14,7 +16,7 @@ private:
     std::unique_ptr<Graphics> graphics; // IMPROVE this is probably not the best place for graphics
     CommandListener *commandListener;
 
-    std::vector<Command*> currentCommands;
+    std::unordered_set<Command*, Command::HashFunction, Command::EqualFunction> currentCommands;
 
 public:
     enum Keys {

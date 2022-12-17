@@ -4,7 +4,7 @@
 #include "GamePhysics.h"
 #include "MenuManager.h"
 #include "LevelLoader.h"
-#include "Helpers.h"
+#include "utils/Time.h"
 #include "lcdui/CanvasImpl.h"
 
 bool Micro::field_249 = false;
@@ -37,7 +37,7 @@ void Micro::menuToGame() {
 int64_t Micro::goLoadingStep() {
     ++gameLoadingStateStage;
     gameCanvas->repaint();
-    int64_t startTimeMillis = Helpers::currentTimeMillis();
+    int64_t startTimeMillis = Time::currentTimeMillis();
     switch (gameLoadingStateStage) {
         case 1:
             levelLoader = new LevelLoader();
@@ -80,10 +80,10 @@ int64_t Micro::goLoadingStep() {
             //     Thread.sleep(100L);
             // } catch (InterruptedException var3) {
             // }
-            Helpers::sleep(100LL);
+            Time::sleep(100LL);
     }
 
-    return Helpers::currentTimeMillis() - startTimeMillis;
+    return Time::currentTimeMillis() - startTimeMillis;
 }
 
 void Micro::init() {
@@ -184,17 +184,17 @@ void Micro::run() {
                 }
 
                 if (timeMs == 0L) {
-                    timeMs = Helpers::currentTimeMillis();
+                    timeMs = Time::currentTimeMillis();
                 }
 
                 if ((var5 = gamePhysics->updatePhysics()) == 3 && field_246 == 0L) {
-                    field_246 = Helpers::currentTimeMillis() + 3000L;
+                    field_246 = Time::currentTimeMillis() + 3000L;
                     gameCanvas->scheduleGameTimerTask("Crashed", 3000);
                     gameCanvas->repaint();
                     gameCanvas->serviceRepaints();
                 }
 
-                if (field_246 != 0L && field_246 < Helpers::currentTimeMillis()) {
+                if (field_246 != 0L && field_246 < Time::currentTimeMillis()) {
                     restart(true);
                 }
 
@@ -216,11 +216,11 @@ void Micro::run() {
                     // }
                     int64_t var7 = 1000L;
                     if (field_246 > 0L) {
-                        var7 = std::min(field_246 - Helpers::currentTimeMillis(), 1000LL);
+                        var7 = std::min(field_246 - Time::currentTimeMillis(), 1000LL);
                     }
 
                     if (var7 > 0L) {
-                        Helpers::sleep(var7);
+                        Time::sleep(var7);
                     }
 
                     restart(true);
@@ -259,16 +259,16 @@ void Micro::run() {
         try {
             gamePhysics->method_53();
             int64_t var1;
-            if ((var1 = Helpers::currentTimeMillis()) - var3 < 30L) {
+            if ((var1 = Time::currentTimeMillis()) - var3 < 30L) {
                 // try {
                 //     synchronized (this) {
                 //         wait(Math.max(30L - (var1 - var3), 1L));
                 //     }
                 // } catch (InterruptedException var11) {
                 // }
-                Helpers::sleep(std::max(30LL - (var1 - var3), 1LL));
+                Time::sleep(std::max(30LL - (var1 - var3), 1LL));
 
-                var3 = Helpers::currentTimeMillis();
+                var3 = Time::currentTimeMillis();
             } else {
                 var3 = var1;
             }
@@ -289,7 +289,7 @@ void Micro::goalLoop() {
         gameCanvas->scheduleGameTimerTask("Finished", 1000);
     }
 
-    for (int64_t timeMs = Helpers::currentTimeMillis() + 1000L; timeMs > Helpers::currentTimeMillis(); gameCanvas->repaint()) {
+    for (int64_t timeMs = Time::currentTimeMillis() + 1000L; timeMs > Time::currentTimeMillis(); gameCanvas->repaint()) {
         if (isInGameMenu) {
             gameCanvas->repaint();
             return;
@@ -308,8 +308,8 @@ void Micro::goalLoop() {
                 //     return;
                 // }
                 int64_t deltaTime;
-                if ((deltaTime = timeMs - Helpers::currentTimeMillis()) > 0L) {
-                    Helpers::sleep(deltaTime);
+                if ((deltaTime = timeMs - Time::currentTimeMillis()) > 0L) {
+                    Time::sleep(deltaTime);
                 }
 
                 return;
@@ -318,16 +318,16 @@ void Micro::goalLoop() {
 
         gamePhysics->method_53();
         int64_t var2;
-        if ((var2 = Helpers::currentTimeMillis()) - var4 < 30L) {
+        if ((var2 = Time::currentTimeMillis()) - var4 < 30L) {
             // try {
             //     synchronized (this) {
             //         wait(Math.max(30L - (var2 - var4), 1L));
             //     }
             // } catch (InterruptedException var14) {
             // }
-            Helpers::sleep(std::max(30L - (var2 - var4), 1LL));
+            Time::sleep(std::max(30L - (var2 - var4), 1LL));
 
-            var4 = Helpers::currentTimeMillis();
+            var4 = Time::currentTimeMillis();
         } else {
             var4 = var2;
         }

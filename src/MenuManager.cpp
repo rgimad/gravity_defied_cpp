@@ -9,7 +9,7 @@
 #include "LevelLoader.h"
 #include "GameMenu.h"
 #include "SettingsStringRender.h"
-#include "Helpers.h"
+#include "utils/Time.h"
 #include "lcdui/CanvasImpl.h"
 
 MenuManager::MenuManager(Micro *var1) {
@@ -468,7 +468,7 @@ void MenuManager::method_201(int var1) {
             break;
         case 2:
             {
-                field_362 = Helpers::currentTimeMillis();
+                field_362 = Time::currentTimeMillis();
                 gameMenuFinished->clearVector();
                 field_354 = settingStringLevel->getCurrentOptionPos();
                 field_355 = settingsStringTrack->getCurrentOptionPos();
@@ -510,7 +510,7 @@ void MenuManager::method_201(int var1) {
             break;
     }
 
-    int64_t currentTimeMillis = Helpers::currentTimeMillis();
+    int64_t currentTimeMillis = Time::currentTimeMillis();
     micro->gameCanvas->isDrawingTime = false;
     int64_t var6 = 0L;
     int8_t var8 = 50;
@@ -527,22 +527,22 @@ void MenuManager::method_201(int var1) {
 
             micro->gamePhysics->method_53();
             repaint();
-            if ((var20 = Helpers::currentTimeMillis()) - var6 < (int64_t) var8) {
+            if ((var20 = Time::currentTimeMillis()) - var6 < (int64_t) var8) {
                 // try {
                 //     synchronized (field_359) {
                 //         field_359.wait((int64_t) var8 - (var20 - var6) < 1L ? 1L : (int64_t) var8 - (var20 - var6));
                 //     }
                 // } catch (InterruptedException var16) {
                 // }
-                Helpers::sleep((int64_t) var8 - (var20 - var6) < 1L ? 1L : (int64_t) var8 - (var20 - var6));
+                Time::sleep((int64_t) var8 - (var20 - var6) < 1L ? 1L : (int64_t) var8 - (var20 - var6));
 
-                var6 = Helpers::currentTimeMillis();
+                var6 = Time::currentTimeMillis();
             } else {
                 var6 = var20;
             }
         } else {
             var8 = 50;
-            if ((var20 = Helpers::currentTimeMillis()) - var6 < (int64_t) var8) {
+            if ((var20 = Time::currentTimeMillis()) - var6 < (int64_t) var8) {
                 // try {
                 //     Object var21;
                 //     synchronized (var21 = new Object()) {
@@ -550,9 +550,9 @@ void MenuManager::method_201(int var1) {
                 //     }
                 // } catch (InterruptedException var14) {
                 // }
-                Helpers::sleep((int64_t) var8 - (var20 - var6) < 1L ? 1L : (int64_t) var8 - (var20 - var6));
+                Time::sleep((int64_t) var8 - (var20 - var6) < 1L ? 1L : (int64_t) var8 - (var20 - var6));
 
-                var6 = Helpers::currentTimeMillis();
+                var6 = Time::currentTimeMillis();
             } else {
                 var6 = var20;
             }
@@ -563,7 +563,7 @@ void MenuManager::method_201(int var1) {
         }
     }
 
-    micro->timeMs += Helpers::currentTimeMillis() - currentTimeMillis;
+    micro->timeMs += Time::currentTimeMillis() - currentTimeMillis;
     micro->gameCanvas->isDrawingTime = true;
     if (currentGameMenu == nullptr) {
         Micro::field_249 = false;
