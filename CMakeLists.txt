@@ -22,6 +22,8 @@ if (WIN32)
     set(SDL2_IMAGE_LIBRARIES_DIR "${SDL2_IMAGE_DIR}/lib")
     set(SDL2_TTF_LIBRARIES_DIR "${SDL2_TTF_DIR}/lib")
 else()
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
     find_package(SDL2 REQUIRED)
     find_package(SDL2_ttf REQUIRED)
     find_package(SDL2_image REQUIRED >=2.0.0)
