@@ -9,14 +9,14 @@ function(download_sdl2 sdl2_version sdl2_image_version sdl2_ttf_version)
     cmake_policy(SET CMP0135 NEW)
 
     FetchContent_Declare(sdl2
-        URL "https://github.com/libsdl-org/SDL/releases/download/release-${sdl2_version}/SDL2-devel-${sdl2_version}-mingw.zip"
+        URL "https://www.libsdl.org/release/SDL2-devel-${sdl2_version}-mingw.zip"
     )
     FetchContent_Declare(sdl2_image
-        URL "https://github.com/libsdl-org/SDL_image/releases/download/release-${sdl2_image_version}/SDL2_image-devel-${sdl2_image_version}-mingw.zip"
+        URL "https://www.libsdl.org/projects/SDL_image/release/SDL2_image-devel-${sdl2_image_version}-mingw.zip"
     )
 
     FetchContent_Declare(sdl2_ttf
-        URL "https://github.com/libsdl-org/SDL_ttf/releases/download/release-${sdl2_ttf_version}/SDL2_ttf-devel-${sdl2_ttf_version}-mingw.zip"
+        URL "https://www.libsdl.org/projects/SDL_ttf/release/SDL2_ttf-devel-${sdl2_ttf_version}-mingw.zip"
     )
 
     FetchContent_MakeAvailable(
