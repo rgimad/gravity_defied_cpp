@@ -17,7 +17,7 @@ public:
     GamePhysics *gamePhysics;
     MenuManager *menuManager;
     bool field_242 = false;
-    int numPhysicsLoops = 2;
+    int numPhysicsLoops = 1;
     int64_t timeMs = 0;
     int64_t gameTimeMs = 0;
     int64_t field_246 = 0;

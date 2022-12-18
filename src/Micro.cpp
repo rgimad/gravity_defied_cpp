@@ -259,14 +259,14 @@ void Micro::run() {
         try {
             gamePhysics->method_53();
             int64_t var1;
-            if ((var1 = Time::currentTimeMillis()) - var3 < 30L) {
+            if ((var1 = Time::currentTimeMillis()) - var3 < 15L) {
                 // try {
                 //     synchronized (this) {
                 //         wait(Math.max(30L - (var1 - var3), 1L));
                 //     }
                 // } catch (InterruptedException var11) {
                 // }
-                Time::sleep(std::max(30LL - (var1 - var3), 1LL));
+                Time::sleep(std::max(15LL - (var1 - var3), 1LL));
 
                 var3 = Time::currentTimeMillis();
             } else {
@@ -318,14 +318,14 @@ void Micro::goalLoop() {
 
         gamePhysics->method_53();
         int64_t var2;
-        if ((var2 = Time::currentTimeMillis()) - var4 < 30L) {
+        if ((var2 = Time::currentTimeMillis()) - var4 < 15L) {
             // try {
             //     synchronized (this) {
             //         wait(Math.max(30L - (var2 - var4), 1L));
             //     }
             // } catch (InterruptedException var14) {
             // }
-            Time::sleep(std::max(30LL - (var2 - var4), 1LL));
+            Time::sleep(std::max(15LL - (var2 - var4), 1LL));
 
             var4 = Time::currentTimeMillis();
         } else {

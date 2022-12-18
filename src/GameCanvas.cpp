@@ -3,6 +3,7 @@
 #include "MathF16.h"
 #include "GamePhysics.h"
 #include "MenuManager.h"
+#include "utils/Time.h"
 #include "lcdui/CanvasImpl.h"
 
 GameCanvas::GameCanvas(Micro *micro) {
@@ -463,6 +464,15 @@ void GameCanvas::method_163(int var1) {
 }
 
 void GameCanvas::paint(Graphics *graphics) {
+    static int64_t time = 0;
+    int64_t now = Time::currentTimeMillis();
+    int64_t delta = now - time;
+    time = now;
+    if (delta != 0) {
+        int fps = 1000 / delta;
+        std::cout << "FPS: " << fps <<  std::endl;
+    }
+
     processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
     if (Micro::isInGameMenu && menuManager != nullptr) {
         menuManager->method_202(graphics);

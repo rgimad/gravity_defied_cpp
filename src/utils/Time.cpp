@@ -1,7 +1,7 @@
 #include "time.h"
 
 #include <chrono>
-#include <thread>
+#include <SDL.h>
 
 namespace Time {
     int64_t currentTimeMillis() {
@@ -9,6 +9,6 @@ namespace Time {
     }
 
     void sleep(int64_t ms) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+        SDL_Delay(ms);
     }
 }
