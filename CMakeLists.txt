@@ -4,9 +4,17 @@ cmake_minimum_required(VERSION 3.5)
 project (gravity_defied_cpp C CXX)
 
 if (WIN32)
-    set(SDL2_DIR "C:/Users/rgimad/SDL2")
-    set(SDL2_IMAGE_DIR "C:/Users/rgimad/SDL2_Image")
-    set(SDL2_TTF_DIR "C:/Users/rgimad/SDL2_ttf")
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/download_sdl2.cmake)
+
+    download_sdl2(
+        "2.26.1" # sdl2
+        "2.6.2"  # sdl2_image
+        "2.20.1" # sdl2_ttf
+    )
+
+    set(SDL2_DIR "${SDL2_SOURCE_DIR}/x86_64-w64-mingw32")
+    set(SDL2_IMAGE_DIR "${SDL2_IMAGE_SOURCE_DIR}/x86_64-w64-mingw32")
+    set(SDL2_TTF_DIR "${SDL2_TTF_SOURCE_DIR}/x86_64-w64-mingw32")
     set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include;${SDL2_DIR}/include/SDL2")
     set(SDL2_IMAGE_INCLUDE_DIRS "${SDL2_IMAGE_DIR}/include")
     set(SDL2_TTF_INCLUDE_DIRS "${SDL2_TTF_DIR}/include")
@@ -14,6 +22,8 @@ if (WIN32)
     set(SDL2_IMAGE_LIBRARIES_DIR "${SDL2_IMAGE_DIR}/lib")
     set(SDL2_TTF_LIBRARIES_DIR "${SDL2_TTF_DIR}/lib")
 else()
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
     find_package(SDL2 REQUIRED)
     find_package(SDL2_ttf REQUIRED)
     find_package(SDL2_image REQUIRED >=2.0.0)
