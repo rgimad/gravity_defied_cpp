@@ -114,7 +114,7 @@ if (WIN32)
         ${SDL2_LIBRARIES_DIR}/libSDL2.dll.a
         ${SDL2_IMAGE_LIBRARIES_DIR}/libSDL2_image.dll.a
         ${SDL2_TTF_LIBRARIES_DIR}/libSDL2_ttf.dll.a
-        -mwindows # comment out this line to make std::cout work
+        # -mwindows # comment out this line to make std::cout work
     )
 else()
     target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
