@@ -32,6 +32,7 @@ public:
     bool isShown() override;
     int getWidth() override;
     int getHeight() override;
+    void setWindowTitle(const std::string &title);
     CanvasImpl* getCanvasImpl();
     void repaint();
     void serviceRepaints();

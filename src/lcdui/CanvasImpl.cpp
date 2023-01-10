@@ -126,3 +126,7 @@ int CanvasImpl::convertKeyCharToKeyCode(SDL_Keycode keyCode) {
             return 0;
     }
 }
+
+void CanvasImpl::setWindowTitle(const std::string &title) {
+    SDL_SetWindowTitle(window, title.c_str());
+}

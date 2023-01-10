@@ -66,6 +66,8 @@ private:
     std::vector<bool> activeActions = std::vector<bool>(7);
     std::vector<bool> activeKeys = std::vector<bool>(10);
 
+    int fps;
+
 public:
     GameCanvas(Micro *micro);
     void drawSprite(Graphics *g, int spriteNo, int x, int y);

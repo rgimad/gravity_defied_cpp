@@ -25,6 +25,10 @@ int Canvas::getHeight() {
     return impl->getHeight();
 }
 
+void Canvas::setWindowTitle(const std::string &title) {
+    impl->setWindowTitle(title);
+}
+
 bool Canvas::isShown() {
     return true;
 }

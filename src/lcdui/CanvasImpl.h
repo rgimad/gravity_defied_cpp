@@ -30,4 +30,5 @@ public:
 
     SDL_Renderer* getRenderer();
     void processEvents();
+    void setWindowTitle(const std::string &title);
 };

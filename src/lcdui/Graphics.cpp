@@ -3,6 +3,7 @@
 Graphics::Graphics(SDL_Renderer *renderer) {
     this->renderer = renderer;
     this->currentColor = {0, 0, 0, 255};
+    this->font = nullptr;
 }
 
 void Graphics::drawString(const std::string &s, int x, int y, int anchor) {
