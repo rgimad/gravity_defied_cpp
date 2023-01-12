@@ -442,9 +442,10 @@ void GameCanvas::drawGame(Graphics *g) {
                     }
                 }
 
-                setColor(0, 0, 0);
-                graphics->setFont(font);
-                graphics->drawString("FPS: " + std::to_string(fps), defaultFontWidth00, height2 - 5, 36);
+                // print fps to screen
+                // setColor(0, 0, 0);
+                // graphics->setFont(font);
+                // graphics->drawString("FPS: " + std::to_string(fps), defaultFontWidth00, height2 - 5, 36);
 
                 var3 = gamePhysics->method_52();
                 method_161(var3, false);
@@ -468,15 +469,15 @@ void GameCanvas::method_163(int var1) {
 }
 
 void GameCanvas::paint(Graphics *graphics) {
-    static int64_t time = 0;
-    int64_t now = Time::currentTimeMillis();
-    int64_t delta = now - time;
-    time = now;
-    if (delta != 0) {
-        fps = 1000 / delta;
-        // std::cout << "FPS: " << fps <<  std::endl;
-        //setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
-    }
+    // static int64_t time = 0;
+    // int64_t now = Time::currentTimeMillis();
+    // int64_t delta = now - time;
+    // time = now;
+    // if (delta != 0) {
+    //     fps = 1000 / delta;
+    //     // std::cout << "FPS: " << fps <<  std::endl;
+    //     //setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
+    // }
 
     processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
     if (Micro::isInGameMenu && menuManager != nullptr) {

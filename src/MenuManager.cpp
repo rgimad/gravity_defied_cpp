@@ -782,6 +782,9 @@ void MenuManager::run() {
 }
 
 void MenuManager::showAlert(std::string title, std::string alertText, Image *image) {
+    (void)title;
+    (void)alertText;
+    (void)image;
     // TODO
     // alert = new Alert(title, alertText, image, AlertType.INFO);
     // alert.setTimeout(4000);
