@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 # Set the project name
-project (gravity_defied_cpp C CXX)
+project(gravity_defied_cpp C CXX)
 
-if (WIN32)
+if(WIN32)
     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/download_sdl2.cmake)
 
     download_sdl2(
@@ -11,15 +11,10 @@ if (WIN32)
         "2.20.1" # sdl2_ttf
     )
 
-    set(SDL2_DIR "${SDL2_SOURCE_DIR}/x86_64-w64-mingw32")
-    set(SDL2_IMAGE_DIR "${SDL2_IMAGE_SOURCE_DIR}/x86_64-w64-mingw32")
-    set(SDL2_TTF_DIR "${SDL2_TTF_SOURCE_DIR}/x86_64-w64-mingw32")
-    set(SDL2_INCLUDE_DIRS "${SDL2_DIR}/include;${SDL2_DIR}/include/SDL2")
-    set(SDL2_IMAGE_INCLUDE_DIRS "${SDL2_IMAGE_DIR}/include")
-    set(SDL2_TTF_INCLUDE_DIRS "${SDL2_TTF_DIR}/include")
-    set(SDL2_LIBRARIES_DIR "${SDL2_DIR}/lib")
-    set(SDL2_IMAGE_LIBRARIES_DIR "${SDL2_IMAGE_DIR}/lib")
-    set(SDL2_TTF_LIBRARIES_DIR "${SDL2_TTF_DIR}/lib")
+    include(${SDL2_SOURCE_DIR}/cmake/sdl2-config.cmake)
+    include(${SDL2_IMAGE_SOURCE_DIR}/cmake/sdl2_image-config.cmake)
+    include(${SDL2_TTF_SOURCE_DIR}/cmake/sdl2_ttf-config.cmake)
+
 else()
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -57,6 +52,11 @@ set(SOURCES
     src/tests/test_Graphics.cpp
     src/tests/test_rms.cpp
 )
+
+if(WIN32)
+    enable_language(RC)
+    list(APPEND SOURCES winres/res.rc)
+endif()
 
 set(HEADERS
     src/utils/Stream.h
@@ -98,34 +98,27 @@ set(HEADERS
 )
 
 # Add an executable with the above sources
-add_executable(${PROJECT_NAME} ${SOURCES})
+add_executable(GravityDefied ${SOURCES})
 
-# Set the directories that should be included in the build command for this target
-include_directories(${SDL2_INCLUDE_DIRS} ${SDL2_IMAGE_INCLUDE_DIRS} ${SDL2_TTF_INCLUDE_DIRS})
+set_target_properties(GravityDefied PROPERTIES LINK_FLAGS_RELEASE -s)
+target_compile_options(GravityDefied PRIVATE -Wall -Wextra -std=c++17)# -g)
 
-target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -std=c++17)# -g)
+if(WIN32)
+    get_target_property(SDL2_INCLUDE_DIR SDL2::SDL2-static INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(SDL2_IMAGE_INCLUDE_DIR SDL2_image::SDL2_image-static INTERFACE_INCLUDE_DIRECTORIES)
+    get_target_property(SDL2_TTF_INCLUDE_DIR SDL2_ttf::SDL2_ttf-static INTERFACE_INCLUDE_DIRECTORIES)
 
-if (WIN32)
-    target_link_options(${PROJECT_NAME} PRIVATE -static-libgcc -static-libstdc++)
-    target_link_libraries(
-        ${PROJECT_NAME}
-        -lmingw32
-        ${SDL2_LIBRARIES_DIR}/libSDL2main.a
-        ${SDL2_LIBRARIES_DIR}/libSDL2.dll.a
-        ${SDL2_IMAGE_LIBRARIES_DIR}/libSDL2_image.dll.a
-        ${SDL2_TTF_LIBRARIES_DIR}/libSDL2_ttf.dll.a
-        -mwindows # comment out this line to make std::cout work
-    )
+    target_include_directories(GravityDefied PRIVATE 
+                                ${SDL2_INCLUDE_DIR}/.. 
+                                ${SDL2_IMAGE_INCLUDE_DIR}/.. 
+                                ${SDL2_TTF_INCLUDE_DIR}/..)
+
+    target_link_options(GravityDefied PRIVATE -static -mwindows)
+    target_link_libraries(GravityDefied SDL2::SDL2-static SDL2_image::SDL2_image-static SDL2_ttf::SDL2_ttf-static)
+
 else()
-    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+    target_link_libraries(GravityDefied ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
 endif()
 
 # Copy the font to the build directory
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
-
-if (WIN32)
-    # Copy SDL dlls to the build directory
-    file(COPY ${SDL2_DIR}/bin/SDL2.dll DESTINATION ${CMAKE_BINARY_DIR})
-    file(COPY ${SDL2_IMAGE_DIR}/bin/SDL2_image.dll DESTINATION ${CMAKE_BINARY_DIR})
-    file(COPY ${SDL2_TTF_DIR}/bin/SDL2_ttf.dll DESTINATION ${CMAKE_BINARY_DIR})
-endif()
