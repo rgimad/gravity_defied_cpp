@@ -1,7 +1,7 @@
 #include "time.h"
 
 #include <chrono>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 namespace Time {
     int64_t currentTimeMillis() {
