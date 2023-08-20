@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 3.24)
-# Set the project name
 project(gravity_defied_cpp C CXX)
 
 if(WIN32)
@@ -14,7 +13,6 @@ if(WIN32)
     include(${SDL2_SOURCE_DIR}/cmake/sdl2-config.cmake)
     include(${SDL2_IMAGE_SOURCE_DIR}/cmake/sdl2_image-config.cmake)
     include(${SDL2_TTF_SOURCE_DIR}/cmake/sdl2_ttf-config.cmake)
-
 else()
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -53,55 +51,18 @@ set(SOURCES
     src/tests/test_rms.cpp
 )
 
+# Compile resources when building for Windows.
 if(WIN32)
     enable_language(RC)
     list(APPEND SOURCES winres/res.rc)
 endif()
 
-set(HEADERS
-    src/utils/Stream.h
-    src/utils/Time.h
-    src/utils/String.h
-    src/Displayable.h
-    src/MathF16.h
-    src/GameCanvas.h
-    src/GamePhysics.h
-    src/TimerOrMotoPartOrMenuElem.h
-    src/class_10.h
-    src/GameLevel.h
-    src/LevelLoader.h
-    src/Micro.h
-    src/TextRender.h
-    src/GameMenu.h
-    src/SettingsStringRender.h
-    src/MenuManager.h
-    src/RecordManager.h
-    src/Timer.h
-    src/IGameMenuElement.h
-    src/lcdui/CanvasImpl.h
-    src/lcdui/Canvas.h
-    src/lcdui/Graphics.h
-    src/lcdui/Image.h
-    src/lcdui/Font.h
-    src/lcdui/Command.h
-    src/lcdui/CommandListener.h
-    src/rms/InvalidRecordIDException.h
-    src/rms/RecordComparator.h
-    src/rms/RecordEnumeration.h
-    src/rms/RecordEnumerationImpl.h
-    src/rms/RecordFilter.h
-    src/rms/RecordStore.h
-    src/rms/RecordStoreException.h
-    src/rms/RecordStoreNotOpenException.h
-    src/tests/test_Graphics.h
-    src/tests/test_rms.h
-)
-
 # Add an executable with the above sources
 add_executable(GravityDefied ${SOURCES})
 
+target_compile_features(GravityDefied PRIVATE cxx_std_17)
+target_compile_options(GravityDefied PRIVATE -Wall -Wextra)
 set_target_properties(GravityDefied PROPERTIES LINK_FLAGS_RELEASE -s)
-target_compile_options(GravityDefied PRIVATE -Wall -Wextra -std=c++17)# -g)
 
 if(WIN32)
     get_target_property(SDL2_INCLUDE_DIR SDL2::SDL2-static INTERFACE_INCLUDE_DIRECTORIES)
@@ -115,10 +76,9 @@ if(WIN32)
 
     target_link_options(GravityDefied PRIVATE -static -mwindows)
     target_link_libraries(GravityDefied SDL2::SDL2-static SDL2_image::SDL2_image-static SDL2_ttf::SDL2_ttf-static)
-
 else()
     target_link_libraries(GravityDefied ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
 endif()
 
-# Copy the font to the build directory
+# Copy assets to the build directory
 file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
