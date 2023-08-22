@@ -3,7 +3,9 @@
 #include <stdexcept>
 #include <cassert>
 
-#define FONT_PATH "assets/FontSansSerif.ttf"
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(assets);
 
 Font::Font(TTF_Font *font, int pointSize) {
     assert(font != nullptr);
@@ -42,7 +44,16 @@ int Font::substringWidth(const std::string &string, int offset, int len) {
 Font* Font::getFont(int face, int style, int size) {
     (void)face;
     size = Font::getRealFontSize(size);
-    TTF_Font *font = TTF_OpenFont(FONT_PATH, size);
+
+    auto internalFs = cmrc::assets::get_filesystem();
+    auto fileData = internalFs.open("assets/FontSansSerif.ttf");
+
+    SDL_RWops *raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
+    if (!raw) {
+        throw std::runtime_error(SDL_GetError());
+    }
+
+    TTF_Font *font = TTF_OpenFontRW(raw, SDL_TRUE, size);
     if (!font) throw std::runtime_error(TTF_GetError());
     TTF_SetFontStyle(font, style); // {plain: 0, bold: 1, italic: 2}
     return new Font(font, size);
