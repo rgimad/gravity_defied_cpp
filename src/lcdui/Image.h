@@ -17,6 +17,6 @@ public:
     int getWidth();
     int getHeight();
     static Image *createImage(int w, int h);
-    static Image *createImage(const char *path);
+    static Image *createImage(std::string path);
     SDL_Surface* getSurface();
 };

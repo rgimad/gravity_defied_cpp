@@ -1,4 +1,7 @@
 #include "Image.h"
+#include <cmrc/cmrc.hpp>
+
+CMRC_DECLARE(assets);
 
 Image::Image() {
     surface = nullptr;
@@ -28,8 +31,16 @@ Image* Image::createImage(int w, int h) {
     return new Image(SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0));
 }
 
-Image* Image::createImage(const char *path) {
-    SDL_Surface *surf = IMG_Load(path);
+Image* Image::createImage(std::string path) {
+    auto internalFs = cmrc::assets::get_filesystem();
+    auto fileData = internalFs.open(path);
+
+    SDL_RWops *raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
+    if (!raw) {
+        throw std::runtime_error(SDL_GetError());
+    }
+
+    SDL_Surface *surf = IMG_Load_RW(raw, SDL_TRUE);
     if (!surf) {
         throw std::runtime_error(IMG_GetError());
     }

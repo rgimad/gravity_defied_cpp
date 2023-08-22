@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.24)
 project(gravity_defied_cpp C CXX)
 
 if(WIN32)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/download_sdl2.cmake)
+    include(cmake/download_sdl2.cmake)
 
     download_sdl2(
         "2.26.1" # sdl2
@@ -14,7 +14,7 @@ if(WIN32)
     include(${SDL2_IMAGE_SOURCE_DIR}/cmake/sdl2_image-config.cmake)
     include(${SDL2_TTF_SOURCE_DIR}/cmake/sdl2_ttf-config.cmake)
 else()
-    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+    list(APPEND CMAKE_MODULE_PATH cmake)
 
     find_package(SDL2 REQUIRED)
     find_package(SDL2_ttf REQUIRED)
@@ -51,13 +51,31 @@ set(SOURCES
     src/tests/test_rms.cpp
 )
 
+include(cmake/CMakeRC.cmake)
+
+cmrc_add_resource_library(Assets
+    NAMESPACE assets
+    ALIAS Assets::Assets
+    assets/bluearm.png
+    assets/helmet.png
+    assets/sprites.png
+    assets/blueleg.png
+    assets/bluebody.png
+    assets/logo.png
+    assets/fender.png
+    assets/levels.mrg
+    assets/engine.png
+    assets/splash.png
+    assets/raster.png
+    assets/FontSansSerif.ttf
+)
+
 # Compile resources when building for Windows.
 if(WIN32)
     enable_language(RC)
     list(APPEND SOURCES winres/res.rc)
 endif()
 
-# Add an executable with the above sources
 add_executable(GravityDefied ${SOURCES})
 
 target_compile_features(GravityDefied PRIVATE cxx_std_17)
@@ -75,10 +93,10 @@ if(WIN32)
                                 ${SDL2_TTF_INCLUDE_DIR}/..)
 
     target_link_options(GravityDefied PRIVATE -static -mwindows)
-    target_link_libraries(GravityDefied SDL2::SDL2-static SDL2_image::SDL2_image-static SDL2_ttf::SDL2_ttf-static)
+    target_link_libraries(GravityDefied SDL2::SDL2-static SDL2_image::SDL2_image-static SDL2_ttf::SDL2_ttf-static Assets::Assets)
 else()
-    target_link_libraries(GravityDefied ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES})
+    target_link_libraries(GravityDefied ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} Assets::Assets)
 endif()
 
 # Copy assets to the build directory
-file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY assets/levels.mrg DESTINATION ${CMAKE_BINARY_DIR})

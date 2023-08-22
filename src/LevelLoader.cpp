@@ -34,7 +34,7 @@ LevelLoader::~LevelLoader() {
 }
 
 void LevelLoader::loadLevels() {
-    std::ifstream dis("assets/levels.mrg", std::ios::binary);
+    std::ifstream dis("levels.mrg", std::ios::binary);
 
     std::vector<int8_t> var3(40);
     std::vector<int> var4(3);
@@ -84,7 +84,7 @@ int LevelLoader::method_88(int var1, int var2) {
 }
 
 void LevelLoader::method_89(int var1, int var2) {
-    std::ifstream dis("assets/levels.mrg", std::ios::binary);
+    std::ifstream dis("levels.mrg", std::ios::binary);
     dis.seekg(levelOffsetInFile[var1 - 1][var2 - 1]);
     if (gameLevel == nullptr) {
         gameLevel = new GameLevel();
