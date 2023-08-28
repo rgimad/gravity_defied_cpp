@@ -1,25 +1,17 @@
 cmake_minimum_required(VERSION 3.24)
 project(gravity_defied_cpp C CXX)
 
+unset(ENV{PKG_CONFIG_PATH})
+
 if(WIN32)
-    include(cmake/download_sdl2.cmake)
-
-    download_sdl2(
-        "2.26.1" # sdl2
-        "2.6.2"  # sdl2_image
-        "2.20.1" # sdl2_ttf
-    )
-
-    include(${SDL2_SOURCE_DIR}/cmake/sdl2-config.cmake)
-    include(${SDL2_IMAGE_SOURCE_DIR}/cmake/sdl2_image-config.cmake)
-    include(${SDL2_TTF_SOURCE_DIR}/cmake/sdl2_ttf-config.cmake)
-else()
-    list(APPEND CMAKE_MODULE_PATH cmake)
-
-    find_package(SDL2 REQUIRED)
-    find_package(SDL2_ttf REQUIRED)
-    find_package(SDL2_image REQUIRED >=2.0.0)
+    include(cmake/mingw-sdl2.cmake)
 endif()
+
+find_package(PkgConfig REQUIRED)
+
+pkg_search_module(SDL2 REQUIRED IMPORTED_TARGET sdl2)
+pkg_search_module(SDL2_TTF REQUIRED IMPORTED_TARGET SDL2_ttf)
+pkg_search_module(SDL2_IMAGE REQUIRED IMPORTED_TARGET SDL2_image)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
@@ -80,22 +72,32 @@ add_executable(GravityDefied ${SOURCES})
 
 target_compile_features(GravityDefied PRIVATE cxx_std_17)
 target_compile_options(GravityDefied PRIVATE -Wall -Wextra)
+
+target_include_directories(GravityDefied PRIVATE
+                           ${SDL2_INCLUDE_DIRS}
+                           ${SDL2_TTF_INCLUDE_DIRS}
+                           ${SDL2_IMAGE_INCLUDE_DIRS})
+
+target_link_directories(GravityDefied PRIVATE
+                        ${SDL2_LIBRARY_DIRS}
+                        ${SDL2_TTF_LIBRARY_DIRS}
+                        ${SDL2_IMAGE_LIBRARY_DIRS})
+
 set_target_properties(GravityDefied PROPERTIES LINK_FLAGS_RELEASE -s)
 
 if(WIN32)
-    get_target_property(SDL2_INCLUDE_DIR SDL2::SDL2-static INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(SDL2_IMAGE_INCLUDE_DIR SDL2_image::SDL2_image-static INTERFACE_INCLUDE_DIRECTORIES)
-    get_target_property(SDL2_TTF_INCLUDE_DIR SDL2_ttf::SDL2_ttf-static INTERFACE_INCLUDE_DIRECTORIES)
-
-    target_include_directories(GravityDefied PRIVATE 
-                                ${SDL2_INCLUDE_DIR}/.. 
-                                ${SDL2_IMAGE_INCLUDE_DIR}/.. 
-                                ${SDL2_TTF_INCLUDE_DIR}/..)
-
     target_link_options(GravityDefied PRIVATE -static -mwindows)
-    target_link_libraries(GravityDefied SDL2::SDL2-static SDL2_image::SDL2_image-static SDL2_ttf::SDL2_ttf-static Assets::Assets)
+    target_link_libraries(GravityDefied 
+                         ${SDL2_STATIC_LIBRARIES} 
+                         ${SDL2_TTF_STATIC_LIBRARIES}
+                         ${SDL2_IMAGE_STATIC_LIBRARIES} 
+                         Assets::Assets)
 else()
-    target_link_libraries(GravityDefied ${SDL2_LIBRARIES} ${SDL2_IMAGE_LIBRARIES} ${SDL2_TTF_LIBRARIES} Assets::Assets)
+    target_link_libraries(GravityDefied 
+                          ${SDL2_LIBRARIES}
+                          ${SDL2_TTF_LIBRARIES}
+                          ${SDL2_IMAGE_LIBRARIES}
+                          Assets::Assets)
 endif()
 
 # Copy assets to the build directory
