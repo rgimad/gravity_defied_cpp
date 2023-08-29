@@ -14,8 +14,8 @@ class Image;
 
 class Graphics {
 private:
-    SDL_Renderer *renderer;
-    Font *font;
+    SDL_Renderer* renderer;
+    Font* font;
     SDL_Color currentColor;
     // void _ellipse(int cx, int cy, int xradius, int yradius);
     void _putpixel(int x, int y);
@@ -30,18 +30,18 @@ public:
         BOTTOM = 32,
         BASELINE = 64
     };
-    Graphics(SDL_Renderer *renderer);
-    void drawString(const std::string &s, int x, int y, int anchor);
+    Graphics(SDL_Renderer* renderer);
+    void drawString(const std::string& s, int x, int y, int anchor);
     void setColor(int r, int g, int b);
-    void setFont(Font *font);
-    Font *getFont();
+    void setFont(Font* font);
+    Font* getFont();
     void setClip(int x, int y, int w, int h);
     void drawChar(char c, int x, int y, int anchor);
     void fillRect(int x, int y, int w, int h);
     void fillArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawLine(int x1, int y1, int x2, int y2);
-    void drawImage(Image *image, int x, int y, int anchor);
+    void drawImage(Image* image, int x, int y, int anchor);
     static int getAnchorX(int x, int size, int anchor);
     static int getAnchorY(int y, int size, int anchor);
 };

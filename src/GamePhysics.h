@@ -16,7 +16,7 @@ private:
     std::vector<std::unique_ptr<TimerOrMotoPartOrMenuElem>> field_30;
 
     int field_31 = 0;
-    LevelLoader *levelLoader;
+    LevelLoader* levelLoader;
     int field_33 = 0;
     int field_34 = 0;
     bool field_35 = false;
@@ -45,12 +45,12 @@ private:
     int camShiftX;
     int camShiftY;
     int field_73;
-    const std::vector<std::vector<int>> hardcodedArr1 = {{183500, -52428}, {262144, -163840}, {406323, -65536}, {445644, -39321}, {235929, 39321}, {16384, -144179}, {13107, -78643}, {288358, 81920}};
-    const std::vector<std::vector<int>> hardcodedArr2 = {{190054, -111411}, {308019, -235929}, {334233, -114688}, {393216, -58982}, {262144, 98304}, {65536, -124518}, {13107, -78643}, {288358, 81920}};
-    const std::vector<std::vector<int>> hardcodedArr3 = {{157286, 13107}, {294912, -13107}, {367001, 91750}, {406323, 190054}, {347340, 72089}, {39321, -98304}, {13107, -52428}, {294912, 81920}};
-    const std::vector<std::vector<int>> hardcodedArr4 = {{183500, -39321}, {262144, -131072}, {393216, -65536}, {458752, -39321}, {294912, 6553}, {16384, -144179}, {13107, -78643}, {288358, 85196}};
-    const std::vector<std::vector<int>> hardcodedArr5 = {{190054, -91750}, {255590, -235929}, {334233, -114688}, {393216, -42598}, {301465, 6553}, {65536, -78643}, {13107, -78643}, {288358, 85196}};
-    const std::vector<std::vector<int>> hardcodedArr6 = {{157286, 13107}, {294912, -13107}, {367001, 104857}, {406323, 176947}, {347340, 72089}, {39321, -98304}, {13107, -52428}, {288358, 85196}};
+    const std::vector<std::vector<int>> hardcodedArr1 = { { 183500, -52428 }, { 262144, -163840 }, { 406323, -65536 }, { 445644, -39321 }, { 235929, 39321 }, { 16384, -144179 }, { 13107, -78643 }, { 288358, 81920 } };
+    const std::vector<std::vector<int>> hardcodedArr2 = { { 190054, -111411 }, { 308019, -235929 }, { 334233, -114688 }, { 393216, -58982 }, { 262144, 98304 }, { 65536, -124518 }, { 13107, -78643 }, { 288358, 81920 } };
+    const std::vector<std::vector<int>> hardcodedArr3 = { { 157286, 13107 }, { 294912, -13107 }, { 367001, 91750 }, { 406323, 190054 }, { 347340, 72089 }, { 39321, -98304 }, { 13107, -52428 }, { 294912, 81920 } };
+    const std::vector<std::vector<int>> hardcodedArr4 = { { 183500, -39321 }, { 262144, -131072 }, { 393216, -65536 }, { 458752, -39321 }, { 294912, 6553 }, { 16384, -144179 }, { 13107, -78643 }, { 288358, 85196 } };
+    const std::vector<std::vector<int>> hardcodedArr5 = { { 190054, -91750 }, { 255590, -235929 }, { 334233, -114688 }, { 393216, -42598 }, { 301465, 6553 }, { 65536, -78643 }, { 13107, -78643 }, { 288358, 85196 } };
+    const std::vector<std::vector<int>> hardcodedArr6 = { { 157286, 13107 }, { 294912, -13107 }, { 367001, 104857 }, { 406323, 176947 }, { 347340, 72089 }, { 39321, -98304 }, { 13107, -52428 }, { 288358, 85196 } };
     std::vector<std::vector<int>> field_80;
 
     void method_27(int var1, int var2);
@@ -58,18 +58,19 @@ private:
     void method_35();
     int method_39(int var1);
     void method_40(int var1);
-    void method_42(class_10 *var1, TimerOrMotoPartOrMenuElem *var2, class_10 *var3, int var4, int var5);
+    void method_42(class_10* var1, TimerOrMotoPartOrMenuElem* var2, class_10* var3, int var4, int var5);
     void method_43(int var1, int var2, int var3);
     void method_44(int var1, int var2, int var3);
     void method_45(int var1);
     int method_46(int var1);
     void method_47(int var1);
-    void renderEngine(GameCanvas *gameCanvas, int var2, int var3);
-    void renderMotoFork(GameCanvas *canvas);
-    void renderWheelTires(GameCanvas *canvas);
-    void renderWheelSpokes(GameCanvas *gameCanvas);
-    void renderSmth(GameCanvas *gameCanvas, int var2, int var3, int var4, int var5);
-    void renderMotoAsLines(GameCanvas *gameCanvas, int var2, int var3, int var4, int var5);
+    void renderEngine(GameCanvas* gameCanvas, int var2, int var3);
+    void renderMotoFork(GameCanvas* canvas);
+    void renderWheelTires(GameCanvas* canvas);
+    void renderWheelSpokes(GameCanvas* gameCanvas);
+    void renderSmth(GameCanvas* gameCanvas, int var2, int var3, int var4, int var5);
+    void renderMotoAsLines(GameCanvas* gameCanvas, int var2, int var3, int var4, int var5);
+
 public:
     inline static int field_7;
     inline static int field_8;
@@ -81,7 +82,7 @@ public:
     inline static int field_14;
     inline static int motoParam10;
     inline static int field_16;
-    inline static std::vector<int> const175_1_half = {114688, 65536, 32768};
+    inline static std::vector<int> const175_1_half = { 114688, 65536, 32768 };
     inline static int motoParam3;
     inline static int field_19;
     inline static int motoParam4;
@@ -99,7 +100,7 @@ public:
     bool field_69;
     bool isGenerateInputAI = false;
 
-    GamePhysics(LevelLoader *levelLoader);
+    GamePhysics(LevelLoader* levelLoader);
     int method_21();
     void method_22(int var1);
     void setMode(int mode);
@@ -122,5 +123,5 @@ public:
     int method_52();
     void method_53();
     void setMotoComponents();
-    void renderGame(GameCanvas *gameCanvas);
+    void renderGame(GameCanvas* gameCanvas);
 };

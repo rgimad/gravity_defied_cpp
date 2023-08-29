@@ -12,10 +12,10 @@ private:
     void destroyApp(bool var1);
 
 public:
-    GameCanvas *gameCanvas;
-    LevelLoader *levelLoader;
-    GamePhysics *gamePhysics;
-    MenuManager *menuManager;
+    GameCanvas* gameCanvas;
+    LevelLoader* levelLoader;
+    GamePhysics* gamePhysics;
+    MenuManager* menuManager;
     bool field_242 = false;
     int numPhysicsLoops = 2;
     int64_t timeMs = 0;

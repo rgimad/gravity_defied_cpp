@@ -17,23 +17,26 @@ const int LevelLoader::field_118 = 1;
 bool LevelLoader::isEnabledPerspective = true;
 bool LevelLoader::isEnabledShadows = true;
 
-LevelLoader::LevelLoader() {
+LevelLoader::LevelLoader()
+{
     for (int i = 0; i < 3; ++i) {
-        field_123[i] = (int) ((int64_t) ((GamePhysics::const175_1_half[i] + 19660) >> 1) * (int64_t) ((GamePhysics::const175_1_half[i] + 19660) >> 1) >> 16);
-        field_124[i] = (int) ((int64_t) ((GamePhysics::const175_1_half[i] - 19660) >> 1) * (int64_t) ((GamePhysics::const175_1_half[i] - 19660) >> 1) >> 16);
+        field_123[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] + 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] + 19660) >> 1) >> 16);
+        field_124[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) >> 16);
     }
 
     try {
         loadLevels();
-    } catch (std::exception &e) {
+    } catch (std::exception& e) {
     }
     method_87();
 }
 
-LevelLoader::~LevelLoader() {
+LevelLoader::~LevelLoader()
+{
 }
 
-void LevelLoader::loadLevels() {
+void LevelLoader::loadLevels()
+{
     std::ifstream dis("levels.mrg", std::ios::binary);
 
     std::vector<int8_t> var3(40);
@@ -60,19 +63,20 @@ void LevelLoader::loadLevels() {
             }
         }
     }
-
 }
 
-
-std::string LevelLoader::getName(int league, int level) {
+std::string LevelLoader::getName(int league, int level)
+{
     return league < 3 && level < static_cast<int>(levelNames[league].size()) ? levelNames[league][level] : "---";
 }
 
-void LevelLoader::method_87() {
+void LevelLoader::method_87()
+{
     method_88(field_125, field_126 + 1);
 }
 
-int LevelLoader::method_88(int var1, int var2) {
+int LevelLoader::method_88(int var1, int var2)
+{
     field_125 = var1;
     field_126 = var2;
     if (field_126 >= static_cast<int>(levelNames[field_125].size())) {
@@ -83,7 +87,8 @@ int LevelLoader::method_88(int var1, int var2) {
     return field_126;
 }
 
-void LevelLoader::method_89(int var1, int var2) {
+void LevelLoader::method_89(int var1, int var2)
+{
     std::ifstream dis("levels.mrg", std::ios::binary);
     dis.seekg(levelOffsetInFile[var1 - 1][var2 - 1]);
     if (gameLevel == nullptr) {
@@ -94,34 +99,40 @@ void LevelLoader::method_89(int var1, int var2) {
     method_96(gameLevel);
 }
 
-
-void LevelLoader::method_90(int var1) {
+void LevelLoader::method_90(int var1)
+{
     (void)var1;
     field_129 = gameLevel->startPosX << 1;
     field_130 = gameLevel->startPosY << 1;
 }
 
-int LevelLoader::method_91() {
+int LevelLoader::method_91()
+{
     return gameLevel->pointPositions[gameLevel->finishFlagPoint][0] << 1;
 }
 
-int LevelLoader::method_92() {
+int LevelLoader::method_92()
+{
     return gameLevel->pointPositions[gameLevel->startFlagPoint][0] << 1;
 }
 
-int LevelLoader::method_93() {
+int LevelLoader::method_93()
+{
     return gameLevel->startPosX << 1;
 }
 
-int LevelLoader::method_94() {
+int LevelLoader::method_94()
+{
     return gameLevel->startPosY << 1;
 }
 
-int LevelLoader::method_95(int var1) {
+int LevelLoader::method_95(int var1)
+{
     return gameLevel->method_181(var1 >> 1);
 }
 
-void LevelLoader::method_96(GameLevel *gameLevel) {
+void LevelLoader::method_96(GameLevel* gameLevel)
+{
     field_131 = INT_MIN;
     this->gameLevel = gameLevel;
     int var2 = gameLevel->pointsCount;
@@ -144,8 +155,8 @@ void LevelLoader::method_96(GameLevel *gameLevel) {
 
         int var6 = -var5;
         int var8 = GamePhysics::getSmthLikeMaxAbs(var6, var4);
-        field_121[var3][0] = (int) (((int64_t) var6 << 32) / (int64_t) var8 >> 16);
-        field_121[var3][1] = (int) (((int64_t) var4 << 32) / (int64_t) var8 >> 16);
+        field_121[var3][0] = (int)(((int64_t)var6 << 32) / (int64_t)var8 >> 16);
+        field_121[var3][1] = (int)(((int64_t)var4 << 32) / (int64_t)var8 >> 16);
         if (gameLevel->startFlagPoint == 0 && gameLevel->pointPositions[var3][0] > gameLevel->startPosX) {
             gameLevel->startFlagPoint = var3 + 1;
         }
@@ -161,11 +172,13 @@ void LevelLoader::method_96(GameLevel *gameLevel) {
     field_136 = 0;
 }
 
-void LevelLoader::setMinMaxX(int minX, int maxX) {
+void LevelLoader::setMinMaxX(int minX, int maxX)
+{
     gameLevel->setMinMaxX(minX, maxX);
 }
 
-void LevelLoader::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
+void LevelLoader::renderLevel3D(GameCanvas* gameCanvas, int xF16, int yF16)
+{
     if (gameCanvas != nullptr) {
         gameCanvas->setColor(0, 170, 0);
         xF16 >>= 1;
@@ -174,13 +187,14 @@ void LevelLoader::renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16) {
     }
 }
 
-void LevelLoader::renderTrackNearestLine(GameCanvas *canvas) {
+void LevelLoader::renderTrackNearestLine(GameCanvas* canvas)
+{
     canvas->setColor(0, 255, 0);
     gameLevel->renderTrackNearestGreenLine(canvas);
 }
 
-
-void LevelLoader::method_100(int var1, int var2, int var3) {
+void LevelLoader::method_100(int var1, int var2, int var3)
+{
     gameLevel->method_184((var1 + 98304) >> 1, (var2 - 98304) >> 1, var3 >> 1);
     var2 >>= 1;
     var1 >>= 1;
@@ -210,7 +224,8 @@ void LevelLoader::method_100(int var1, int var2, int var3) {
     field_136 = gameLevel->pointPositions[field_134][0];
 }
 
-int LevelLoader::method_101(TimerOrMotoPartOrMenuElem *var1, int var2) {
+int LevelLoader::method_101(TimerOrMotoPartOrMenuElem* var1, int var2)
+{
     int var16 = 0;
     int8_t var17 = 2;
     int var18 = var1->xF16 >> 1;
@@ -233,11 +248,11 @@ int LevelLoader::method_101(TimerOrMotoPartOrMenuElem *var1, int var2) {
         if (var18 - field_123[var2] <= var6 && var18 + field_123[var2] >= var4) {
             int var8 = var4 - var6;
             int var9 = var5 - var7;
-            int var10 = (int) ((int64_t) var8 * (int64_t) var8 >> 16) + (int) ((int64_t) var9 * (int64_t) var9 >> 16);
-            int var11 = (int) ((int64_t) (var18 - var4) * (int64_t) (-var8) >> 16) + (int) ((int64_t) (var19 - var5) * (int64_t) (-var9) >> 16);
+            int var10 = (int)((int64_t)var8 * (int64_t)var8 >> 16) + (int)((int64_t)var9 * (int64_t)var9 >> 16);
+            int var11 = (int)((int64_t)(var18 - var4) * (int64_t)(-var8) >> 16) + (int)((int64_t)(var19 - var5) * (int64_t)(-var9) >> 16);
             int var12;
             if ((var10 < 0 ? -var10 : var10) >= 3) {
-                var12 = (int) (((int64_t) var11 << 32) / (int64_t) var10 >> 16);
+                var12 = (int)(((int64_t)var11 << 32) / (int64_t)var10 >> 16);
             } else {
                 var12 = (var11 > 0 ? 1 : -1) * (var10 > 0 ? 1 : -1) * INT_MAX;
             }
@@ -250,14 +265,14 @@ int LevelLoader::method_101(TimerOrMotoPartOrMenuElem *var1, int var2) {
                 var12 = 65536;
             }
 
-            int var13 = var4 + (int) ((int64_t) var12 * (int64_t) (-var8) >> 16);
-            int var14 = var5 + (int) ((int64_t) var12 * (int64_t) (-var9) >> 16);
+            int var13 = var4 + (int)((int64_t)var12 * (int64_t)(-var8) >> 16);
+            int var14 = var5 + (int)((int64_t)var12 * (int64_t)(-var9) >> 16);
             var8 = var18 - var13;
             var9 = var19 - var14;
             int8_t var3;
             int64_t var23;
-            if ((var23 = ((int64_t) var8 * (int64_t) var8 >> 16) + ((int64_t) var9 * (int64_t) var9 >> 16)) < (int64_t) field_123[var2]) {
-                if (var23 >= (int64_t) field_124[var2]) {
+            if ((var23 = ((int64_t)var8 * (int64_t)var8 >> 16) + ((int64_t)var9 * (int64_t)var9 >> 16)) < (int64_t)field_123[var2]) {
+                if (var23 >= (int64_t)field_124[var2]) {
                     var3 = 1;
                 } else {
                     var3 = 0;
@@ -266,13 +281,13 @@ int LevelLoader::method_101(TimerOrMotoPartOrMenuElem *var1, int var2) {
                 var3 = 2;
             }
 
-            if (var3 == 0 && (int) ((int64_t) field_121[var22][0] * (int64_t) var1->field_382 >> 16) + (int) ((int64_t) field_121[var22][1] * (int64_t) var1->field_383 >> 16) < 0) {
+            if (var3 == 0 && (int)((int64_t)field_121[var22][0] * (int64_t)var1->field_382 >> 16) + (int)((int64_t)field_121[var22][1] * (int64_t)var1->field_383 >> 16) < 0) {
                 field_137 = field_121[var22][0];
                 field_138 = field_121[var22][1];
                 return 0;
             }
 
-            if (var3 == 1 && (int) ((int64_t) field_121[var22][0] * (int64_t) var1->field_382 >> 16) + (int) ((int64_t) field_121[var22][1] * (int64_t) var1->field_383 >> 16) < 0) {
+            if (var3 == 1 && (int)((int64_t)field_121[var22][0] * (int64_t)var1->field_382 >> 16) + (int)((int64_t)field_121[var22][1] * (int64_t)var1->field_383 >> 16) < 0) {
                 ++var16;
                 var17 = 1;
                 if (var16 == 1) {
@@ -287,7 +302,7 @@ int LevelLoader::method_101(TimerOrMotoPartOrMenuElem *var1, int var2) {
     }
 
     if (var17 == 1) {
-        if ((int) ((int64_t) var20 * (int64_t) var1->field_382 >> 16) + (int) ((int64_t) var21 * (int64_t) var1->field_383 >> 16) >= 0) {
+        if ((int)((int64_t)var20 * (int64_t)var1->field_382 >> 16) + (int)((int64_t)var21 * (int64_t)var1->field_383 >> 16) >= 0) {
             return 2;
         }
 
@@ -297,10 +312,3 @@ int LevelLoader::method_101(TimerOrMotoPartOrMenuElem *var1, int var2) {
 
     return var17;
 }
-
-
-
-
-
-
-

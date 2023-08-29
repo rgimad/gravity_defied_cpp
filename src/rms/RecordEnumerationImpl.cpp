@@ -3,53 +3,64 @@
 #include "../utils/Stream.h"
 #include "RecordStoreException.h"
 
-RecordEnumerationImpl::RecordEnumerationImpl(std::vector<std::vector<int8_t>> data) {
+RecordEnumerationImpl::RecordEnumerationImpl(std::vector<std::vector<int8_t>> data)
+{
     this->data = data;
 }
 
-RecordEnumerationImpl::RecordEnumerationImpl() {
+RecordEnumerationImpl::RecordEnumerationImpl()
+{
 }
 
-RecordEnumerationImpl::~RecordEnumerationImpl() {
+RecordEnumerationImpl::~RecordEnumerationImpl()
+{
     data.clear();
 }
 
-int RecordEnumerationImpl::numRecords() {
+int RecordEnumerationImpl::numRecords()
+{
     return data.size();
 }
 
-std::vector<int8_t> RecordEnumerationImpl::nextRecord() {
+std::vector<int8_t> RecordEnumerationImpl::nextRecord()
+{
     return data[currentPos++];
 }
 
-int RecordEnumerationImpl::addRecord(std::vector<int8_t> bytes) {
+int RecordEnumerationImpl::addRecord(std::vector<int8_t> bytes)
+{
     data.push_back(bytes);
     return data.size() - 1;
 }
 
-void RecordEnumerationImpl::setRecord(int index, std::vector<int8_t> bytes) {
+void RecordEnumerationImpl::setRecord(int index, std::vector<int8_t> bytes)
+{
     if (static_cast<int>(data.size()) <= index) {
         throw RecordStoreException();
     }
     data[index] = bytes;
 }
 
-void RecordEnumerationImpl::reset() {
+void RecordEnumerationImpl::reset()
+{
     currentPos = 0;
 }
 
-int RecordEnumerationImpl::nextRecordId() {
+int RecordEnumerationImpl::nextRecordId()
+{
     if (currentPos >= static_cast<int>(data.size())) {
         throw RecordStoreException();
     }
     return currentPos;
 }
 
-void RecordEnumerationImpl::destroy() {
+void RecordEnumerationImpl::destroy()
+{
     data.clear();
 }
 
-void RecordEnumerationImpl::serialize(std::ostream& os) {
+void RecordEnumerationImpl::serialize(std::ostream& os)
+{
     size_t temp = data.size();
     Stream::writeVariable(&currentPos, os);
     Stream::writeVariable(&(temp = data.size()), os);
@@ -63,7 +74,8 @@ void RecordEnumerationImpl::serialize(std::ostream& os) {
     }
 }
 
-void RecordEnumerationImpl::deserialize(std::istream& is) {
+void RecordEnumerationImpl::deserialize(std::istream& is)
+{
     size_t temp;
     Stream::readVariable(&currentPos, is);
     Stream::readVariable(&temp, is);

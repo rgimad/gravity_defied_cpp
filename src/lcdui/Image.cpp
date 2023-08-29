@@ -3,44 +3,52 @@
 
 CMRC_DECLARE(assets);
 
-Image::Image() {
+Image::Image()
+{
     surface = nullptr;
 }
 
-Image::Image(SDL_Surface *surf) {
+Image::Image(SDL_Surface* surf)
+{
     surface = surf;
 }
 
-Image::~Image() {
+Image::~Image()
+{
     SDL_FreeSurface(surface);
 }
 
-Graphics* Image::getGraphics() {
+Graphics* Image::getGraphics()
+{
     return new Graphics(SDL_CreateSoftwareRenderer(surface));
 }
 
-int Image::getWidth() {
+int Image::getWidth()
+{
     return surface->w;
 }
 
-int Image::getHeight() {
+int Image::getHeight()
+{
     return surface->h;
 }
 
-Image* Image::createImage(int w, int h) {
+Image* Image::createImage(int w, int h)
+{
     return new Image(SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0));
 }
 
-Image* Image::createImage(std::string path) {
+Image* Image::createImage(std::string path)
+{
     auto internalFs = cmrc::assets::get_filesystem();
     auto fileData = internalFs.open(path);
 
-    SDL_RWops *raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
+    SDL_RWops* raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
     if (!raw) {
         throw std::runtime_error(SDL_GetError());
     }
 
-    SDL_Surface *surf = IMG_Load_RW(raw, SDL_TRUE);
+    SDL_Surface* surf = IMG_Load_RW(raw, SDL_TRUE);
     if (!surf) {
         throw std::runtime_error(IMG_GetError());
     }
@@ -51,6 +59,7 @@ Image* Image::createImage(std::string path) {
     return new Image(surf);
 }
 
-SDL_Surface* Image::getSurface() {
+SDL_Surface* Image::getSurface()
+{
     return surface;
 }
