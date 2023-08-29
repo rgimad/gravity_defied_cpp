@@ -12,7 +12,7 @@ private:
     // 4: league, 100, 175, 225, 350,
     // 3: three best times
     std::vector<std::vector<std::vector<int8_t>>> recordName = std::vector<std::vector<std::vector<int8_t>>>(4, std::vector<std::vector<int8_t>>(3, std::vector<int8_t>(3)));
-    RecordStore *recordStore = nullptr;
+    RecordStore* recordStore = nullptr;
     int packedRecordInfoRecordId = -1;
     std::vector<int8_t> packedRecordInfo = std::vector<int8_t>(96);
     std::string str;
@@ -23,6 +23,7 @@ private:
     void getLevelInfo(std::vector<int8_t> var1);
     void resetRecordsTime();
     void addNewRecord(int gameLevel, int position);
+
 public:
     inline static const int unused = 3;
 

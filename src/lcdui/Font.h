@@ -6,6 +6,7 @@
 class Font {
 private:
     int height;
+
 public:
     enum FontSize {
         SIZE_SMALL = 8,
@@ -23,17 +24,17 @@ public:
         FACE_SYSTEM = 0
     };
 
-    Font(TTF_Font *font, int pointSize);
+    Font(TTF_Font* font, int pointSize);
     ~Font();
 
     int getBaselinePosition();
     int getHeight();
     int charWidth(char c);
-    int stringWidth(const std::string &s);
-    int substringWidth(const std::string &string, int offset, int len);
-    static Font *getFont(int face, int style, int size);
+    int stringWidth(const std::string& s);
+    int substringWidth(const std::string& string, int offset, int len);
+    static Font* getFont(int face, int style, int size);
     static int getRealFontSize(int size);
-    static Font *getDefaultFont();
+    static Font* getDefaultFont();
 
-    TTF_Font *font;
+    TTF_Font* font;
 };

@@ -12,8 +12,8 @@ class IMenuManager;
 class TimerOrMotoPartOrMenuElem : public IGameMenuElement {
 private:
     std::string text;
-    GameMenu *gameMenu;
-    IMenuManager *menuManager;
+    GameMenu* gameMenu;
+    IMenuManager* menuManager;
 
 public:
     int xF16;
@@ -26,16 +26,16 @@ public:
     int field_386;
     int field_387;
     int timerNo;
-    Micro *micro;
+    Micro* micro;
 
     TimerOrMotoPartOrMenuElem();
-    TimerOrMotoPartOrMenuElem(int timerNo, Micro *micro) ;
-    TimerOrMotoPartOrMenuElem(std::string text, GameMenu *gameMenu, IMenuManager *menuManager);
+    TimerOrMotoPartOrMenuElem(int timerNo, Micro* micro);
+    TimerOrMotoPartOrMenuElem(std::string text, GameMenu* gameMenu, IMenuManager* menuManager);
     void setToZeros();
     void setText(std::string text);
     std::string getText();
     bool isNotTextRender();
     void menuElemMethod(int var1);
-    void setGameMenu(GameMenu *gameMenu);
-    void render(Graphics *graphics, int y, int x);
+    void setGameMenu(GameMenu* gameMenu);
+    void render(Graphics* graphics, int y, int x);
 };

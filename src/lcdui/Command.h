@@ -3,9 +3,10 @@
 #include <string>
 
 template <class T>
-inline void hash_combine(std::size_t& seed, const T& v) {
+inline void hash_combine(std::size_t& seed, const T& v)
+{
     std::hash<T> hasher;
-    seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 class Command {
@@ -22,13 +23,15 @@ public:
     };
 
     struct EqualFunction {
-        bool operator()(Command *lhs, Command *rhs) const {
+        bool operator()(Command* lhs, Command* rhs) const
+        {
             return lhs->name == rhs->name && lhs->type == rhs->type && lhs->priority == rhs->priority;
         }
     };
 
     struct HashFunction {
-        size_t operator()(Command *command) const {
+        size_t operator()(Command* command) const
+        {
             std::size_t seed = 0;
             hash_combine(seed, command->name);
             hash_combine(seed, command->type);

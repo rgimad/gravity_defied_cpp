@@ -5,7 +5,8 @@
 #include "GameCanvas.h"
 #include "lcdui/Graphics.h"
 
-SettingsStringRender::SettingsStringRender(std::string text, int isDisabled, IMenuManager *menuManager, std::vector<std::string> optionsList, bool var5, Micro *micro, GameMenu *gameMenu, bool useColon) {
+SettingsStringRender::SettingsStringRender(std::string text, int isDisabled, IMenuManager* menuManager, std::vector<std::string> optionsList, bool var5, Micro* micro, GameMenu* gameMenu, bool useColon)
+{
     this->micro = micro;
     if (useColon) {
         this->useColon = true;
@@ -20,7 +21,7 @@ SettingsStringRender::SettingsStringRender(std::string text, int isDisabled, IMe
         this->menuManager = menuManager;
         this->optionsList = optionsList;
         if (this->optionsList.empty()) {
-            this->optionsList = {""};
+            this->optionsList = { "" };
         }
 
         maxAvailableOption = optionsList.size() - 1;
@@ -40,12 +41,14 @@ SettingsStringRender::SettingsStringRender(std::string text, int isDisabled, IMe
     }
 }
 
-void SettingsStringRender::setFlags(bool hasSprite, bool isDrawSprite8) {
+void SettingsStringRender::setFlags(bool hasSprite, bool isDrawSprite8)
+{
     this->hasSprite = hasSprite;
     this->isDrawSprite8 = isDrawSprite8;
 }
 
-void SettingsStringRender::setOptionsList(std::vector<std::string> var1) {
+void SettingsStringRender::setOptionsList(std::vector<std::string> var1)
+{
     optionsList = var1;
     if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
         currentOptionPos = optionsList.size() - 1;
@@ -59,7 +62,8 @@ void SettingsStringRender::setOptionsList(std::vector<std::string> var1) {
     init();
 }
 
-void SettingsStringRender::init() {
+void SettingsStringRender::init()
+{
     currentGameMenu = new GameMenu(text, micro, parentGameMenu, std::vector<int8_t>());
     settingsStringRenders = std::vector<SettingsStringRender*>(optionsList.size());
 
@@ -73,14 +77,15 @@ void SettingsStringRender::init() {
 
         currentGameMenu->addMenuElement(settingsStringRenders[var1]);
     }
-
 }
 
-void SettingsStringRender::setParentGameMenu(GameMenu *parentGameMenu) {
+void SettingsStringRender::setParentGameMenu(GameMenu* parentGameMenu)
+{
     this->parentGameMenu = parentGameMenu;
 }
 
-void SettingsStringRender::setText(std::string text) {
+void SettingsStringRender::setText(std::string text)
+{
     if (useColon) {
         this->text = text;
     } else {
@@ -88,11 +93,13 @@ void SettingsStringRender::setText(std::string text) {
     }
 }
 
-bool SettingsStringRender::isNotTextRender() {
+bool SettingsStringRender::isNotTextRender()
+{
     return true;
 }
 
-void SettingsStringRender::menuElemMethod(int var1) {
+void SettingsStringRender::menuElemMethod(int var1)
+{
     if (useColon) {
         if (var1 == 1) {
             menuManager->processMenu(this);
@@ -100,76 +107,77 @@ void SettingsStringRender::menuElemMethod(int var1) {
         }
     } else {
         switch (var1) {
-            case 1:
-                if (field_146) {
-                    ++currentOptionPos;
-                    if (currentOptionPos > 1) {
-                        currentOptionPos = 0;
-                    }
-
-                    if (currentOptionPos == 1) {
-                        selectedOptionName = "Off";
-                    } else {
-                        selectedOptionName = "On";
-                    }
-
-                    menuManager->processMenu(this);
-                    return;
+        case 1:
+            if (field_146) {
+                ++currentOptionPos;
+                if (currentOptionPos > 1) {
+                    currentOptionPos = 0;
                 }
 
-                field_147 = true;
+                if (currentOptionPos == 1) {
+                    selectedOptionName = "Off";
+                } else {
+                    selectedOptionName = "On";
+                }
+
                 menuManager->processMenu(this);
                 return;
-            case 2:
-                if (field_146) {
-                    if (currentOptionPos == 1) {
-                        currentOptionPos = 0;
-                        selectedOptionName = "On";
-                        menuManager->processMenu(this);
-                    }
+            }
 
-                    return;
-                }
-
-                ++currentOptionPos;
-                if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
-                    currentOptionPos = optionsList.size() - 1;
-                } else {
-                    menuManager->processMenu(this);
-                }
-
-                selectCurrentOptionName();
-                return;
-            case 3:
-                if (field_146) {
-                    if (currentOptionPos == 0) {
-                        currentOptionPos = 1;
-                        selectedOptionName = "Off";
-                        menuManager->processMenu(this);
-                    }
-
-                    return;
-                }
-
-                --currentOptionPos;
-                if (currentOptionPos < 0) {
+            field_147 = true;
+            menuManager->processMenu(this);
+            return;
+        case 2:
+            if (field_146) {
+                if (currentOptionPos == 1) {
                     currentOptionPos = 0;
-                } else {
-                    selectCurrentOptionName();
+                    selectedOptionName = "On";
                     menuManager->processMenu(this);
                 }
 
+                return;
+            }
+
+            ++currentOptionPos;
+            if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
+                currentOptionPos = optionsList.size() - 1;
+            } else {
+                menuManager->processMenu(this);
+            }
+
+            selectCurrentOptionName();
+            return;
+        case 3:
+            if (field_146) {
+                if (currentOptionPos == 0) {
+                    currentOptionPos = 1;
+                    selectedOptionName = "Off";
+                    menuManager->processMenu(this);
+                }
+
+                return;
+            }
+
+            --currentOptionPos;
+            if (currentOptionPos < 0) {
+                currentOptionPos = 0;
+            } else {
                 selectCurrentOptionName();
+                menuManager->processMenu(this);
+            }
+
+            selectCurrentOptionName();
         }
     }
-
 }
 
-void SettingsStringRender::selectCurrentOptionName() {
+void SettingsStringRender::selectCurrentOptionName()
+{
     selectedOptionName = optionsList[currentOptionPos];
 }
 
-void SettingsStringRender::render(Graphics *graphics, int y, int x) {
+void SettingsStringRender::render(Graphics* graphics, int y, int x)
+{
     if (useColon) {
         if (!hasSprite) {
             graphics->drawString(text, x, y, 20);
@@ -194,7 +202,8 @@ void SettingsStringRender::render(Graphics *graphics, int y, int x) {
     }
 }
 
-void SettingsStringRender::setAvailableOptions(int maxAvailableOption) {
+void SettingsStringRender::setAvailableOptions(int maxAvailableOption)
+{
     this->maxAvailableOption = maxAvailableOption;
     if (maxAvailableOption > static_cast<int>(optionsList.size()) - 1) {
         maxAvailableOption = optionsList.size() - 1;
@@ -209,22 +218,25 @@ void SettingsStringRender::setAvailableOptions(int maxAvailableOption) {
             }
         }
     }
-
 }
 
-int SettingsStringRender::getMaxAvailableOptionPos() {
+int SettingsStringRender::getMaxAvailableOptionPos()
+{
     return maxAvailableOption;
 }
 
-int SettingsStringRender::getMaxOptionPos() {
+int SettingsStringRender::getMaxOptionPos()
+{
     return optionsList.size() - 1;
 }
 
-std::vector<std::string> SettingsStringRender::getOptionsList() {
+std::vector<std::string> SettingsStringRender::getOptionsList()
+{
     return optionsList;
 }
 
-void SettingsStringRender::setCurentOptionPos(int pos) {
+void SettingsStringRender::setCurentOptionPos(int pos)
+{
     currentOptionPos = pos;
     if (currentOptionPos > static_cast<int>(optionsList.size()) - 1) {
         currentOptionPos = 0;
@@ -237,22 +249,28 @@ void SettingsStringRender::setCurentOptionPos(int pos) {
     selectCurrentOptionName();
 }
 
-int SettingsStringRender::getCurrentOptionPos() {
+int SettingsStringRender::getCurrentOptionPos()
+{
     return currentOptionPos;
 }
 
-GameMenu* SettingsStringRender::getGameMenu() {
+GameMenu* SettingsStringRender::getGameMenu()
+{
     return currentGameMenu;
 }
 
-void SettingsStringRender::method_1(GameMenu *var1, bool var2) {
-    (void)var1; (void)var2;
+void SettingsStringRender::method_1(GameMenu* var1, bool var2)
+{
+    (void)var1;
+    (void)var2;
 }
 
-void SettingsStringRender::saveSmthToRecordStoreAndCloseIt() {
+void SettingsStringRender::saveSmthToRecordStoreAndCloseIt()
+{
 }
 
-void SettingsStringRender::processMenu(IGameMenuElement *var1) {
+void SettingsStringRender::processMenu(IGameMenuElement* var1)
+{
     for (int var2 = 0; var2 < static_cast<int>(settingsStringRenders.size()); ++var2) {
         if (var1 == settingsStringRenders[var2]) {
             currentOptionPos = var2;
@@ -265,11 +283,13 @@ void SettingsStringRender::processMenu(IGameMenuElement *var1) {
     menuManager->processMenu(this);
 }
 
-std::vector<SettingsStringRender*> SettingsStringRender::getSettingsStringRenders() {
+std::vector<SettingsStringRender*> SettingsStringRender::getSettingsStringRenders()
+{
     return settingsStringRenders;
 }
 
-bool SettingsStringRender::method_114() {
+bool SettingsStringRender::method_114()
+{
     if (field_147) {
         field_147 = false;
         return true;

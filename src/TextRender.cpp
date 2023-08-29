@@ -5,7 +5,8 @@
 #include "lcdui/Font.h"
 #include "lcdui/Graphics.h"
 
-TextRender::TextRender(std::string text, Micro *var2) {
+TextRender::TextRender(std::string text, Micro* var2)
+{
     this->text = text;
     micro = var2;
     isDrawSprite = false;
@@ -13,37 +14,45 @@ TextRender::TextRender(std::string text, Micro *var2) {
     font = nullptr;
 }
 
-int TextRender::getBaselinePosition() {
+int TextRender::getBaselinePosition()
+{
     return defaultFont->getBaselinePosition();
 }
 
-void TextRender::setFont(Font *value) {
+void TextRender::setFont(Font* value)
+{
     font.reset(value);
 }
 
-void TextRender::setDefaultFont(Font *value) {
+void TextRender::setDefaultFont(Font* value)
+{
     defaultFont = value;
 }
 
-void TextRender::setMaxArea(int w, int h) {
+void TextRender::setMaxArea(int w, int h)
+{
     fieldMaxWidth = w;
     fieldMaxHeightUnused = h;
 }
 
-void TextRender::setText(std::string text) {
+void TextRender::setText(std::string text)
+{
     this->text = text;
 }
 
-bool TextRender::isNotTextRender() {
+bool TextRender::isNotTextRender()
+{
     return false;
 }
 
-void TextRender::menuElemMethod(int var1) {
+void TextRender::menuElemMethod(int var1)
+{
     (void)var1;
 }
 
-void TextRender::render(Graphics *graphics, int y, int x) {
-    Font *preservedFont = graphics->getFont();
+void TextRender::render(Graphics* graphics, int y, int x)
+{
+    Font* preservedFont = graphics->getFont();
     graphics->setFont(defaultFont);
     if (font != nullptr) {
         graphics->setFont(font.get());
@@ -57,7 +66,8 @@ void TextRender::render(Graphics *graphics, int y, int x) {
     graphics->setFont(preservedFont);
 }
 
-std::vector<TextRender*> TextRender::makeMultilineTextRenders(std::string text, Micro *micro) {
+std::vector<TextRender*> TextRender::makeMultilineTextRenders(std::string text, Micro* micro)
+{
     std::size_t startPos = 0;
     std::size_t endPos = 0;
     int8_t var4 = 25;
@@ -85,11 +95,13 @@ std::vector<TextRender*> TextRender::makeMultilineTextRenders(std::string text, 
     return vector;
 }
 
-void TextRender::setDx(int var1) {
+void TextRender::setDx(int var1)
+{
     dx = var1;
 }
 
-void TextRender::setDrawSprite(bool isDrawSprite, int spriteNo) {
+void TextRender::setDrawSprite(bool isDrawSprite, int spriteNo)
+{
     this->isDrawSprite = isDrawSprite;
     this->spriteNo = spriteNo;
 }
