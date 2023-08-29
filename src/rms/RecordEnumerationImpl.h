@@ -9,6 +9,7 @@ class RecordEnumerationImpl : public RecordEnumeration {
 private:
     // static const int64_t serialVersionUID = 123;
     int currentPos = 0;
+
 public:
     RecordEnumerationImpl(std::vector<std::vector<int8_t>> data);
     RecordEnumerationImpl();

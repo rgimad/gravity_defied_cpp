@@ -10,83 +10,88 @@
 bool Micro::field_249 = false;
 int Micro::gameLoadingStateStage = 0;
 
-Micro::Micro() {
-
+Micro::Micro()
+{
 }
 
-Micro::~Micro() {
-
+Micro::~Micro()
+{
 }
 
-void Micro::setNumPhysicsLoops(int value) {
+void Micro::setNumPhysicsLoops(int value)
+{
     numPhysicsLoops = value;
 }
 
-void Micro::gameToMenu() {
+void Micro::gameToMenu()
+{
     gameCanvas->removeMenuCommand();
     isInGameMenu = true;
     menuManager->addOkAndBackCommands();
 }
 
-void Micro::menuToGame() {
+void Micro::menuToGame()
+{
     menuManager->removeOkAndBackCommands();
     isInGameMenu = false;
     gameCanvas->addMenuCommand();
 }
 
-int64_t Micro::goLoadingStep() {
+int64_t Micro::goLoadingStep()
+{
     ++gameLoadingStateStage;
     gameCanvas->repaint();
     int64_t startTimeMillis = Time::currentTimeMillis();
     switch (gameLoadingStateStage) {
-        case 1:
-            levelLoader = new LevelLoader();
-            break;
-        case 2:
-            gamePhysics = new GamePhysics(levelLoader);
-            gameCanvas->init(gamePhysics);
-            break;
-        case 3:
-            menuManager = new MenuManager(this);
-            menuManager->initPart(1);
-            break;
-        case 4:
-            menuManager->initPart(2);
-            break;
-        case 5:
-            menuManager->initPart(3);
-            break;
-        case 6:
-            menuManager->initPart(4);
-            break;
-        case 7:
-            menuManager->initPart(5);
-            break;
-        case 8:
-            menuManager->initPart(6);
-            break;
-        case 9:
-            menuManager->initPart(7);
-            break;
-        case 10:
-            gameCanvas->setMenuManager(menuManager);
-            gameCanvas->setViewPosition(-50, 150);
-            setMode(1);
-            break;
-        default:
-            --gameLoadingStateStage;
+    case 1:
+        levelLoader = new LevelLoader();
+        break;
+    case 2:
+        gamePhysics = new GamePhysics(levelLoader);
+        gameCanvas->init(gamePhysics);
+        break;
+    case 3:
+        menuManager = new MenuManager(this);
+        menuManager->initPart(1);
+        break;
+    case 4:
+        menuManager->initPart(2);
+        break;
+    case 5:
+        menuManager->initPart(3);
+        break;
+    case 6:
+        menuManager->initPart(4);
+        break;
+    case 7:
+        menuManager->initPart(5);
+        break;
+    case 8:
+        menuManager->initPart(6);
+        break;
+    case 9:
+        menuManager->initPart(7);
+        break;
+    case 10:
+        gameCanvas->setMenuManager(menuManager);
+        gameCanvas->setViewPosition(-50, 150);
+        setMode(1);
+        break;
+    default:
+        --gameLoadingStateStage;
 
-            // try {
-            //     Thread.sleep(100L);
-            // } catch (InterruptedException var3) {
-            // }
-            Time::sleep(100LL);
+        // try {
+        //     Thread.sleep(100L);
+        // } catch (InterruptedException var3) {
+        // }
+        Time::sleep(100LL);
     }
 
     return Time::currentTimeMillis() - startTimeMillis;
 }
 
-void Micro::init() {
+void Micro::init()
+{
     int64_t timeToLoading = 3000L;
     // Thread.yield();
     gameCanvas = new GameCanvas(this);
@@ -116,7 +121,8 @@ void Micro::init() {
     isInited = true;
 }
 
-void Micro::restart(bool var1) {
+void Micro::restart(bool var1)
+{
     gamePhysics->resetSmth(true);
     timeMs = 0;
     gameTimeMs = 0;
@@ -128,16 +134,16 @@ void Micro::restart(bool var1) {
     gameCanvas->method_129();
 }
 
-void Micro::destroyApp(bool var1) {
+void Micro::destroyApp(bool var1)
+{
     (void)var1;
     field_249 = false;
     field_242 = true;
     menuManager->saveSmthToRecordStoreAndCloseIt();
 }
 
-
-
-void Micro::startApp() {
+void Micro::startApp()
+{
     field_249 = true;
     // if (thread == null) {
     //     thread = new Thread(this);
@@ -147,7 +153,8 @@ void Micro::startApp() {
 }
 
 // original method
-void Micro::run() {
+void Micro::run()
+{
     if (!isInited) {
         init();
     }
@@ -248,7 +255,7 @@ void Micro::run() {
             }
 
             var10000 = field_249;
-        } catch (std::exception &var15) {
+        } catch (std::exception& var15) {
             continue;
         }
 
@@ -274,14 +281,15 @@ void Micro::run() {
             }
 
             gameCanvas->repaint();
-        } catch (std::exception &var14) {
+        } catch (std::exception& var14) {
         }
     }
 
     destroyApp(true);
 }
 
-void Micro::goalLoop() {
+void Micro::goalLoop()
+{
     int64_t var4 = 0L;
     if (!gamePhysics->field_69) {
         gameCanvas->scheduleGameTimerTask("Wheelie!", 1000);
@@ -334,6 +342,7 @@ void Micro::goalLoop() {
     }
 }
 
-void Micro::setMode(int mode) {
+void Micro::setMode(int mode)
+{
     gamePhysics->setMode(mode);
 }

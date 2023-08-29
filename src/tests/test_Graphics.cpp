@@ -1,7 +1,8 @@
 #include "test_Graphics.h"
 
-void test_Graphics() {
-    if (SDL_Init( SDL_INIT_EVERYTHING ) != 0) {
+void test_Graphics()
+{
+    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         throw std::runtime_error(SDL_GetError());
     }
 
@@ -13,7 +14,7 @@ void test_Graphics() {
         throw std::runtime_error(TTF_GetError());
     }
 
-    SDL_Window *window = SDL_CreateWindow(
+    SDL_Window* window = SDL_CreateWindow(
         0,
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
@@ -24,15 +25,14 @@ void test_Graphics() {
         throw std::runtime_error(SDL_GetError());
     }
 
-    SDL_Renderer *renderer = SDL_CreateRenderer(
-        window, -1, SDL_RENDERER_ACCELERATED
-    );
+    SDL_Renderer* renderer = SDL_CreateRenderer(
+        window, -1, SDL_RENDERER_ACCELERATED);
 
     if (!renderer) {
         throw std::runtime_error(SDL_GetError());
     }
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255 );
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 
     Graphics g(renderer);
@@ -40,14 +40,14 @@ void test_Graphics() {
     g.setClip(50, 50, 100, 100);
 
     for (int i = 0; i < 180; i++) {
-        g.setColor(0, i/2, i);
+        g.setColor(0, i / 2, i);
         g.drawLine(15, 15, 100, i);
     }
 
     g.setClip(0, 0, 320, 240);
 
     for (int i = 50; i < 180; i++) {
-        g.setColor(i/2, 0, i/3);
+        g.setColor(i / 2, 0, i / 3);
         g.fillRect(i + 120, i, 100, 100);
     }
 
@@ -82,17 +82,17 @@ void test_Graphics() {
     // comapre with http://www.java2s.com/Tutorial/Java/0261__2D-Graphics/FillArc.htm
     // http://cs111.wellesley.edu/~cs111/archive/cs111_fall06/public_html/labs/lab12/arc.html
 
-    std::unique_ptr<Image> img1 {Image::createImage("assets/splash.png")},
-        img2 {Image::createImage("assets/sprites.png")};
+    std::unique_ptr<Image> img1 { Image::createImage("assets/splash.png") },
+        img2 { Image::createImage("assets/sprites.png") };
     g.drawImage(img1.get(), 150, 150, Graphics::HCENTER | Graphics::VCENTER);
     g.drawImage(img1.get(), 0, 0, Graphics::HCENTER | Graphics::VCENTER);
     g.drawImage(img2.get(), 200, 150, Graphics::LEFT | Graphics::TOP);
 
-    std::unique_ptr<Font> font {Font::getFont(Font::FACE_SYSTEM, Font::STYLE_BOLD, Font::SIZE_MEDIUM)};
+    std::unique_ptr<Font> font { Font::getFont(Font::FACE_SYSTEM, Font::STYLE_BOLD, Font::SIZE_MEDIUM) };
     g.setFont(font.get());
     g.setColor(0, 0, 0);
-    g.drawString("Gravity Defied", 200, 10,  Graphics::LEFT | Graphics::TOP);
-    g.drawChar('G', 200, 30,  Graphics::LEFT | Graphics::TOP);
+    g.drawString("Gravity Defied", 200, 10, Graphics::LEFT | Graphics::TOP);
+    g.drawChar('G', 200, 30, Graphics::LEFT | Graphics::TOP);
 
     SDL_RenderPresent(renderer); // Send to screen
 
@@ -109,8 +109,8 @@ void test_Graphics() {
     }
 
     SDL_DestroyRenderer(renderer);
-	SDL_DestroyWindow(window);
-	SDL_Quit();
+    SDL_DestroyWindow(window);
+    SDL_Quit();
     IMG_Quit();
     TTF_Quit();
 }

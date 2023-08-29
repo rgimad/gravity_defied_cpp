@@ -12,7 +12,7 @@ class RecordComparator;
 
 class RecordStore {
 private:
-    RecordStore(std::filesystem::path filePath, RecordEnumerationImpl *records);
+    RecordStore(std::filesystem::path filePath, RecordEnumerationImpl* records);
     void save();
     static RecordEnumerationImpl* load(std::filesystem::path filePath);
     static std::unique_ptr<RecordStore> createRecordStore(std::string name, bool createIfNecessary);
@@ -28,7 +28,7 @@ public:
     void closeRecordStore();
     static void deleteRecordStore(std::string name);
     static std::vector<std::string> listRecordStores();
-    RecordEnumeration* enumerateRecords(RecordFilter *filter, RecordComparator *comparator, bool keepUpdated);
+    RecordEnumeration* enumerateRecords(RecordFilter* filter, RecordComparator* comparator, bool keepUpdated);
     int addRecord(std::vector<int8_t> arr, int offset, int numBytes);
     void setRecord(int recordId, std::vector<int8_t> arr, int offset, int numBytes);
 };

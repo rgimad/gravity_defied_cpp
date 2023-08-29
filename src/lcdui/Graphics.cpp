@@ -1,21 +1,24 @@
 #include "Graphics.h"
 
-Graphics::Graphics(SDL_Renderer *renderer) {
+Graphics::Graphics(SDL_Renderer* renderer)
+{
     this->renderer = renderer;
-    this->currentColor = {0, 0, 0, 255};
+    this->currentColor = { 0, 0, 0, 255 };
     this->font = nullptr;
 }
 
-void Graphics::drawString(const std::string &s, int x, int y, int anchor) {
+void Graphics::drawString(const std::string& s, int x, int y, int anchor)
+{
     SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font->font, s.c_str(), currentColor);
     SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
 
     int width, height;
-    if (TTF_SizeText(font->font, s.c_str(), &width, &height) == -1) throw std::runtime_error(TTF_GetError());
+    if (TTF_SizeText(font->font, s.c_str(), &width, &height) == -1)
+        throw std::runtime_error(TTF_GetError());
 
     x = getAnchorX(x, width, anchor);
     y = getAnchorY(y, height, anchor);
-    SDL_Rect dstRect{x, y, width, height};
+    SDL_Rect dstRect { x, y, width, height };
 
     SDL_RenderCopy(renderer, message, nullptr, &dstRect);
 
@@ -23,7 +26,8 @@ void Graphics::drawString(const std::string &s, int x, int y, int anchor) {
     SDL_DestroyTexture(message);
 }
 
-void Graphics::setColor(int r, int g, int b) {
+void Graphics::setColor(int r, int g, int b)
+{
     currentColor.r = r;
     currentColor.g = g;
     currentColor.b = b;
@@ -31,25 +35,30 @@ void Graphics::setColor(int r, int g, int b) {
     SDL_SetRenderDrawColor(renderer, (Uint8)r, (Uint8)g, (Uint8)b, 255);
 }
 
-void Graphics::setFont(Font *font) {
+void Graphics::setFont(Font* font)
+{
     this->font = font;
 }
 
-Font* Graphics::getFont() {
+Font* Graphics::getFont()
+{
     return font;
 }
 
-void Graphics::setClip(int x, int y, int w, int h) {
-    SDL_Rect clipRect {x, y, w, h};
+void Graphics::setClip(int x, int y, int w, int h)
+{
+    SDL_Rect clipRect { x, y, w, h };
     SDL_RenderSetClipRect(renderer, &clipRect);
 }
 
-void Graphics::drawChar(char c, int x, int y, int anchor) {
+void Graphics::drawChar(char c, int x, int y, int anchor)
+{
     drawString(std::string(1, c), x, y, anchor);
 }
 
-void Graphics::fillRect(int x, int y, int w, int h) {
-    SDL_Rect rect {x, y, w, h};
+void Graphics::fillRect(int x, int y, int w, int h)
+{
+    SDL_Rect rect { x, y, w, h };
     SDL_RenderFillRect(renderer, &rect);
 }
 
@@ -80,11 +89,12 @@ void Graphics::fillRect(int x, int y, int w, int h) {
  * startAngle - the beginning angle
  * arcAngle - the angular extent of the arc, relative to the start angle
  */
-void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int arcAngle) {
+void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int arcAngle)
+{
     // Draws an elliptical arc left-top at (x, y), with axes given by
     // xradius and yradius, traveling from startAngle to endangle.
     // Bresenham-based if complete
-    int xradius = width/2, yradius = heigth/2;
+    int xradius = width / 2, yradius = heigth / 2;
     x += xradius;
     y += yradius;
     if (xradius == 0 && yradius == 0) {
@@ -98,10 +108,10 @@ void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int 
     // }
 
     for (int angle = startAngle; angle < startAngle + arcAngle; angle++) {
-        drawLine(x + int(xradius * cos (angle * PI_CONV)),
-                 y - int(yradius * sin (angle * PI_CONV)),
-                 x + int(xradius * cos ((angle + 1) * PI_CONV)),
-                 y - int(yradius * sin ((angle + 1) * PI_CONV)));
+        drawLine(x + int(xradius * cos(angle * PI_CONV)),
+            y - int(yradius * sin(angle * PI_CONV)),
+            x + int(xradius * cos((angle + 1) * PI_CONV)),
+            y - int(yradius * sin((angle + 1) * PI_CONV)));
     }
 }
 
@@ -141,19 +151,20 @@ void Graphics::drawArc(int x, int y, int width, int heigth, int startAngle, int 
 // }
 
 // int norm_ang(int angle) {
-    // // reduce the angle  
-    // angle =  angle % 360; 
+// // reduce the angle
+// angle =  angle % 360;
 
-    // // force it to be the positive remainder, so that 0 <= angle < 360  
-    // angle = (angle + 360) % 360;  
+// // force it to be the positive remainder, so that 0 <= angle < 360
+// angle = (angle + 360) % 360;
 
-    // // force into the minimum absolute value residue class, so that -180 < angle <= 180  
-    // if (angle > 180)  
-    //     angle -= 360;  
-    // return angle;
+// // force into the minimum absolute value residue class, so that -180 < angle <= 180
+// if (angle > 180)
+//     angle -= 360;
+// return angle;
 // }
 
-int to_360(int ang) {
+int to_360(int ang)
+{
     // if (ang != 0 && ang % 360 == 0) {
     //     ang = 360;
     // } else {
@@ -168,13 +179,14 @@ int to_360(int ang) {
     return ang;
 }
 
-void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle) {
+void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
+{
     int endAngle = startAngle + arcAngle;
     // startAngle = norm_ang(startAngle);
     // endAngle = norm_ang(endAngle);
     // SDL_Log("startAngle = %d, endAngle = %d\n", startAngle, endAngle);
-    double a = w/2.0, b = h/2.0;
-    double e = sqrt(1.0 - (b*b)/(a*a));
+    double a = w / 2.0, b = h / 2.0;
+    double e = sqrt(1.0 - (b * b) / (a * a));
     for (int _y = y - b; _y < y + b; _y++) {
         for (int _x = x - a; _x < x + a; _x++) {
             // _putpixel(_x, _y);
@@ -187,18 +199,17 @@ void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
             //     _putpixel(_x, _y);
             // }
             double ang = atan2(-(_y - y), _x - x); // cuz in screen y grows downwards (in maths y grows upwards)
-            
+
             // double rad = b/sqrt(1 - e*e*cos(ang)*cos(ang));
             // double dist = sqrt((_x - x)*(_x - x) + (_y - y)*(_y - y));
-            double rad = b*b/(1 - e*e*cos(ang)*cos(ang));
-            double dist = ((_x - x)*(_x - x) + (_y - y)*(_y - y));
+            double rad = b * b / (1 - e * e * cos(ang) * cos(ang));
+            double dist = ((_x - x) * (_x - x) + (_y - y) * (_y - y));
 
-            int ang2 = to_360(ang/PI_CONV);
-            
+            int ang2 = to_360(ang / PI_CONV);
+
             if (ang2 >= to_360(startAngle)
                 && ang2 <= to_360(endAngle)
-                && dist <= rad)
-            {
+                && dist <= rad) {
                 _putpixel(_x, _y);
             }
 
@@ -211,24 +222,28 @@ void Graphics::fillArc(int x, int y, int w, int h, int startAngle, int arcAngle)
     }
 }
 
-void Graphics::_putpixel(int x, int y) {
+void Graphics::_putpixel(int x, int y)
+{
     SDL_RenderDrawPoint(renderer, x, y);
 }
 
-void Graphics::drawLine(int x1, int y1, int x2, int y2) {
+void Graphics::drawLine(int x1, int y1, int x2, int y2)
+{
     SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 }
 
-void Graphics::drawImage(Image *image, int x, int y, int anchor) {
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
+void Graphics::drawImage(Image* image, int x, int y, int anchor)
+{
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
     x = getAnchorX(x, image->getWidth(), anchor);
     y = getAnchorY(y, image->getHeight(), anchor);
-    SDL_Rect dstRect{x, y, image->getWidth(), image->getHeight()};
+    SDL_Rect dstRect { x, y, image->getWidth(), image->getHeight() };
     SDL_RenderCopy(renderer, texture, 0, &dstRect);
     SDL_DestroyTexture(texture);
 }
 
-int Graphics::getAnchorX(int x, int size, int anchor) {
+int Graphics::getAnchorX(int x, int size, int anchor)
+{
     if ((anchor & LEFT) != 0) {
         return x;
     }
@@ -241,7 +256,8 @@ int Graphics::getAnchorX(int x, int size, int anchor) {
     throw std::runtime_error("unknown xanchor = " + std::to_string(anchor));
 }
 
-int Graphics::getAnchorY(int y, int size, int anchor) {
+int Graphics::getAnchorY(int y, int size, int anchor)
+{
     if ((anchor & TOP) != 0) {
         return y;
     }

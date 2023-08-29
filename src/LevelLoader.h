@@ -13,7 +13,7 @@
 
 class LevelLoader {
 private:
-    std::vector< std::vector<int> > field_121;
+    std::vector<std::vector<int>> field_121;
     int field_123[3];
     int field_124[3];
     inline static std::vector<std::vector<int>> levelOffsetInFile = std::vector<std::vector<int>>(3);
@@ -34,7 +34,7 @@ public:
     static const int field_118;
     static bool isEnabledPerspective;
     static bool isEnabledShadows;
-    GameLevel *gameLevel = nullptr;
+    GameLevel* gameLevel = nullptr;
     int field_125 = 0;
     int field_126 = -1;
     std::vector<std::vector<std::string>> levelNames = std::vector<std::vector<std::string>>(3);
@@ -59,13 +59,10 @@ public:
     int method_93();
     int method_94();
     int method_95(int var1);
-    void method_96(GameLevel *gameLevel);
+    void method_96(GameLevel* gameLevel);
     void setMinMaxX(int minX, int maxX);
-    void renderLevel3D(GameCanvas *gameCanvas, int xF16, int yF16);
-    void renderTrackNearestLine(GameCanvas *canvas);
+    void renderLevel3D(GameCanvas* gameCanvas, int xF16, int yF16);
+    void renderTrackNearestLine(GameCanvas* canvas);
     void method_100(int var1, int var2, int var3);
-    int method_101(TimerOrMotoPartOrMenuElem *var1, int var2);
-
+    int method_101(TimerOrMotoPartOrMenuElem* var1, int var2);
 };
-
-

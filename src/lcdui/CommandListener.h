@@ -5,5 +5,5 @@ class Displayable;
 
 class CommandListener {
 public:
-    virtual void commandAction(Command *command, Displayable *displayable) = 0;
+    virtual void commandAction(Command* command, Displayable* displayable) = 0;
 };

@@ -9,13 +9,15 @@
 #include "RecordStoreException.h"
 #include "../utils/String.h"
 
-RecordStore::RecordStore(std::filesystem::path filePath, RecordEnumerationImpl *records) {
+RecordStore::RecordStore(std::filesystem::path filePath, RecordEnumerationImpl* records)
+{
     // assert(std::filesystem::exists(filePath));
     this->filePath = filePath;
     this->records.reset(records);
 }
 
-RecordEnumeration* RecordStore::enumerateRecords(RecordFilter *filter, RecordComparator *comparator, bool keepUpdated) {
+RecordEnumeration* RecordStore::enumerateRecords(RecordFilter* filter, RecordComparator* comparator, bool keepUpdated)
+{
     assert(filter == nullptr);
     assert(comparator == nullptr);
     assert(!keepUpdated);
@@ -23,11 +25,13 @@ RecordEnumeration* RecordStore::enumerateRecords(RecordFilter *filter, RecordCom
     return records.get();
 }
 
-void RecordStore::closeRecordStore() {
+void RecordStore::closeRecordStore()
+{
     // nothing
 }
 
-int RecordStore::addRecord(std::vector<int8_t> arr, int offset, int numBytes) {
+int RecordStore::addRecord(std::vector<int8_t> arr, int offset, int numBytes)
+{
     log("addRecord()");
     assert(static_cast<int>(arr.size()) == numBytes);
     assert(offset == 0);
@@ -36,20 +40,24 @@ int RecordStore::addRecord(std::vector<int8_t> arr, int offset, int numBytes) {
     return id;
 }
 
-void RecordStore::setRecord(int recordId, std::vector<int8_t> arr, int offset, int numBytes) {
-    (void)offset; (void)numBytes;
+void RecordStore::setRecord(int recordId, std::vector<int8_t> arr, int offset, int numBytes)
+{
+    (void)offset;
+    (void)numBytes;
     records->setRecord(recordId, arr);
     save();
 }
 
-void RecordStore::save() {
+void RecordStore::save()
+{
     std::ofstream ofstream(filePath, std::ios::binary);
     records->serialize(ofstream);
     ofstream.close();
 }
 
-RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath) {
-    RecordEnumerationImpl *temp = new RecordEnumerationImpl();
+RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath)
+{
+    RecordEnumerationImpl* temp = new RecordEnumerationImpl();
     std::ifstream ifstream(filePath, std::ios::binary);
     temp->deserialize(ifstream);
     ifstream.close();
@@ -57,7 +65,8 @@ RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath) {
     return temp;
 }
 
-RecordStore* RecordStore::openRecordStore(std::string name, bool createIfNecessary) {
+RecordStore* RecordStore::openRecordStore(std::string name, bool createIfNecessary)
+{
     if (opened.find(name) == opened.end()) {
         opened[name] = createRecordStore(name, createIfNecessary);
     }
@@ -65,7 +74,8 @@ RecordStore* RecordStore::openRecordStore(std::string name, bool createIfNecessa
     return opened[name].get();
 }
 
-std::unique_ptr<RecordStore> RecordStore::createRecordStore(std::string name, bool createIfNecessary) {
+std::unique_ptr<RecordStore> RecordStore::createRecordStore(std::string name, bool createIfNecessary)
+{
     log("createRecordStore(" + name + ", " + std::to_string(createIfNecessary) + ")");
     std::filesystem::path filePath = std::filesystem::path(recordStoreDir) / std::filesystem::path(name);
 
@@ -84,10 +94,11 @@ std::unique_ptr<RecordStore> RecordStore::createRecordStore(std::string name, bo
     }
 }
 
-std::vector<std::string> RecordStore::listRecordStores() {
+std::vector<std::string> RecordStore::listRecordStores()
+{
     std::vector<std::string> result;
 
-    for (const auto & entry : std::filesystem::directory_iterator(recordStoreDir))
+    for (const auto& entry : std::filesystem::directory_iterator(recordStoreDir))
         result.push_back(entry.path().filename().string());
 
     log("listRecordStores() = {" + String::join(result, ", ") + "}");
@@ -95,11 +106,13 @@ std::vector<std::string> RecordStore::listRecordStores() {
     return result;
 }
 
-void RecordStore::deleteRecordStore(std::string name) {
+void RecordStore::deleteRecordStore(std::string name)
+{
     log("deleteRecordStore(" + name + ")");
     throw std::runtime_error("deleteRecordStore is not implemented");
 }
 
-void RecordStore::log(std::string s) {
+void RecordStore::log(std::string s)
+{
     std::cout << s << std::endl;
 }
