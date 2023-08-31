@@ -1,23 +1,18 @@
 #pragma once
-#include <stdexcept>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include "Graphics.h"
 
-class Graphics;
+#include <string>
+#include <SDL2/SDL.h>
 
 class Image {
 private:
     SDL_Surface* surface;
 
 public:
-    Image();
-    Image(SDL_Surface* surf);
+    Image(const std::string& embeddedPath);
+    Image(int width, int height);
     ~Image();
-    Graphics* getGraphics();
-    int getWidth();
-    int getHeight();
-    static Image* createImage(int w, int h);
-    static Image* createImage(std::string path);
-    SDL_Surface* getSurface();
+
+    int getWidth() const;
+    int getHeight() const;
+    SDL_Surface* getSurface() const;
 };

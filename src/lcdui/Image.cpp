@@ -1,47 +1,28 @@
 #include "Image.h"
+
+#include <stdexcept>
+#include <string>
+
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <cmrc/cmrc.hpp>
 
 CMRC_DECLARE(assets);
 
-Image::Image()
+Image::Image(int width, int height)
 {
-    surface = nullptr;
+    SDL_Surface* surf = SDL_CreateRGBSurface(0, width, height, 32, 0, 0, 0, 0);
+    if (!surf) {
+        throw std::runtime_error(SDL_GetError());
+    }
+
+    this->surface = surf;
 }
 
-Image::Image(SDL_Surface* surf)
+Image::Image(const std::string& embeddedPath)
 {
-    surface = surf;
-}
-
-Image::~Image()
-{
-    SDL_FreeSurface(surface);
-}
-
-Graphics* Image::getGraphics()
-{
-    return new Graphics(SDL_CreateSoftwareRenderer(surface));
-}
-
-int Image::getWidth()
-{
-    return surface->w;
-}
-
-int Image::getHeight()
-{
-    return surface->h;
-}
-
-Image* Image::createImage(int w, int h)
-{
-    return new Image(SDL_CreateRGBSurface(0, w, h, 32, 0, 0, 0, 0));
-}
-
-Image* Image::createImage(std::string path)
-{
-    auto internalFs = cmrc::assets::get_filesystem();
-    auto fileData = internalFs.open(path);
+    cmrc::embedded_filesystem embeddedFs = cmrc::assets::get_filesystem();
+    cmrc::file fileData = embeddedFs.open(embeddedPath);
 
     SDL_RWops* raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
     if (!raw) {
@@ -52,14 +33,33 @@ Image* Image::createImage(std::string path)
     if (!surf) {
         throw std::runtime_error(IMG_GetError());
     }
-    surf = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA32, 0);
-    if (!surf) {
+
+    SDL_Surface* surf_conv = SDL_ConvertSurfaceFormat(surf, SDL_PIXELFORMAT_RGBA32, 0);
+    SDL_FreeSurface(surf);
+
+    if (!surf_conv) {
         throw std::runtime_error(SDL_GetError());
     }
-    return new Image(surf);
+
+    this->surface = surf_conv;
 }
 
-SDL_Surface* Image::getSurface()
+Image::~Image()
 {
-    return surface;
+    SDL_FreeSurface(this->surface);
+}
+
+int Image::getWidth() const
+{
+    return this->surface->w;
+}
+
+int Image::getHeight() const
+{
+    return this->surface->h;
+}
+
+SDL_Surface* Image::getSurface() const
+{
+    return this->surface;
 }

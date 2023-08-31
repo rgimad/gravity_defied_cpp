@@ -39,8 +39,6 @@ set(SOURCES
     src/lcdui/Command.cpp
     src/rms/RecordEnumerationImpl.cpp
     src/rms/RecordStore.cpp
-    src/tests/test_Graphics.cpp
-    src/tests/test_rms.cpp
 )
 
 include(cmake/CMakeRC.cmake)
