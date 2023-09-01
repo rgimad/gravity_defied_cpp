@@ -13,6 +13,7 @@ This is the C++ & SDL2 port of Gravity Defied, and includes all features of the 
 ### Gravity Defied Cpp authors
 * **[rgimad](https://github.com/rgimad)** - idea & coding
 * **[AntonEvmenenko](https://github.com/AntonEvmenenko)** - coding
+* **[turbocat2001](https://github.com/turbocat2001)** - coding
 
 ### Codebrew GDTR Authors
 
