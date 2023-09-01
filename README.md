@@ -1,6 +1,6 @@
 # Gravity Defied Cpp
 
-![screen3](/screens/screen3.png?raw=true "screen3")
+![screen4](/screens/screen4.png?raw=true "screen4")
 
 **Gravity Defied** is a legendary mototrial racing mobile game. It was originally developed by Codebrew Software in 2004 for J2ME platform.
 
