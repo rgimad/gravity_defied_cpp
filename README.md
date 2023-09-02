@@ -4,9 +4,9 @@
 
 **Gravity Defied** is a legendary mototrial racing mobile game. It was originally developed by Codebrew Software in 2004 for J2ME platform.
 
-This is the C++ & SDL2 port of Gravity Defied, and includes all features of the original game.
+This is the C++ & SDL2 port of Gravity Defied, which includes all the features of the original game.
 
-***Project is not associated with Codebrew Software in any fashion. All rights to the original Gravity Defied, it's name, logotype, brand and all that stuff belongs to Codebrew Software.***
+***This Project is not associated with Codebrew Software in any fashion. All rights to the original Gravity Defied, it's name, logotype, brand and all that stuff belong to Codebrew Software.***
 
 # Authors
 
