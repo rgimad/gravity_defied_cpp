@@ -93,7 +93,7 @@ private:
     RecordStore* recordStore;
     int recorcStoreRecordId = -1;
     bool isRecordStoreOpened;
-    Image* rasterImage;
+    std::unique_ptr<Image> rasterImage;
     TextRender* textRenderCodeBrewLink;
     int field_354 = 0;
     int field_355 = 0;

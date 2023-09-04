@@ -1,41 +1,32 @@
 #include "GameCanvas.h"
-
 #include "MathF16.h"
 #include "GamePhysics.h"
 #include "MenuManager.h"
-#include "utils/Time.h"
-#include "lcdui/CanvasImpl.h"
+#include "lcdui/Image.h"
+
+#include <memory>
+#include <vector>
 
 GameCanvas::GameCanvas(Micro* micro)
 {
-    try {
-        this->splashImage = Image::createImage("assets/splash.png");
-        this->logoImage = Image::createImage("assets/logo.png");
-    } catch (std::exception& e) {
-    }
+    splashImage = std::make_unique<Image>("assets/splash.png");
+    logoImage = std::make_unique<Image>("assets/logo.png");
 
     // repaint();
     this->micro = micro;
     updateSizeAndRepaint();
     font = Font::getFont(64, 1, 0);
 
-    try {
-        this->helmetImage = Image::createImage("assets/helmet.png");
-    } catch (std::exception& e) {
-        this->helmetImage = Image::createImage(1, 1);
-    }
+    helmetImage = std::make_unique<Image>("assets/helmet.png");
 
     helmetSpriteWidth = helmetImage->getWidth() / 6;
     helmetSpriteHeight = helmetImage->getHeight() / 6;
 
-    try {
-        spritesImage = Image::createImage("assets/sprites.png");
-    } catch (std::exception& e) {
-        spritesImage = onePixImage;
-    }
+    spritesImage = std::make_unique<Image>("assets/sprites.png");
 
     dx = 0;
     dy = height2;
+
     commandMenu = new Command("Menu", 1, 1);
     defaultFontWidth00 = Font::getDefaultFont()->stringWidth("00") + 3;
 }
@@ -44,7 +35,7 @@ void GameCanvas::drawSprite(Graphics* g, int spriteNo, int x, int y)
 {
     if (spritesImage) {
         g->setClip(x, y, spriteSizeX[spriteNo], spriteSizeY[spriteNo]);
-        g->drawImage(spritesImage, x - spriteOffsetX[spriteNo], y - spriteOffsetY[spriteNo], 20);
+        g->drawImage(spritesImage.get(), x - spriteOffsetX[spriteNo], y - spriteOffsetY[spriteNo], 20);
         g->setClip(0, 0, getWidth(), getHeight());
     }
 }
@@ -75,86 +66,53 @@ void GameCanvas::updateSizeAndRepaint()
     repaint();
 }
 
-int GameCanvas::loadSprites(int var1)
+int GameCanvas::loadSprites(int flags)
 {
-    // synchronized (objectForSyncronization) {
-    if ((var1 & 1) != 0) {
-        try {
-            if (fenderImage == nullptr) {
-                fenderImage = Image::createImage("assets/fender.png");
-                fenderSpriteWidth = fenderImage->getWidth() / 6;
-                fenderSpriteHeight = fenderImage->getHeight() / 6;
-            }
-
-            if (engineImage == nullptr) {
-                engineImage = Image::createImage("assets/engine.png");
-                engineSpriteWidth = engineImage->getWidth() / 6;
-                engineSpriteHeight = engineImage->getHeight() / 6;
-            }
-        } catch (std::exception& e) {
-            fenderImage = engineImage = nullptr;
-            var1 &= -2;
+    if (flags & 1) {
+        if (!fenderImage) {
+            fenderImage = std::make_unique<Image>("assets/fender.png");
+            fenderSpriteWidth = fenderImage->getWidth() / 6;
+            fenderSpriteHeight = fenderImage->getHeight() / 6;
+        }
+        if (!engineImage) {
+            engineImage = std::make_unique<Image>("assets/engine.png");
+            engineSpriteWidth = engineImage->getWidth() / 6;
+            engineSpriteHeight = engineImage->getHeight() / 6;
         }
     } else {
-        engineImage = fenderImage = nullptr;
+        fenderImage = nullptr;
+        engineImage = nullptr;
     }
-
-    if ((var1 & 2) != 0) {
-        try {
-            if (bodyPartsImages[1] == nullptr) {
-                bodyPartsImages[1] = std::shared_ptr<Image>(Image::createImage("assets/blueleg.png"));
-            }
-        } catch (std::exception& e) {
-            bodyPartsImages[1] = nullptr;
-            bodyPartsImages[0] = nullptr;
-            bodyPartsImages[2] = nullptr;
-            var1 &= -3;
-            return var1;
+    
+    if (flags & 2) {
+        if (!bodyPartsImages[1]) {
+            bodyPartsImages[1] = std::make_unique<Image>("assets/blueleg.png");
         }
 
         bodyPartsSpriteWidth[1] = bodyPartsImages[1]->getWidth() / 6;
         bodyPartsSpriteHeight[1] = bodyPartsImages[1]->getHeight() / 3;
 
-        try {
-            bodyPartsImages[0] = std::shared_ptr<Image>(Image::createImage("assets/bluearm.png"));
-        } catch (std::exception& e) {
-            bodyPartsImages[0] = bodyPartsImages[1];
-        }
+        bodyPartsImages[0] = std::make_unique<Image>("assets/bluearm.png");
 
         bodyPartsSpriteWidth[0] = bodyPartsImages[0]->getWidth() / 6;
         bodyPartsSpriteHeight[0] = bodyPartsImages[0]->getHeight() / 3;
 
-        try {
-            bodyPartsImages[2] = std::shared_ptr<Image>(Image::createImage("assets/bluebody.png"));
-        } catch (std::exception& e) {
-            bodyPartsImages[2] = bodyPartsImages[1];
-        }
+        bodyPartsImages[2] = std::make_unique<Image>("assets/bluebody.png");
 
         bodyPartsSpriteWidth[2] = bodyPartsImages[2]->getWidth() / 6;
         bodyPartsSpriteHeight[2] = bodyPartsImages[2]->getHeight() / 3;
     } else {
-        bodyPartsImages[1] = bodyPartsImages[2] = bodyPartsImages[0] = nullptr;
+        bodyPartsImages[0] = nullptr;
+        bodyPartsImages[1] = nullptr;
+        bodyPartsImages[2] = nullptr;
     }
 
-    return var1;
-    // }
+    return flags;
 }
 
 void GameCanvas::method_129()
 {
     method_164();
-}
-
-Image* GameCanvas::loadImage(std::string imgName)
-{
-    Image* img = nullptr;
-
-    try {
-        img = Image::createImage(imgName.c_str());
-    } catch (std::exception& e) {
-    }
-
-    return img;
 }
 
 void GameCanvas::setViewPosition(int dx, int dy)
@@ -206,7 +164,7 @@ void GameCanvas::renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int 
     int angleFP16 = MathF16::atan2F16(x2F16 - x1F16, y2F16 - y1F16);
     int spriteNo = calcSpriteNo(angleFP16, 0, 205887, 16, false);
 
-    if (bodyPartsImages[bodyPartNo] != nullptr) {
+    if (bodyPartsImages[bodyPartNo]) {
         x -= bodyPartsSpriteWidth[bodyPartNo] / 2;
         y -= bodyPartsSpriteHeight[bodyPartNo] / 2;
         graphics->setClip(x, y, bodyPartsSpriteWidth[bodyPartNo], bodyPartsSpriteHeight[bodyPartNo]);
@@ -257,7 +215,7 @@ void GameCanvas::drawHelmet(int x, int y, int angleF16)
         int var5 = addDx(x) - helmetSpriteWidth / 2;
         int var6 = addDy(y) - helmetSpriteHeight / 2;
         graphics->setClip(var5, var6, helmetSpriteWidth, helmetSpriteHeight);
-        graphics->drawImage(helmetImage, var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
+        graphics->drawImage(helmetImage.get(), var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -376,7 +334,7 @@ void GameCanvas::renderEngine(int x, int y, int angleF16)
     int centerY = addDy(y) - engineSpriteHeight / 2;
     if (engineImage != nullptr) {
         graphics->setClip(centerX, centerY, engineSpriteWidth, engineSpriteHeight);
-        graphics->drawImage(engineImage, centerX - engineSpriteWidth * (spriteNo % 6), centerY - engineSpriteHeight * (spriteNo / 6), 20);
+        graphics->drawImage(engineImage.get(), centerX - engineSpriteWidth * (spriteNo % 6), centerY - engineSpriteHeight * (spriteNo / 6), 20);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -388,7 +346,7 @@ void GameCanvas::renderFender(int x, int y, int angleF16)
         int centerX = addDx(x) - fenderSpriteWidth / 2;
         int centerY = addDy(y) - fenderSpriteHeight / 2;
         graphics->setClip(centerX, centerY, fenderSpriteWidth, fenderSpriteHeight);
-        graphics->drawImage(fenderImage, centerX - fenderSpriteWidth * (spriteNo % 6), centerY - fenderSpriteHeight * (spriteNo / 6), 20);
+        graphics->drawImage(fenderImage.get(), centerX - fenderSpriteWidth * (spriteNo % 6), centerY - fenderSpriteHeight * (spriteNo / 6), 20);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -433,7 +391,7 @@ void GameCanvas::drawGame(Graphics* g)
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
                 if (logoImage != nullptr) {
-                    graphics->drawImage(logoImage, getWidth() / 2, getHeight() / 2, 3);
+                    graphics->drawImage(logoImage.get(), getWidth() / 2, getHeight() / 2, 3);
                     drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5, getHeight() - spriteSizeY[16] - 7);
                     drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
                 }
@@ -441,7 +399,7 @@ void GameCanvas::drawGame(Graphics* g)
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
                 if (splashImage != nullptr) {
-                    graphics->drawImage(splashImage, getWidth() / 2, getHeight() / 2, 3);
+                    graphics->drawImage(splashImage.get(), getWidth() / 2, getHeight() / 2, 3);
                 }
             }
 

@@ -356,7 +356,7 @@ void GameMenu::render_76(Graphics* graphics)
                 int var5 = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
                 int var6 = var2 + font2->getBaselinePosition() / 2 - micro->gameCanvas->helmetSpriteHeight / 2;
                 graphics->setClip(var5, var6, micro->gameCanvas->helmetSpriteWidth, micro->gameCanvas->helmetSpriteHeight);
-                graphics->drawImage(micro->gameCanvas->helmetImage, var5 - micro->gameCanvas->helmetSpriteWidth * (field_110 % 6), var6 - micro->gameCanvas->helmetSpriteHeight * (field_110 / 6), 20);
+                graphics->drawImage(micro->gameCanvas->helmetImage.get(), var5 - micro->gameCanvas->helmetSpriteWidth * (field_110 % 6), var6 - micro->gameCanvas->helmetSpriteHeight * (field_110 / 6), 20);
                 graphics->setClip(0, 0, canvasWidth, canvasHeight);
                 ++field_110;
                 if (field_110 > 30) {

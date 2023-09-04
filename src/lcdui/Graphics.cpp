@@ -1,4 +1,5 @@
 #include "Graphics.h"
+#include <memory>
 
 Graphics::Graphics(SDL_Renderer* renderer)
 {
@@ -232,7 +233,7 @@ void Graphics::drawLine(int x1, int y1, int x2, int y2)
     SDL_RenderDrawLine(renderer, x1, y1, x2, y2);
 }
 
-void Graphics::drawImage(Image* image, int x, int y, int anchor)
+void Graphics::drawImage(Image* const image, int x, int y, int anchor)
 {
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
     x = getAnchorX(x, image->getWidth(), anchor);

@@ -1,5 +1,4 @@
 #include "MenuManager.h"
-
 #include "rms/RecordStoreException.h"
 #include "rms/RecordStoreNotOpenException.h"
 #include "rms/RecordStore.h"
@@ -10,7 +9,7 @@
 #include "GameMenu.h"
 #include "SettingsStringRender.h"
 #include "utils/Time.h"
-#include "lcdui/CanvasImpl.h"
+
 
 MenuManager::MenuManager(Micro* var1)
 {
@@ -305,12 +304,8 @@ void MenuManager::initPart(int var1)
         commandBack = new Command("Back", 2, 1);
         method_1(gameMenuMain, false);
 
-        try {
-            rasterImage = Image::createImage("assets/raster.png");
-            return;
-        } catch (std::exception& var10) {
-            rasterImage = Image::createImage(1, 1);
-        }
+        rasterImage = std::make_unique<Image>("assets/raster.png");
+
     default:
         break;
     }
@@ -590,7 +585,7 @@ void MenuManager::fillCanvasWithImage(Graphics* graphics)
 {
     for (int y = 0; y < getCanvasHeight(); y += rasterImage->getHeight()) {
         for (int x = 0; x < getCanvasWidth(); x += rasterImage->getWidth()) {
-            graphics->drawImage(rasterImage, x, y, 20);
+            graphics->drawImage(rasterImage.get(), x, y, 20);
         }
     }
 }
