@@ -5,6 +5,11 @@ unset(ENV{PKG_CONFIG_PATH})
 
 if(WIN32)
     include(cmake/mingw-sdl2.cmake)
+    download_mingw_sdl2(
+        "2.26.1"    # SDL2
+        "2.20.1"    # SDL2_ttf
+        "2.6.2"     # SDL2_image
+    )
 endif()
 
 find_package(PkgConfig REQUIRED)
