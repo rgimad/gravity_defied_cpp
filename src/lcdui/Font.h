@@ -1,12 +1,12 @@
 #pragma once
 
-#include <SDL2/SDL_ttf.h>
 #include <string>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+
+#include <cmrc/cmrc.hpp>
 
 class Font {
-private:
-    int height;
-
 public:
     enum FontSize {
         SIZE_SMALL = 8,
@@ -15,26 +15,29 @@ public:
     };
 
     enum FontStyle {
-        STYLE_PLAIN = 0,
-        STYLE_BOLD = 1,
-        STYLE_ITALLIC = 2
+        STYLE_PLAIN = TTF_STYLE_NORMAL,
+        STYLE_BOLD = TTF_STYLE_BOLD,
+        STYLE_ITALIC = TTF_STYLE_ITALIC
     };
 
     enum FontFace {
         FACE_SYSTEM = 0
     };
 
-    Font(TTF_Font* font, int pointSize);
+    Font(FontStyle style, FontSize pointSize);
     ~Font();
 
-    int getBaselinePosition();
-    int getHeight();
+    int getBaselinePosition() const;
+    int getHeight() const;
+    TTF_Font* getTtfFont() const;
     int charWidth(char c);
     int stringWidth(const std::string& s);
     int substringWidth(const std::string& string, int offset, int len);
-    static Font* getFont(int face, int style, int size);
-    static int getRealFontSize(int size);
-    static Font* getDefaultFont();
 
-    TTF_Font* font;
+private:
+    static inline SDL_RWops* ttfRwOps = nullptr;
+    TTF_Font* ttfFont;
+    int height;
+
+    static int getRealFontSize(FontSize size);
 };

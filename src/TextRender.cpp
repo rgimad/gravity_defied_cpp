@@ -19,14 +19,14 @@ int TextRender::getBaselinePosition()
     return defaultFont->getBaselinePosition();
 }
 
-void TextRender::setFont(Font* value)
+void TextRender::setFont(std::shared_ptr<Font> font)
 {
-    font.reset(value);
+    this->font = font;
 }
 
-void TextRender::setDefaultFont(Font* value)
+void TextRender::setDefaultFont(std::shared_ptr<Font> font)
 {
-    defaultFont = value;
+    defaultFont = font;
 }
 
 void TextRender::setMaxArea(int w, int h)
@@ -52,10 +52,10 @@ void TextRender::menuElemMethod(int var1)
 
 void TextRender::render(Graphics* graphics, int y, int x)
 {
-    Font* preservedFont = graphics->getFont();
+    std::shared_ptr<Font> preservedFont = graphics->getFont();
     graphics->setFont(defaultFont);
-    if (font != nullptr) {
-        graphics->setFont(font.get());
+    if (font) {
+        graphics->setFont(font);
     }
 
     graphics->drawString(text, x + dx, y, 20);

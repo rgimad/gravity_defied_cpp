@@ -18,7 +18,7 @@ class Image;
 class Graphics {
 private:
     SDL_Renderer* renderer;
-    Font* font;
+    std::shared_ptr<Font> font;
     SDL_Color currentColor;
     // void _ellipse(int cx, int cy, int xradius, int yradius);
     void _putpixel(int x, int y);
@@ -36,8 +36,8 @@ public:
     Graphics(SDL_Renderer* renderer);
     void drawString(const std::string& s, int x, int y, int anchor);
     void setColor(int r, int g, int b);
-    void setFont(Font* font);
-    Font* getFont();
+    void setFont(std::shared_ptr<Font> font);
+    std::shared_ptr<Font> getFont() const;
     void setClip(int x, int y, int w, int h);
     void drawChar(char c, int x, int y, int anchor);
     void fillRect(int x, int y, int w, int h);

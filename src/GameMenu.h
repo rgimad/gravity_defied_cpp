@@ -17,9 +17,9 @@ private:
     int field_95;
     std::vector<IGameMenuElement*> vector;
     Micro* micro;
-    Font* font;
-    Font* font2;
-    Font* font3;
+    std::shared_ptr<Font> font;
+    std::shared_ptr<Font> font2;
+    std::shared_ptr<Font> font3;
     int field_101;
     int field_103;
     int field_104;

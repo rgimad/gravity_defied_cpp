@@ -3,6 +3,7 @@
 #include "GamePhysics.h"
 #include "MenuManager.h"
 #include "lcdui/Image.h"
+#include "lcdui/FontStorage.h"
 
 #include <memory>
 #include <vector>
@@ -15,7 +16,8 @@ GameCanvas::GameCanvas(Micro* micro)
     // repaint();
     this->micro = micro;
     updateSizeAndRepaint();
-    font = Font::getFont(64, 1, 0);
+    font = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_MEDIUM);
+    auto defaultFont = FontStorage::getFont(Font::STYLE_PLAIN, Font::SIZE_MEDIUM);
 
     helmetImage = std::make_unique<Image>("assets/helmet.png");
 
@@ -28,7 +30,7 @@ GameCanvas::GameCanvas(Micro* micro)
     dy = height2;
 
     commandMenu = new Command("Menu", 1, 1);
-    defaultFontWidth00 = Font::getDefaultFont()->stringWidth("00") + 3;
+    defaultFontWidth00 = defaultFont->stringWidth("00") + 3;
 }
 
 void GameCanvas::drawSprite(Graphics* g, int spriteNo, int x, int y)

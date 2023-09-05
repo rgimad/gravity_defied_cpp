@@ -33,7 +33,7 @@ private:
     int field_178 = 0;
     int field_179 = 0;
     Micro* micro = nullptr;
-    Font* font = nullptr;
+    std::shared_ptr<Font> font;
     bool timerTriggered = false;
     int field_184 = 1;
     std::unique_ptr<Image> splashImage;
