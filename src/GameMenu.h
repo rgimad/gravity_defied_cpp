@@ -31,12 +31,12 @@ private:
     int field_110;
     bool field_111;
     int nameCursorPos;
-    std::vector<int8_t> strArr;
+    char* strArr;
 
 public:
     int xPos;
 
-    GameMenu(std::string var1, Micro* micro, GameMenu* var3, std::vector<int8_t> var4);
+    GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputData);
     void method_68(int var1);
     void method_69(std::string var1);
     void method_70();
@@ -51,6 +51,6 @@ public:
     int method_79();
     void clearVector();
     std::string makeString();
-    std::vector<int8_t> getStrArr();
+    char* getStrArr() const;
     void method_83(int var1);
 };

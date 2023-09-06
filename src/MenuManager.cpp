@@ -23,7 +23,7 @@ void MenuManager::initPart(int var1)
     int var4;
     switch (var1) {
     case 1:
-        field_341 = { 65, 65, 65 };
+        field_341 = defaultInputField;
         field_374 = { "On", "Off" };
         field_375 = { "Keyset 1", "Keyset 2", "Keyset 3" };
         recordManager = new RecordManager();
@@ -145,11 +145,11 @@ void MenuManager::initPart(int var1)
         field_360 = field_371;
         return;
     case 4: {
-        gameMenuMain = new GameMenu("Main", micro, nullptr, std::vector<int8_t>());
-        gameMenuPlay = new GameMenu("Play", micro, gameMenuMain, std::vector<int8_t>());
-        gameMenuOptions = new GameMenu("Options", micro, gameMenuMain, std::vector<int8_t>());
-        gameMenuAbout = new GameMenu("About", micro, gameMenuMain, std::vector<int8_t>());
-        gameMenuHelp = new GameMenu("Help", micro, gameMenuMain, std::vector<int8_t>());
+        gameMenuMain = new GameMenu("Main", micro, nullptr, nullptr);
+        gameMenuPlay = new GameMenu("Play", micro, gameMenuMain, nullptr);
+        gameMenuOptions = new GameMenu("Options", micro, gameMenuMain, nullptr);
+        gameMenuAbout = new GameMenu("About", micro, gameMenuMain, nullptr);
+        gameMenuHelp = new GameMenu("Help", micro, gameMenuMain, nullptr);
         settingStringBack = new SettingsStringRender("Back", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringGoToMain = new SettingsStringRender("Go to Main", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringContinue = new SettingsStringRender("Continue", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
@@ -163,15 +163,15 @@ void MenuManager::initPart(int var1)
         }
 
         textRenderCodeBrewLink->setFont(boldSmallFont);
-        gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay, std::vector<int8_t>());
-        gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay, std::vector<int8_t>());
+        gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay, nullptr);
+        gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay, nullptr);
     }
         return;
     case 5:
-        gameMenuIngame = new GameMenu("Ingame", micro, gameMenuPlay, std::vector<int8_t>());
+        gameMenuIngame = new GameMenu("Ingame", micro, gameMenuPlay, nullptr);
         gameMenuEnterName = new GameMenu("Enter Name", micro, gameMenuFinished, field_341);
-        gameMenuConfirmClear = new GameMenu("Confirm Clear", micro, gameMenuOptions, std::vector<int8_t>());
-        gameMenuConfirmReset = new GameMenu("Confirm Reset", micro, gameMenuConfirmClear, std::vector<int8_t>());
+        gameMenuConfirmClear = new GameMenu("Confirm Clear", micro, gameMenuOptions, nullptr);
+        gameMenuConfirmReset = new GameMenu("Confirm Reset", micro, gameMenuConfirmClear, nullptr);
         taskPlayMenu = new TimerOrMotoPartOrMenuElem("Play Menu", gameMenuPlay, this);
         taskOptions = new TimerOrMotoPartOrMenuElem("Options", gameMenuOptions, this);
         taskHelp = new TimerOrMotoPartOrMenuElem("Help", gameMenuHelp, this);
@@ -187,7 +187,7 @@ void MenuManager::initPart(int var1)
         settingsStringLeague = new SettingsStringRender("League", field_371, this, leagueNames, false, micro, gameMenuPlay, false);
 
         try {
-            settingsStringTrack->setAvailableOptions(field_342.at(field_370));
+            settingsStringTrack->setAvailableOptions(field_342[field_370]);
         } catch (std::exception& var5) {
             settingsStringTrack->setAvailableOptions(0);
         }
@@ -233,12 +233,12 @@ void MenuManager::initPart(int var1)
         addTextRender(gameMenuConfirmReset, "Would you like to do a full reset?");
         gameMenuConfirmReset->addMenuElement(field_315);
         gameMenuConfirmReset->addMenuElement(field_314);
-        field_317 = new GameMenu("Objective", micro, gameMenuHelp, std::vector<int8_t>());
+        field_317 = new GameMenu("Objective", micro, gameMenuHelp, nullptr);
         field_318 = new TimerOrMotoPartOrMenuElem("Objective", field_317, this);
         addTextRender(field_317, "Race to the finish line as fast as you can without crashing. By leaning forward and backward you can adjust the rotation of your bike. By landing on both wheels after jumping, your bike won't crash as easily. Beware, the levels tend to get harder and harder...");
         field_317->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(field_318);
-        field_319 = new GameMenu("Keys", micro, gameMenuHelp, std::vector<int8_t>());
+        field_319 = new GameMenu("Keys", micro, gameMenuHelp, nullptr);
         field_320 = new TimerOrMotoPartOrMenuElem("Keys", field_319, this);
         addTextRender(field_319, "- " + field_375[0] + " -");
         addTextRender(field_319, "UP accelerates, DOWN brakes, RIGHT leans forward and LEFT leans backward. 1 accelerates and leans backward. 3 accelerates and leans forward. 7 brakes and leans backward. 9 brakes and leans forward.");
@@ -250,19 +250,19 @@ void MenuManager::initPart(int var1)
         addTextRender(field_319, "3 accelerates, 6 brakes, 5 leans forward and 4 leans backward.");
         field_319->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(field_320);
-        field_321 = new GameMenu("Unlocking", micro, gameMenuHelp, std::vector<int8_t>());
+        field_321 = new GameMenu("Unlocking", micro, gameMenuHelp, nullptr);
         field_322 = new TimerOrMotoPartOrMenuElem("Unlocking", field_321, this);
         addTextRender(field_321, "By completing the easier levels, new levels will be unlocked. You will also gain access to higher leagues where more advanced bikes with different characteristics are available.");
         field_321->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(field_322);
-        gameMenuOptionsHighscoreDescription = new GameMenu("Highscore", micro, gameMenuHelp, std::vector<int8_t>());
+        gameMenuOptionsHighscoreDescription = new GameMenu("Highscore", micro, gameMenuHelp, nullptr);
         taskHighscore = new TimerOrMotoPartOrMenuElem("Highscore", gameMenuOptionsHighscoreDescription, this);
         addTextRender(gameMenuOptionsHighscoreDescription, "The three best times on every track are saved for each league. When beating a time on a track you will be asked to enter your name. The highscores can be viewed from the Play Menu. By pressing left and right in the highscore view you can view the highscore for a specific league. The highscore can be cleared from the options menu.");
         gameMenuOptionsHighscoreDescription->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(taskHighscore);
         return;
     case 7:
-        gameMenuOptions2 = new GameMenu("Options", micro, gameMenuHelp, std::vector<int8_t>());
+        gameMenuOptions2 = new GameMenu("Options", micro, gameMenuHelp, nullptr);
         field_326 = new TimerOrMotoPartOrMenuElem("Options", gameMenuOptions2, this);
 
         addTextRender(gameMenuOptions2, "Perspective: On/Off");
@@ -301,7 +301,7 @@ void MenuManager::initPart(int var1)
         gameMenuIngame->addMenuElement(taskHelp);
         gameMenuIngame->addMenuElement(settingStringPlayMenu);
         field_335 = new SettingsStringRender("Ok", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-        field_336 = new SettingsStringRender("Name - " + std::string(reinterpret_cast<char*>(field_341.data())), 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
+        field_336 = new SettingsStringRender("Name - " + std::string(field_341), 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         commandOk = new Command("Ok", 4, 1);
         commandBack = new Command("Back", 2, 1);
         method_1(gameMenuMain, false);
@@ -353,7 +353,7 @@ void MenuManager::method_197()
 
     for (std::size_t var2 = 0; var2 < var1.size(); ++var2) {
         if (var1[var2] != "") {
-            gameMenuFinished->addMenuElement(new TextRender("" + std::to_string(var2 + 1) + "." + var1[var2], micro));
+            gameMenuFinished->addMenuElement(new TextRender(std::to_string(var2 + 1) + "." + var1[var2], micro));
         }
     }
 
@@ -479,7 +479,7 @@ void MenuManager::method_201(int var1)
         field_355 = settingsStringTrack->getCurrentOptionPos();
         recordManager->method_8(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
         int var2 = recordManager->getPosOfNewRecord(settingsStringLeague->getCurrentOptionPos(), field_337);
-        field_340 = method_219(field_337);
+        field_340 = timeToString(field_337);
         if (var2 >= 0 && var2 <= 2) {
             TextRender* var3 = new TextRender("", micro);
             var3->setDx(GameCanvas::spriteSizeX[5] + 1);
@@ -679,7 +679,7 @@ void MenuManager::method_1(GameMenu* gm, bool var2)
         method_207(field_360);
     } else if (gm == gameMenuFinished) {
         field_341 = gameMenuEnterName->getStrArr();
-        field_336->setText("Name - " + std::string(reinterpret_cast<char*>(field_341.data())));
+        field_336->setText("Name - " + std::string(field_341));
     } else if (gm == gameMenuPlay) {
         settingsStringTrack->setOptionsList(micro->levelLoader->levelNames[settingStringLevel->getCurrentOptionPos()]);
         if (currentGameMenu == field_299) {
@@ -1038,7 +1038,7 @@ int8_t MenuManager::method_217(int var1, int8_t var2)
     return field_278[var1] == -127 ? var2 : field_278[var1];
 }
 
-void MenuManager::copyThreeBytesFromArr(int var1, std::vector<int8_t> var2)
+void MenuManager::copyThreeBytesFromArr(int var1, char* var2)
 {
     if (isRecordStoreOpened && var1 == 16) {
         for (int i = 0; i < 3; ++i) {
@@ -1047,30 +1047,30 @@ void MenuManager::copyThreeBytesFromArr(int var1, std::vector<int8_t> var2)
     }
 }
 
-std::string MenuManager::method_219(int64_t var1)
+std::string MenuManager::timeToString(int64_t time)
 {
-    field_338 = (int)(var1 / 100L);
-    field_339 = (int)(var1 % 100L);
-    std::string var3;
+    field_338 = (int)(time / 100L);
+    field_339 = (int)(time % 100L);
+    std::string timeStr;
     if (field_338 / 60 < 10) {
-        var3 = " 0" + field_338 / 60;
+        timeStr = " 0" + std::to_string(field_338 / 60);
     } else {
-        var3 = " " + field_338 / 60;
+        timeStr = " " + std::to_string(field_338 / 60);
     }
 
     if (field_338 % 60 < 10) {
-        var3 = var3 + ":0" + std::to_string(field_338 % 60);
+        timeStr = timeStr + ":0" + std::to_string(field_338 % 60);
     } else {
-        var3 = var3 + ":" + std::to_string(field_338 % 60);
+        timeStr = timeStr + ":" + std::to_string(field_338 % 60);
     }
 
     if (field_339 < 10) {
-        var3 = var3 + ".0" + std::to_string(field_339);
+        timeStr = timeStr + ".0" + std::to_string(field_339);
     } else {
-        var3 = var3 + "." + std::to_string(field_339);
+        timeStr = timeStr + "." + std::to_string(field_339);
     }
 
-    return var3;
+    return timeStr;
 }
 
 void MenuManager::setValue(int pos, int8_t value)

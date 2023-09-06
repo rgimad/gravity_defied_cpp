@@ -82,8 +82,9 @@ private:
     int field_338;
     int field_339;
     std::string field_340;
-    std::vector<int8_t> field_341;
-    std::vector<int8_t> field_342 = std::vector<int8_t>(3);
+    char* field_341;
+    char field_342[4];
+    char defaultInputField[4] = "AAA";
     int8_t availableLeagues = 0;
     int8_t field_344 = 0;
     std::vector<int> field_345 = { 0, 0, 0 };
@@ -123,8 +124,8 @@ private:
     void processNonFireKeyCode(int keyCode);
     std::vector<int8_t> method_216(int var1, int8_t var2);
     int8_t method_217(int var1, int8_t var2);
-    void copyThreeBytesFromArr(int var1, std::vector<int8_t> var2);
-    std::string method_219(int64_t var1);
+    void copyThreeBytesFromArr(int var1, char* var2);
+    std::string timeToString(int64_t time);
     void setValue(int pos, int8_t value);
     void exit();
     int getCountOfRecordStoresWithPrefix(int prefixNumber);

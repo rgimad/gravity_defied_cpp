@@ -9,7 +9,7 @@
 #include "lcdui/FontStorage.h"
 #include "lcdui/Graphics.h"
 
-GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, std::vector<int8_t> var4)
+GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputData)
 {
     field_94 = var1;
     field_95 = -1;
@@ -49,11 +49,11 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, std::vector<i
         field_107 = (canvasHeight - (field_101 << 1) - 10) / (font2->getBaselinePosition() + field_103);
     }
 
-    if (!var4.empty()) {
+    if (inputData) {
         field_111 = true;
         nameCursorPos = 0;
         xPos = 8;
-        strArr = var4;
+        strArr = inputData;
     } else {
         field_111 = false;
     }
@@ -410,10 +410,10 @@ void GameMenu::clearVector()
 
 std::string GameMenu::makeString()
 {
-    return std::string(reinterpret_cast<char*>(strArr.data()));
+    return std::string(strArr);
 }
 
-std::vector<int8_t> GameMenu::getStrArr()
+char* GameMenu::getStrArr() const
 {
     return strArr;
 }

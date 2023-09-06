@@ -79,10 +79,10 @@ void RecordManager::loadRecordInfo(std::vector<int8_t> var1)
         }
     }
 
-    for (league = 0; league < 4; ++league) {
-        for (pos = 0; pos < 3; ++pos) {
-            for (int i = 0; i < 3; ++i) {
-                recordName[league][pos][i] = var1[offset++];
+    for (league = 0; league < LEAGUES_MAX; ++league) {
+        for (pos = 0; pos < RECORD_NO_MAX; ++pos) {
+            for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
+                recordName[league][pos][player] = var1[offset++];
             }
         }
     }
@@ -101,10 +101,10 @@ void RecordManager::getLevelInfo(std::vector<int8_t> var1)
         }
     }
 
-    for (league = 0; league < 4; ++league) {
-        for (recordNo = 0; recordNo < 3; ++recordNo) {
-            for (int var5 = 0; var5 < 3; ++var5) {
-                var1[shift++] = recordName[league][recordNo][var5];
+    for (league = 0; league < LEAGUES_MAX; ++league) {
+        for (recordNo = 0; recordNo < RECORD_NO_MAX; ++recordNo) {
+            for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
+                var1[shift++] = recordName[league][recordNo][player];
             }
         }
     }
@@ -127,7 +127,7 @@ std::vector<std::string> RecordManager::getRecordDescription(int var1)
         if (recordTimeMs[var1][var3] != 0L) {
             int var4 = (int)recordTimeMs[var1][var3] / 100;
             int var5 = (int)recordTimeMs[var1][var3] % 100;
-            var2[var3] = "" + std::string(reinterpret_cast<char*>(recordName[var1][var3].data())) + " ";
+            var2[var3] = "" + std::string(recordName[var1][var3]) + " ";
 
             if (var4 / 60 < 10) {
                 var2[var3] = var2[var3] + " 0" + std::to_string(var4 / 60);
@@ -183,7 +183,7 @@ int RecordManager::getPosOfNewRecord(int league, int64_t timeMs)
     return 3;
 }
 
-void RecordManager::method_17(int league, std::vector<int8_t> values, int64_t timeMs)
+void RecordManager::method_17(int league, char* values, int64_t timeMs)
 {
     int newRecordPos;
     if ((newRecordPos = getPosOfNewRecord(league, timeMs)) != 3) {
@@ -194,18 +194,18 @@ void RecordManager::method_17(int league, std::vector<int8_t> values, int64_t ti
         addNewRecord(league, newRecordPos);
         recordTimeMs[league][newRecordPos] = timeMs;
 
-        for (int i = 0; i < 3; ++i) {
-            recordName[league][newRecordPos][i] = values[i];
+        for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
+            recordName[league][newRecordPos][player] = values[player];
         }
     }
 }
 
 void RecordManager::addNewRecord(int gameLevel, int position)
 {
-    for (int i = 2; i > position; --i) {
-        recordTimeMs[gameLevel][i] = recordTimeMs[gameLevel][i - 1];
-        for (int j = 0; j < 3; ++j) {
-            recordName[gameLevel][i][j] = recordName[gameLevel][i - 1][j];
+    for (auto pos = 2; pos > position; --pos) {
+        recordTimeMs[gameLevel][pos] = recordTimeMs[gameLevel][pos - 1];
+        for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
+            recordName[gameLevel][pos][player] = recordName[gameLevel][pos - 1][player];
         }
     }
 }
