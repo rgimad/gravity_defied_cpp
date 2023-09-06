@@ -10,11 +10,11 @@ Graphics::Graphics(SDL_Renderer* renderer)
 
 void Graphics::drawString(const std::string& s, int x, int y, int anchor)
 {
-    SDL_Surface* surfaceMessage = TTF_RenderText_Solid(font->font, s.c_str(), currentColor);
+    SDL_Surface* surfaceMessage = TTF_RenderText_Blended(font->getTtfFont(), s.c_str(), currentColor);
     SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surfaceMessage);
 
     int width, height;
-    if (TTF_SizeText(font->font, s.c_str(), &width, &height) == -1)
+    if (TTF_SizeText(font->getTtfFont(), s.c_str(), &width, &height) == -1)
         throw std::runtime_error(TTF_GetError());
 
     x = getAnchorX(x, width, anchor);
@@ -36,12 +36,12 @@ void Graphics::setColor(int r, int g, int b)
     SDL_SetRenderDrawColor(renderer, (Uint8)r, (Uint8)g, (Uint8)b, 255);
 }
 
-void Graphics::setFont(Font* font)
+void Graphics::setFont(std::shared_ptr<Font> font)
 {
     this->font = font;
 }
 
-Font* Graphics::getFont()
+std::shared_ptr<Font> Graphics::getFont() const
 {
     return font;
 }

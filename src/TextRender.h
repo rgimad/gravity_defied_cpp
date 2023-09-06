@@ -13,8 +13,8 @@ class Graphics;
 class TextRender : public IGameMenuElement {
 private:
     std::string text;
-    inline static Font* defaultFont;
-    std::unique_ptr<Font> font;
+    static inline std::shared_ptr<Font> defaultFont;
+    std::shared_ptr<Font> font;
     int dx = 0;
     inline static int fieldMaxWidth = 100;
     inline static int fieldMaxHeightUnused = 100;
@@ -25,8 +25,8 @@ private:
 public:
     TextRender(std::string text, Micro* var2);
     static int getBaselinePosition();
-    void setFont(Font* value);
-    static void setDefaultFont(Font* value);
+    void setFont(std::shared_ptr<Font> font);
+    static void setDefaultFont(std::shared_ptr<Font> font);
     static void setMaxArea(int w, int h);
     void setText(std::string text);
     bool isNotTextRender();

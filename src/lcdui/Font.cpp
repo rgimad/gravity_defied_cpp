@@ -1,33 +1,47 @@
 #include "Font.h"
 
 #include <stdexcept>
-#include <cassert>
-
-#include <cmrc/cmrc.hpp>
 
 CMRC_DECLARE(assets);
 
-Font::Font(TTF_Font* font, int pointSize)
+Font::Font(FontStyle style, FontSize pointSize)
 {
-    assert(font != nullptr);
-    this->font = font;
-    this->height = pointSize;
+    if (!ttfRwOps) {
+        cmrc::embedded_filesystem internalFs = cmrc::assets::get_filesystem();
+        cmrc::file fileData = internalFs.open("assets/FontSansSerif.ttf");
+        SDL_RWops* raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
+        if (!raw) {
+            throw std::runtime_error(SDL_GetError());
+        }
+
+        ttfRwOps = raw;
+    }
+
+    int realSize = getRealFontSize(pointSize);
+    TTF_Font* font = TTF_OpenFontRW(ttfRwOps, SDL_TRUE, realSize);
+    TTF_SetFontStyle(font, style);
+    this->ttfFont = font;
+    this->height = realSize;
 }
 
 Font::~Font()
 {
-    assert(font != nullptr);
-    TTF_CloseFont(font);
+    TTF_CloseFont(ttfFont);
 }
 
-int Font::getBaselinePosition()
+int Font::getBaselinePosition() const
 {
     return height;
 }
 
-int Font::getHeight()
+int Font::getHeight() const
 {
     return height;
+}
+
+TTF_Font* Font::getTtfFont() const
+{
+    return ttfFont;
 }
 
 int Font::charWidth(char c)
@@ -38,7 +52,7 @@ int Font::charWidth(char c)
 int Font::stringWidth(const std::string& s)
 {
     int width, height;
-    if (TTF_SizeText(font, s.c_str(), &width, &height) == -1)
+    if (TTF_SizeText(ttfFont, s.c_str(), &width, &height) == -1)
         throw std::runtime_error(TTF_GetError());
     return width;
 }
@@ -48,28 +62,7 @@ int Font::substringWidth(const std::string& string, int offset, int len)
     return stringWidth(string.substr(offset, len));
 }
 
-// face: now unused
-Font* Font::getFont(int face, int style, int size)
-{
-    (void)face;
-    size = Font::getRealFontSize(size);
-
-    auto internalFs = cmrc::assets::get_filesystem();
-    auto fileData = internalFs.open("assets/FontSansSerif.ttf");
-
-    SDL_RWops* raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
-    if (!raw) {
-        throw std::runtime_error(SDL_GetError());
-    }
-
-    TTF_Font* font = TTF_OpenFontRW(raw, SDL_TRUE, size);
-    if (!font)
-        throw std::runtime_error(TTF_GetError());
-    TTF_SetFontStyle(font, style); // {plain: 0, bold: 1, italic: 2}
-    return new Font(font, size);
-}
-
-int Font::getRealFontSize(int size)
+int Font::getRealFontSize(FontSize size)
 {
     switch (size) {
     case SIZE_LARGE:
@@ -81,9 +74,4 @@ int Font::getRealFontSize(int size)
     default:
         throw std::runtime_error("unknown font size: " + std::to_string(size));
     }
-}
-
-Font* Font::getDefaultFont()
-{
-    return Font::getFont(0, 0, Font::SIZE_MEDIUM);
 }

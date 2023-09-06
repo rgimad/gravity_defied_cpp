@@ -2,6 +2,7 @@
 #include "rms/RecordStoreException.h"
 #include "rms/RecordStoreNotOpenException.h"
 #include "rms/RecordStore.h"
+#include "lcdui/FontStorage.h"
 #include "TextRender.h"
 #include "RecordManager.h"
 #include "Micro.h"
@@ -153,14 +154,15 @@ void MenuManager::initPart(int var1)
         settingStringGoToMain = new SettingsStringRender("Go to Main", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringContinue = new SettingsStringRender("Continue", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringPlayMenu = new SettingsStringRender("Play Menu", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-        std::unique_ptr<Font> tempFont(Font::getFont(32, 1, 8));
-        if (gameMenuAbout->xPos + tempFont->stringWidth("http://www.codebrew.se/") >= getCanvasWidth()) {
+        
+        std::shared_ptr boldSmallFont = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_SMALL);
+        if (gameMenuAbout->xPos + boldSmallFont->stringWidth("http://www.codebrew.se/") >= getCanvasWidth()) {
             textRenderCodeBrewLink = new TextRender("www.codebrew.se", micro);
         } else {
             textRenderCodeBrewLink = new TextRender("http://www.codebrew.se/", micro);
         }
 
-        textRenderCodeBrewLink->setFont(Font::getFont(32, 1, 8));
+        textRenderCodeBrewLink->setFont(boldSmallFont);
         gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay, std::vector<int8_t>());
         gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay, std::vector<int8_t>());
     }

@@ -42,6 +42,7 @@ set(SOURCES
     src/lcdui/Image.cpp
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
+    src/lcdui/FontStorage.cpp
     src/rms/RecordEnumerationImpl.cpp
     src/rms/RecordStore.cpp
 )

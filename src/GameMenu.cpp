@@ -6,6 +6,7 @@
 #include "GameCanvas.h"
 #include "MenuManager.h"
 #include "lcdui/Font.h"
+#include "lcdui/FontStorage.h"
 #include "lcdui/Graphics.h"
 
 GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, std::vector<int8_t> var4)
@@ -16,10 +17,12 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, std::vector<i
     gameMenu = var3;
     canvasWidth = micro->gameCanvas->getWidth();
     canvasHeight = micro->gameCanvas->getHeight();
-    font = Font::getFont(64, 1, 16);
-    font3 = Font::getFont(64, 0, 8);
+    
+    font = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_LARGE);
+    font3 = FontStorage::getFont(Font::STYLE_PLAIN, Font::SIZE_SMALL);
+
     if (canvasWidth >= 128) {
-        font2 = Font::getFont(64, 1, 0);
+        font2 = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_MEDIUM);
     } else {
         font2 = font3;
     }
