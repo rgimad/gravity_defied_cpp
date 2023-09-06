@@ -64,7 +64,7 @@ void SettingsStringRender::setOptionsList(std::vector<std::string> var1)
 
 void SettingsStringRender::init()
 {
-    currentGameMenu = new GameMenu(text, micro, parentGameMenu, nullptr);
+    currentGameMenu = new GameMenu(text, micro, parentGameMenu);
     settingsStringRenders = std::vector<SettingsStringRender*>(optionsList.size());
 
     for (int var1 = 0; var1 < static_cast<int>(settingsStringRenders.size()); ++var1) {

@@ -145,11 +145,11 @@ void MenuManager::initPart(int var1)
         field_360 = field_371;
         return;
     case 4: {
-        gameMenuMain = new GameMenu("Main", micro, nullptr, nullptr);
-        gameMenuPlay = new GameMenu("Play", micro, gameMenuMain, nullptr);
-        gameMenuOptions = new GameMenu("Options", micro, gameMenuMain, nullptr);
-        gameMenuAbout = new GameMenu("About", micro, gameMenuMain, nullptr);
-        gameMenuHelp = new GameMenu("Help", micro, gameMenuMain, nullptr);
+        gameMenuMain = new GameMenu("Main", micro, nullptr);
+        gameMenuPlay = new GameMenu("Play", micro, gameMenuMain);
+        gameMenuOptions = new GameMenu("Options", micro, gameMenuMain);
+        gameMenuAbout = new GameMenu("About", micro, gameMenuMain);
+        gameMenuHelp = new GameMenu("Help", micro, gameMenuMain);
         settingStringBack = new SettingsStringRender("Back", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringGoToMain = new SettingsStringRender("Go to Main", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringContinue = new SettingsStringRender("Continue", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
@@ -163,15 +163,15 @@ void MenuManager::initPart(int var1)
         }
 
         textRenderCodeBrewLink->setFont(boldSmallFont);
-        gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay, nullptr);
-        gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay, nullptr);
+        gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay);
+        gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay);
     }
         return;
     case 5:
-        gameMenuIngame = new GameMenu("Ingame", micro, gameMenuPlay, nullptr);
+        gameMenuIngame = new GameMenu("Ingame", micro, gameMenuPlay);
         gameMenuEnterName = new GameMenu("Enter Name", micro, gameMenuFinished, field_341);
-        gameMenuConfirmClear = new GameMenu("Confirm Clear", micro, gameMenuOptions, nullptr);
-        gameMenuConfirmReset = new GameMenu("Confirm Reset", micro, gameMenuConfirmClear, nullptr);
+        gameMenuConfirmClear = new GameMenu("Confirm Clear", micro, gameMenuOptions);
+        gameMenuConfirmReset = new GameMenu("Confirm Reset", micro, gameMenuConfirmClear);
         taskPlayMenu = new TimerOrMotoPartOrMenuElem("Play Menu", gameMenuPlay, this);
         taskOptions = new TimerOrMotoPartOrMenuElem("Options", gameMenuOptions, this);
         taskHelp = new TimerOrMotoPartOrMenuElem("Help", gameMenuHelp, this);
@@ -233,12 +233,12 @@ void MenuManager::initPart(int var1)
         addTextRender(gameMenuConfirmReset, "Would you like to do a full reset?");
         gameMenuConfirmReset->addMenuElement(field_315);
         gameMenuConfirmReset->addMenuElement(field_314);
-        field_317 = new GameMenu("Objective", micro, gameMenuHelp, nullptr);
+        field_317 = new GameMenu("Objective", micro, gameMenuHelp);
         field_318 = new TimerOrMotoPartOrMenuElem("Objective", field_317, this);
         addTextRender(field_317, "Race to the finish line as fast as you can without crashing. By leaning forward and backward you can adjust the rotation of your bike. By landing on both wheels after jumping, your bike won't crash as easily. Beware, the levels tend to get harder and harder...");
         field_317->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(field_318);
-        field_319 = new GameMenu("Keys", micro, gameMenuHelp, nullptr);
+        field_319 = new GameMenu("Keys", micro, gameMenuHelp);
         field_320 = new TimerOrMotoPartOrMenuElem("Keys", field_319, this);
         addTextRender(field_319, "- " + field_375[0] + " -");
         addTextRender(field_319, "UP accelerates, DOWN brakes, RIGHT leans forward and LEFT leans backward. 1 accelerates and leans backward. 3 accelerates and leans forward. 7 brakes and leans backward. 9 brakes and leans forward.");
@@ -250,19 +250,19 @@ void MenuManager::initPart(int var1)
         addTextRender(field_319, "3 accelerates, 6 brakes, 5 leans forward and 4 leans backward.");
         field_319->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(field_320);
-        field_321 = new GameMenu("Unlocking", micro, gameMenuHelp, nullptr);
+        field_321 = new GameMenu("Unlocking", micro, gameMenuHelp);
         field_322 = new TimerOrMotoPartOrMenuElem("Unlocking", field_321, this);
         addTextRender(field_321, "By completing the easier levels, new levels will be unlocked. You will also gain access to higher leagues where more advanced bikes with different characteristics are available.");
         field_321->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(field_322);
-        gameMenuOptionsHighscoreDescription = new GameMenu("Highscore", micro, gameMenuHelp, nullptr);
+        gameMenuOptionsHighscoreDescription = new GameMenu("Highscore", micro, gameMenuHelp);
         taskHighscore = new TimerOrMotoPartOrMenuElem("Highscore", gameMenuOptionsHighscoreDescription, this);
         addTextRender(gameMenuOptionsHighscoreDescription, "The three best times on every track are saved for each league. When beating a time on a track you will be asked to enter your name. The highscores can be viewed from the Play Menu. By pressing left and right in the highscore view you can view the highscore for a specific league. The highscore can be cleared from the options menu.");
         gameMenuOptionsHighscoreDescription->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(taskHighscore);
         return;
     case 7:
-        gameMenuOptions2 = new GameMenu("Options", micro, gameMenuHelp, nullptr);
+        gameMenuOptions2 = new GameMenu("Options", micro, gameMenuHelp);
         field_326 = new TimerOrMotoPartOrMenuElem("Options", gameMenuOptions2, this);
 
         addTextRender(gameMenuOptions2, "Perspective: On/Off");
