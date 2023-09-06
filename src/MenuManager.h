@@ -84,7 +84,7 @@ private:
     std::string field_340;
     char* field_341;
     char field_342[4];
-    char defaultInputField[4] = "AAA";
+    char defaultInputString[4] = "AAA";
     int8_t availableLeagues = 0;
     int8_t field_344 = 0;
     std::vector<int> field_345 = { 0, 0, 0 };

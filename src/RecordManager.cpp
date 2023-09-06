@@ -81,8 +81,8 @@ void RecordManager::loadRecordInfo(std::vector<int8_t> var1)
 
     for (league = 0; league < LEAGUES_MAX; ++league) {
         for (pos = 0; pos < RECORD_NO_MAX; ++pos) {
-            for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
-                recordName[league][pos][player] = var1[offset++];
+            for (auto i = 0; i < PLAYER_NAME_MAX; ++i) {
+                recordName[league][pos][i] = var1[offset++];
             }
         }
     }
@@ -103,8 +103,8 @@ void RecordManager::getLevelInfo(std::vector<int8_t> var1)
 
     for (league = 0; league < LEAGUES_MAX; ++league) {
         for (recordNo = 0; recordNo < RECORD_NO_MAX; ++recordNo) {
-            for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
-                var1[shift++] = recordName[league][recordNo][player];
+            for (auto i = 0; i < PLAYER_NAME_MAX; ++i) {
+                var1[shift++] = recordName[league][recordNo][i];
             }
         }
     }
@@ -194,8 +194,8 @@ void RecordManager::method_17(int league, char* values, int64_t timeMs)
         addNewRecord(league, newRecordPos);
         recordTimeMs[league][newRecordPos] = timeMs;
 
-        for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
-            recordName[league][newRecordPos][player] = values[player];
+        for (auto i = 0; i < PLAYER_NAME_MAX; ++i) {
+            recordName[league][newRecordPos][i] = values[i];
         }
     }
 }
@@ -204,8 +204,8 @@ void RecordManager::addNewRecord(int gameLevel, int position)
 {
     for (auto pos = 2; pos > position; --pos) {
         recordTimeMs[gameLevel][pos] = recordTimeMs[gameLevel][pos - 1];
-        for (auto player = 0; player < PLAYER_NAME_MAX; ++player) {
-            recordName[gameLevel][pos][player] = recordName[gameLevel][pos - 1][player];
+        for (auto i = 0; i < PLAYER_NAME_MAX; ++i) {
+            recordName[gameLevel][pos][i] = recordName[gameLevel][pos - 1][i];
         }
     }
 }

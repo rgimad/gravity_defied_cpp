@@ -23,7 +23,7 @@ void MenuManager::initPart(int var1)
     int var4;
     switch (var1) {
     case 1:
-        field_341 = defaultInputField;
+        field_341 = defaultInputString;
         field_374 = { "On", "Off" };
         field_375 = { "Keyset 1", "Keyset 2", "Keyset 3" };
         recordManager = new RecordManager();
