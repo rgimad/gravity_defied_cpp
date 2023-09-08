@@ -3,7 +3,6 @@
 #include "LevelLoader.h"
 #include "GamePhysics.h"
 #include "GameCanvas.h"
-#include "utils/Stream.h"
 
 GameLevel::GameLevel()
 {
@@ -201,43 +200,43 @@ void GameLevel::renderTrackNearestGreenLine(GameCanvas* gameCanvas)
     }
 }
 
-void GameLevel::load(std::ifstream& var1)
+void GameLevel::load(FileStream* inStream)
 {
     init();
     int8_t c;
-    Stream::readVariable(&c, var1, true);
+    inStream->readVariable(&c, true);
     if (c == 50) {
         char var3[20];
-        Stream::readVariable(var3, var1, false, 20);
+        inStream->readVariable(var3, false, 20);
     }
 
     finishFlagPoint = 0;
     startFlagPoint = 0;
     int pointX, pointY;
     short pointsCount;
-    Stream::readVariable(&startPosX, var1, true);
-    Stream::readVariable(&startPosY, var1, true);
-    Stream::readVariable(&finishPosX, var1, true);
-    Stream::readVariable(&finishPosY, var1, true);
-    Stream::readVariable(&pointsCount, var1, true);
-    Stream::readVariable(&pointX, var1, true);
-    Stream::readVariable(&pointY, var1, true);
+    inStream->readVariable(&startPosX, true);
+    inStream->readVariable(&startPosY, true);
+    inStream->readVariable(&finishPosX, true);
+    inStream->readVariable(&finishPosY, true);
+    inStream->readVariable(&pointsCount, true);
+    inStream->readVariable(&pointX, true);
+    inStream->readVariable(&pointY, true);
     int offsetX = pointX;
     int offsetY = pointY;
     addPointSimple(pointX, pointY);
 
     for (int i = 1; i < pointsCount; ++i) {
         int8_t modeOrDx;
-        Stream::readVariable(&modeOrDx, var1, true);
+        inStream->readVariable(&modeOrDx, true);
         if (modeOrDx == -1) {
             offsetY = 0;
             offsetX = 0;
-            Stream::readVariable(&pointX, var1, true);
-            Stream::readVariable(&pointY, var1, true);
+            inStream->readVariable(&pointX, true);
+            inStream->readVariable(&pointY, true);
         } else {
             pointX = modeOrDx;
             int8_t temp;
-            Stream::readVariable(&temp, var1, true);
+            inStream->readVariable(&temp, true);
             pointY = temp;
         }
 
