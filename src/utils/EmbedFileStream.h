@@ -4,10 +4,9 @@
 
 #include <cmrc/cmrc.hpp>
 
-class EmbedFileStream: public FileStream
-{
+class EmbedFileStream : public FileStream {
 public:
-    EmbedFileStream(std::string embedFilePath);
+    EmbedFileStream(const std::string& embedFilePath);
     virtual void setPos(std::streampos pos) override;
     virtual bool isOpen() override;
 

@@ -5,7 +5,7 @@
 
 CMRC_DECLARE(assets);
 
-EmbedFileStream::EmbedFileStream(std::string embedFileName)
+EmbedFileStream::EmbedFileStream(const std::string& embedFileName)
     : FileStream()
 {
     auto embedFs = cmrc::assets::get_filesystem();
@@ -24,7 +24,7 @@ void EmbedFileStream::read_impl(char* s, std::streamsize n)
     buffPos += n;
 }
 
-void EmbedFileStream::write_impl([[maybe_unused]] char* s, [[maybe_unused]]std::streamsize n)
+void EmbedFileStream::write_impl([[maybe_unused]] char* s, [[maybe_unused]] std::streamsize n)
 {
     throw std::runtime_error("Write to buffer no supported!");
 }
