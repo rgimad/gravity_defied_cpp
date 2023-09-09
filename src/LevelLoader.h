@@ -10,6 +10,7 @@
 #include "GameCanvas.h"
 #include "GameLevel.h"
 #include "TimerOrMotoPartOrMenuElem.h"
+#include "utils/FileStream.h"
 
 class LevelLoader {
 private:
@@ -24,6 +25,7 @@ private:
     static int field_135;
     static int field_136;
 
+    FileStream* levelFileStream;
     void loadLevels();
 
 public:

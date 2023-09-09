@@ -1,8 +1,9 @@
 #include "LevelLoader.h"
+#include "utils/FileStream.h"
+#include "utils/EmbedFileStream.h"
 
 #include <climits>
-
-#include "utils/Stream.h"
+#include <algorithm>
 
 int LevelLoader::field_133 = 0;
 int LevelLoader::field_134 = 0;
@@ -24,36 +25,42 @@ LevelLoader::LevelLoader()
         field_124[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) >> 16);
     }
 
-    try {
-        loadLevels();
-    } catch (std::exception& e) {
+    FileStream* fileStream = new FileStream("levels.mrg", std::ios::in | std::ios::binary);
+    if (fileStream->isOpen()) {
+        levelFileStream = fileStream;
+    } else {
+        delete fileStream;
+        std::cout << "Warning! Using embedded levels.mrg" << std::endl;
+        EmbedFileStream* embedFileStream = new EmbedFileStream("assets/levels.mrg");
+        levelFileStream = static_cast<FileStream*>(embedFileStream);
     }
+
+    loadLevels();
     method_87();
 }
 
 LevelLoader::~LevelLoader()
 {
+    delete levelFileStream; 
 }
 
 void LevelLoader::loadLevels()
 {
-    std::ifstream dis("levels.mrg", std::ios::binary);
-
     std::vector<int8_t> var3(40);
     std::vector<int> var4(3);
 
     for (int league = 0; league < 3; ++league) {
-        Stream::readVariable(&var4[league], dis, true);
+        levelFileStream->readVariable(&var4[league], true);
         levelOffsetInFile[league] = std::vector<int>(var4[league]);
         levelNames[league] = std::vector<std::string>(var4[league]);
 
         for (int levelNp = 0; levelNp < var4[league]; ++levelNp) {
             int var7;
-            Stream::readVariable(&var7, dis, true);
+            levelFileStream->readVariable(&var7, true);
             levelOffsetInFile[league][levelNp] = var7;
 
             for (int var8 = 0; var8 < 40; ++var8) {
-                Stream::readVariable(&var3[var8], dis, true);
+                levelFileStream->readVariable(&var3[var8], true);
                 if (var3[var8] == 0) {
                     std::string s = std::string(reinterpret_cast<char*>(var3.data()), var8);
                     std::replace(s.begin(), s.end(), '_', ' ');
@@ -89,13 +96,11 @@ int LevelLoader::method_88(int var1, int var2)
 
 void LevelLoader::method_89(int var1, int var2)
 {
-    std::ifstream dis("levels.mrg", std::ios::binary);
-    dis.seekg(levelOffsetInFile[var1 - 1][var2 - 1]);
+    levelFileStream->setPos(levelOffsetInFile[var1 - 1][var2 - 1]);
     if (gameLevel == nullptr) {
         gameLevel = new GameLevel();
     }
-    gameLevel->load(dis);
-    dis.close();
+    gameLevel->load(levelFileStream);
     method_96(gameLevel);
 }
 

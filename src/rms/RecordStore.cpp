@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "RecordStoreException.h"
+#include "../utils/FileStream.h"
 #include "../utils/String.h"
 
 RecordStore::RecordStore(std::filesystem::path filePath, RecordEnumerationImpl* records)
@@ -50,18 +51,15 @@ void RecordStore::setRecord(int recordId, std::vector<int8_t> arr, int offset, i
 
 void RecordStore::save()
 {
-    std::ofstream ofstream(filePath, std::ios::binary);
-    records->serialize(ofstream);
-    ofstream.close();
+    FileStream outStream(filePath, std::ios::out | std::ios::binary);
+    records->serialize(&outStream);
 }
 
 RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath)
 {
     RecordEnumerationImpl* temp = new RecordEnumerationImpl();
-    std::ifstream ifstream(filePath, std::ios::binary);
-    temp->deserialize(ifstream);
-    ifstream.close();
-
+    FileStream inStream(filePath, std::ios::in | std::ios::binary);
+    temp->deserialize(&inStream);
     return temp;
 }
 

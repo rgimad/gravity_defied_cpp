@@ -4,6 +4,8 @@
 #include <vector>
 #include <fstream>
 
+#include "utils/FileStream.h"
+
 class GameCanvas;
 
 class GameLevel {
@@ -45,5 +47,5 @@ public:
     /*synchronized*/ void renderTrackNearestGreenLine(GameCanvas* canvas);
     void addPointSimple(int var1, int var2);
     void addPoint(int x, int y);
-    /*synchronized*/ void load(std::ifstream& var1);
+    /*synchronized*/ void load(FileStream* inStream);
 };

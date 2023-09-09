@@ -21,6 +21,7 @@ pkg_search_module(SDL2_IMAGE REQUIRED IMPORTED_TARGET SDL2_image)
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
     src/utils/Time.cpp
+    src/utils/EmbedFileStream.cpp
     src/main.cpp
     src/MathF16.cpp
     src/GameCanvas.cpp

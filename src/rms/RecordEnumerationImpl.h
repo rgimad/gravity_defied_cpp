@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "RecordEnumeration.h"
+#include "../utils/FileStream.h"
 
 class RecordEnumerationImpl : public RecordEnumeration {
 private:
@@ -23,8 +24,8 @@ public:
     int nextRecordId();
     void destroy();
 
-    void serialize(std::ostream& os);
-    void deserialize(std::istream& is);
+    void serialize(FileStream* outStream);
+    void deserialize(FileStream* inStream);
 
     std::vector<std::vector<int8_t>> data;
 };

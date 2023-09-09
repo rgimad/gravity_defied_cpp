@@ -1,6 +1,4 @@
 #include "RecordEnumerationImpl.h"
-
-#include "../utils/Stream.h"
 #include "RecordStoreException.h"
 
 RecordEnumerationImpl::RecordEnumerationImpl(std::vector<std::vector<int8_t>> data)
@@ -59,33 +57,33 @@ void RecordEnumerationImpl::destroy()
     data.clear();
 }
 
-void RecordEnumerationImpl::serialize(std::ostream& os)
+void RecordEnumerationImpl::serialize(FileStream* outStream)
 {
     size_t temp = data.size();
-    Stream::writeVariable(&currentPos, os);
-    Stream::writeVariable(&(temp = data.size()), os);
+    outStream->writeVariable(&currentPos);
+    outStream->writeVariable(&(temp = data.size()));
 
     for (auto i = data.cbegin(); i != data.cend(); i++) {
-        Stream::writeVariable(&(temp = i->size()), os);
+        outStream->writeVariable(&(temp = i->size()));
         for (auto j = i->cbegin(); j != i->cend(); j++) {
             int8_t buffer;
-            Stream::writeVariable(&(buffer = *j), os);
+            outStream->writeVariable(&(buffer = *j));
         }
     }
 }
 
-void RecordEnumerationImpl::deserialize(std::istream& is)
+void RecordEnumerationImpl::deserialize(FileStream* inStream)
 {
     size_t temp;
-    Stream::readVariable(&currentPos, is);
-    Stream::readVariable(&temp, is);
+    inStream->readVariable(&currentPos);
+    inStream->readVariable(&temp);
     data.resize(temp);
 
     for (size_t i = 0; i < data.size(); ++i) {
-        Stream::readVariable(&temp, is);
+        inStream->readVariable(&temp);
         data[i].resize(temp);
         for (size_t j = 0; j < data[i].size(); ++j) {
-            Stream::readVariable(&data[i][j], is);
+            inStream->readVariable(&data[i][j]);
         }
     }
 }
