@@ -58,7 +58,7 @@ void RecordStore::save()
 RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath)
 {
     RecordEnumerationImpl* temp = new RecordEnumerationImpl();
-    FileStream inStream(filePath, std::ios::out | std::ios::binary);
+    FileStream inStream(filePath, std::ios::in | std::ios::binary);
     temp->deserialize(&inStream);
     return temp;
 }
