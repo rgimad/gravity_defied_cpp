@@ -44,7 +44,7 @@ int64_t Micro::goLoadingStep()
     int64_t startTimeMillis = Time::currentTimeMillis();
     switch (gameLoadingStateStage) {
     case 1:
-        levelLoader = new LevelLoader();
+        levelLoader = new LevelLoader(mrgFilePath);
         break;
     case 2:
         gamePhysics = new GamePhysics(levelLoader);
@@ -345,4 +345,9 @@ void Micro::goalLoop()
 void Micro::setMode(int mode)
 {
     gamePhysics->setMode(mode);
+}
+
+void Micro::setMrgFilePath(const char* path)
+{
+    mrgFilePath = std::filesystem::path(path);
 }

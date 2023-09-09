@@ -18,14 +18,14 @@ const int LevelLoader::field_118 = 1;
 bool LevelLoader::isEnabledPerspective = true;
 bool LevelLoader::isEnabledShadows = true;
 
-LevelLoader::LevelLoader()
+LevelLoader::LevelLoader(const std::filesystem::path& mrgFilePath)
 {
     for (int i = 0; i < 3; ++i) {
         field_123[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] + 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] + 19660) >> 1) >> 16);
         field_124[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) >> 16);
     }
 
-    FileStream* fileStream = new FileStream("levels.mrg", std::ios::in | std::ios::binary);
+    FileStream* fileStream = new FileStream(mrgFilePath, std::ios::in | std::ios::binary);
     if (fileStream->isOpen()) {
         levelFileStream = fileStream;
     } else {

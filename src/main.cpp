@@ -4,12 +4,15 @@
 
 #include "Micro.h"
 
-int main(int argc, char** args)
+int main(int argc, char** argv)
 {
-    (void)argc;
-    (void)args;
     try {
         std::unique_ptr<Micro> micro = std::make_unique<Micro>();
+
+        if (argc == 2) {
+            micro->setMrgFilePath(argv[1]);
+        }
+
         micro->startApp();
     } catch (std::exception& e) {
         std::cout << "Exception: " << e.what() << std::endl;
