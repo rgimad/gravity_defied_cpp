@@ -347,7 +347,16 @@ void Micro::setMode(int mode)
     gamePhysics->setMode(mode);
 }
 
-void Micro::setMrgFilePath(const char* path)
+void Micro::setMrgFilePath(const std::string& path)
 {
     mrgFilePath = std::filesystem::path(path);
+}
+
+void Micro::showHelp(const char* progName)
+{
+    std::cout << "Useage: " << progName << " <FILE>" << std::endl
+              << "Example:" << std::endl
+              << "  " << progName << "             # No parameters. Use built-in levels file" << std::endl
+              << "  " << progName << " levels.mrg  # Use a custom levels file" << std::endl
+              << std::endl;
 }

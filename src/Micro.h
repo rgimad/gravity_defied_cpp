@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <filesystem>
+#include <string>
 
 class GameCanvas;
 class GamePhysics;
@@ -42,5 +43,6 @@ public:
     void goalLoop();
     void setNumPhysicsLoops(int value);
     void setMode(int mode);
-    void setMrgFilePath(const char* path);
+    void setMrgFilePath(const std::string& path);
+    void showHelp(const char* progName);
 };
