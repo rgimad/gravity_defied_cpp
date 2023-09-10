@@ -32,7 +32,7 @@ LevelLoader::LevelLoader(const std::filesystem::path& mrgFilePath)
         }
         levelFileStream = fileStream;
     } else {
-        EmbedFileStream* embedFileStream = new EmbedFileStream("assets/levels.mrg");
+        EmbedFileStream* embedFileStream = new EmbedFileStream("levels.mrg");
         levelFileStream = static_cast<FileStream*>(embedFileStream);
     }
 

@@ -8,7 +8,7 @@ Font::Font(FontStyle style, FontSize pointSize)
 {
     if (!ttfRwOps) {
         cmrc::embedded_filesystem internalFs = cmrc::assets::get_filesystem();
-        cmrc::file fileData = internalFs.open("assets/FontSansSerif.ttf");
+        cmrc::file fileData = internalFs.open("FontSansSerif.ttf");
         SDL_RWops* raw = SDL_RWFromConstMem(fileData.begin(), fileData.size());
         if (!raw) {
             throw std::runtime_error(SDL_GetError());
