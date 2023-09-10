@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <filesystem>
+#include <string>
 
 class GameCanvas;
 class GamePhysics;
@@ -10,6 +12,7 @@ class Micro {
 private:
     int64_t goLoadingStep();
     void destroyApp(bool var1);
+    std::filesystem::path mrgFilePath;
 
 public:
     GameCanvas* gameCanvas;
@@ -40,4 +43,6 @@ public:
     void goalLoop();
     void setNumPhysicsLoops(int value);
     void setMode(int mode);
+    void setMrgFilePath(const std::string& path);
+    void showHelp(const char* progName);
 };

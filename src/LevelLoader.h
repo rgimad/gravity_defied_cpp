@@ -46,7 +46,7 @@ public:
     int field_137;
     int field_138;
 
-    LevelLoader();
+    LevelLoader(const std::filesystem::path& mrgFilePath);
     ~LevelLoader();
 
     std::string getName(int league, int level);
