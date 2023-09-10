@@ -33,7 +33,7 @@ public:
     Micro();
     ~Micro();
 
-    void startApp();
+    void startApp(int argc, char** argv);
 
     void gameToMenu();
     void menuToGame();
@@ -43,6 +43,5 @@ public:
     void goalLoop();
     void setNumPhysicsLoops(int value);
     void setMode(int mode);
-    void setMrgFilePath(const std::string& path);
     void showHelp(const char* progName);
 };

@@ -18,12 +18,13 @@ private:
     static std::unique_ptr<RecordStore> createRecordStore(std::string name, bool createIfNecessary);
     static void log(std::string s);
 
-    inline static const std::string recordStoreDir = "recordStore";
+    inline static std::filesystem::path recordStoreDir;
     inline static std::unordered_map<std::string, std::unique_ptr<RecordStore>> opened;
     std::filesystem::path filePath;
     std::unique_ptr<RecordEnumerationImpl> records;
 
 public:
+    static void setRecordStoreDir(const char* progName);
     static RecordStore* openRecordStore(std::string name, bool createIfNecessary);
     void closeRecordStore();
     static void deleteRecordStore(std::string name);

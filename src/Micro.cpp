@@ -6,6 +6,7 @@
 #include "LevelLoader.h"
 #include "utils/Time.h"
 #include "lcdui/CanvasImpl.h"
+#include "rms/RecordStore.h"
 
 bool Micro::field_249 = false;
 int Micro::gameLoadingStateStage = 0;
@@ -142,8 +143,21 @@ void Micro::destroyApp(bool var1)
     menuManager->saveSmthToRecordStoreAndCloseIt();
 }
 
-void Micro::startApp()
+void Micro::startApp(int argc, char** argv)
 {
+    if (argc > 1) {
+        std::string argv1(argv[1]);
+
+        if (argv1 == "-h" || argv1 == "--help") {
+            showHelp(argv[0]);
+            return;
+        }
+
+        this->mrgFilePath = argv1;
+    }
+
+    RecordStore::setRecordStoreDir(argv[0]);
+
     field_249 = true;
     // if (thread == null) {
     //     thread = new Thread(this);
@@ -345,11 +359,6 @@ void Micro::goalLoop()
 void Micro::setMode(int mode)
 {
     gamePhysics->setMode(mode);
-}
-
-void Micro::setMrgFilePath(const std::string& path)
-{
-    mrgFilePath = std::filesystem::path(path);
 }
 
 void Micro::showHelp(const char* progName)
