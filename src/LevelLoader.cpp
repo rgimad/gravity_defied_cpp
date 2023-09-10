@@ -25,12 +25,13 @@ LevelLoader::LevelLoader(const std::filesystem::path& mrgFilePath)
         field_124[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) >> 16);
     }
 
-    FileStream* fileStream = new FileStream(mrgFilePath, std::ios::in | std::ios::binary);
-    if (fileStream->isOpen()) {
+    if (!mrgFilePath.string().empty()) {
+        FileStream* fileStream = new FileStream(mrgFilePath, std::ios::in | std::ios::binary);
+        if (!fileStream->isOpen()) {
+            throw std::system_error(errno, std::system_category(), "Failed to open " + mrgFilePath.string());
+        }
         levelFileStream = fileStream;
     } else {
-        delete fileStream;
-        std::cout << "Warning! Using embedded levels.mrg" << std::endl;
         EmbedFileStream* embedFileStream = new EmbedFileStream("assets/levels.mrg");
         levelFileStream = static_cast<FileStream*>(embedFileStream);
     }
@@ -41,7 +42,7 @@ LevelLoader::LevelLoader(const std::filesystem::path& mrgFilePath)
 
 LevelLoader::~LevelLoader()
 {
-    delete levelFileStream; 
+    delete levelFileStream;
 }
 
 void LevelLoader::loadLevels()
