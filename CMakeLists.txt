@@ -53,6 +53,7 @@ include(cmake/CMakeRC.cmake)
 cmrc_add_resource_library(Assets
     NAMESPACE assets
     ALIAS Assets::Assets
+    WHENCE assets
     assets/bluearm.png
     assets/helmet.png
     assets/sprites.png

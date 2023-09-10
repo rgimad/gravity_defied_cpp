@@ -10,8 +10,8 @@
 
 GameCanvas::GameCanvas(Micro* micro)
 {
-    splashImage = std::make_unique<Image>("assets/splash.png");
-    logoImage = std::make_unique<Image>("assets/logo.png");
+    splashImage = std::make_unique<Image>("splash.png");
+    logoImage = std::make_unique<Image>("logo.png");
 
     // repaint();
     this->micro = micro;
@@ -19,12 +19,12 @@ GameCanvas::GameCanvas(Micro* micro)
     font = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_MEDIUM);
     auto defaultFont = FontStorage::getFont(Font::STYLE_PLAIN, Font::SIZE_MEDIUM);
 
-    helmetImage = std::make_unique<Image>("assets/helmet.png");
+    helmetImage = std::make_unique<Image>("helmet.png");
 
     helmetSpriteWidth = helmetImage->getWidth() / 6;
     helmetSpriteHeight = helmetImage->getHeight() / 6;
 
-    spritesImage = std::make_unique<Image>("assets/sprites.png");
+    spritesImage = std::make_unique<Image>("sprites.png");
 
     dx = 0;
     dy = height2;
@@ -72,12 +72,12 @@ int GameCanvas::loadSprites(int flags)
 {
     if (flags & 1) {
         if (!fenderImage) {
-            fenderImage = std::make_unique<Image>("assets/fender.png");
+            fenderImage = std::make_unique<Image>("fender.png");
             fenderSpriteWidth = fenderImage->getWidth() / 6;
             fenderSpriteHeight = fenderImage->getHeight() / 6;
         }
         if (!engineImage) {
-            engineImage = std::make_unique<Image>("assets/engine.png");
+            engineImage = std::make_unique<Image>("engine.png");
             engineSpriteWidth = engineImage->getWidth() / 6;
             engineSpriteHeight = engineImage->getHeight() / 6;
         }
@@ -88,18 +88,18 @@ int GameCanvas::loadSprites(int flags)
     
     if (flags & 2) {
         if (!bodyPartsImages[1]) {
-            bodyPartsImages[1] = std::make_unique<Image>("assets/blueleg.png");
+            bodyPartsImages[1] = std::make_unique<Image>("blueleg.png");
         }
 
         bodyPartsSpriteWidth[1] = bodyPartsImages[1]->getWidth() / 6;
         bodyPartsSpriteHeight[1] = bodyPartsImages[1]->getHeight() / 3;
 
-        bodyPartsImages[0] = std::make_unique<Image>("assets/bluearm.png");
+        bodyPartsImages[0] = std::make_unique<Image>("bluearm.png");
 
         bodyPartsSpriteWidth[0] = bodyPartsImages[0]->getWidth() / 6;
         bodyPartsSpriteHeight[0] = bodyPartsImages[0]->getHeight() / 3;
 
-        bodyPartsImages[2] = std::make_unique<Image>("assets/bluebody.png");
+        bodyPartsImages[2] = std::make_unique<Image>("bluebody.png");
 
         bodyPartsSpriteWidth[2] = bodyPartsImages[2]->getWidth() / 6;
         bodyPartsSpriteHeight[2] = bodyPartsImages[2]->getHeight() / 3;
