@@ -354,9 +354,9 @@ void Micro::setMrgFilePath(const std::string& path)
 
 void Micro::showHelp(const char* progName)
 {
-    std::cout << "Useage: " << progName << " <FILE>" << std::endl
+    std::cout << "Usage: " << progName << " <FILE>" << std::endl
               << "Example:" << std::endl
-              << "  " << progName << "             # No parameters. Use built-in levels file" << std::endl
-              << "  " << progName << " levels.mrg  # Use a custom levels file" << std::endl
+              << "  " << progName << " levels.mrg  # A path to a custom levels file could be specified" << std::endl
+              << "  " << progName << "             # When no path is specified, the built-in levels file will be used" << std::endl
               << std::endl;
 }
