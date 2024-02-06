@@ -201,7 +201,7 @@ void Micro::run()
 
             for (int i = numPhysicsLoops; i > 0; --i) {
                 if (field_248) {
-                    gameTimeMs += 20L;
+                    gameTimeMs += 10L;
                 }
 
                 if (timeMs == 0L) {
@@ -209,8 +209,8 @@ void Micro::run()
                 }
 
                 if ((var5 = gamePhysics->updatePhysics()) == 3 && field_246 == 0L) {
-                    field_246 = Time::currentTimeMillis() + 3000L;
-                    gameCanvas->scheduleGameTimerTask("Crashed", 3000);
+                    field_246 = Time::currentTimeMillis() + 1500L;
+                    gameCanvas->scheduleGameTimerTask("Crashed", 1500);
                     gameCanvas->repaint();
                     gameCanvas->serviceRepaints();
                 }
@@ -220,7 +220,7 @@ void Micro::run()
                 }
 
                 if (var5 == 5) {
-                    gameCanvas->scheduleGameTimerTask("Crashed", 3000);
+                    gameCanvas->scheduleGameTimerTask("Crashed", 1500);
                     gameCanvas->repaint();
                     gameCanvas->serviceRepaints();
 
@@ -280,14 +280,14 @@ void Micro::run()
         try {
             gamePhysics->method_53();
             int64_t var1;
-            if ((var1 = Time::currentTimeMillis()) - var3 < 30L) {
+            if ((var1 = Time::currentTimeMillis()) - var3 < 15L) {
                 // try {
                 //     synchronized (this) {
                 //         wait(Math.max(30L - (var1 - var3), 1L));
                 //     }
                 // } catch (InterruptedException var11) {
                 // }
-                Time::sleep(std::max(30LL - (var1 - var3), 1LL));
+                Time::sleep(std::max(15LL - (var1 - var3), 1LL));
 
                 var3 = Time::currentTimeMillis();
             } else {
@@ -311,7 +311,7 @@ void Micro::goalLoop()
         gameCanvas->scheduleGameTimerTask("Finished", 1000);
     }
 
-    for (int64_t timeMs = Time::currentTimeMillis() + 1000L; timeMs > Time::currentTimeMillis(); gameCanvas->repaint()) {
+    for (int64_t timeMs = Time::currentTimeMillis() + 1500L; timeMs > Time::currentTimeMillis(); gameCanvas->repaint()) {
         if (isInGameMenu) {
             gameCanvas->repaint();
             return;
@@ -340,14 +340,14 @@ void Micro::goalLoop()
 
         gamePhysics->method_53();
         int64_t var2;
-        if ((var2 = Time::currentTimeMillis()) - var4 < 30L) {
+        if ((var2 = Time::currentTimeMillis()) - var4 < 15L) {
             // try {
             //     synchronized (this) {
             //         wait(Math.max(30L - (var2 - var4), 1L));
             //     }
             // } catch (InterruptedException var14) {
             // }
-            Time::sleep(std::max(30LL - (var2 - var4), 1LL));
+            Time::sleep(std::max(15LL - (var2 - var4), 1LL));
 
             var4 = Time::currentTimeMillis();
         } else {
