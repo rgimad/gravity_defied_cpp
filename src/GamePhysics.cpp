@@ -508,63 +508,61 @@ int GamePhysics::method_39(int var1)
     int var3 = 0;
     int var4 = var1;
 
-label77:
-    do {
+    while (var3 < var1) {
         int var5;
-        while (var3 < var1) {
-            method_45(var4 - var3);
-            if (!var2 && method_38()) {
-                var5 = 3;
-            } else {
-                var5 = method_46(index10);
+        method_45(var4 - var3);
+        if (!var2 && method_38()) {
+            var5 = 3;
+        } else {
+            var5 = method_46(index10);
+        }
+
+        if (!var2 && field_68) {
+            if (var5 != 3) {
+                return 2;
             }
 
-            if (!var2 && field_68) {
-                if (var5 != 3) {
-                    return 2;
-                }
+            return 1;
+        }
 
-                return 1;
-            }
+        if (var5 == 0) {
+            var4 = (var3 + var4) >> 1;
 
-            if (var5 == 0) {
-                var4 = (var3 + var4) >> 1;
-                goto label77;
-            }
-
-            if (var5 == 3) {
-                field_68 = true;
-                var4 = (var3 + var4) >> 1;
-            } else {
-                int var6;
-                if (var5 == 1) {
-                    do {
-                        method_47(index10);
-                        if ((var6 = method_46(index10)) == 0) {
-                            return 5;
-                        }
-                    } while (var6 != 2);
-                }
-
-                var3 = var4;
-                var4 = var1;
-                index01 = index01 == 1 ? 0 : 1;
-                index10 = index10 == 1 ? 0 : 1;
+            if (((var4 = (var3 + var4) >> 1) - var3 < 0 ? -(var4 - var3) : var4 - var3) >= 65) {
+              return 5;
             }
         }
 
-        if ((var5 = (int)((int64_t)(field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16) * (int64_t)(field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16) >> 16) + (int)((int64_t)(field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16) * (int64_t)(field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16) >> 16)) < 983040) {
-            field_35 = true;
+        if (var5 == 3) {
+            field_68 = true;
+            var4 = (var3 + var4) >> 1;
+        } else {
+            int var6;
+            if (var5 == 1) {
+                do {
+                    method_47(index10);
+                    if ((var6 = method_46(index10)) == 0) {
+                        return 5;
+                    }
+                } while (var6 != 2);
+            }
+
+            var3 = var4;
+            var4 = var1;
+            index01 = index01 == 1 ? 0 : 1;
+            index10 = index10 == 1 ? 0 : 1;
         }
+    }
 
-        if (var5 > 4587520) {
-            field_35 = true;
-        }
+    int wheelDist = (int)((int64_t)(field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16) * (int64_t)(field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16) >> 16) + (int)((int64_t)(field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16) * (int64_t)(field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16) >> 16);
+    if (wheelDist < 983040) {
+        field_35 = true;
+    }
+    if (wheelDist > 4587520) {
+        field_35 = true;
+    }
 
-        return 0;
-    } while (((var4 = (var3 + var4) >> 1) - var3 < 0 ? -(var4 - var3) : var4 - var3) >= 65);
-
-    return 5;
+    return 0;
 }
 
 void GamePhysics::method_40(int var1)
