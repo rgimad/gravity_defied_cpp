@@ -529,7 +529,7 @@ int GamePhysics::method_39(int var1)
             var4 = (var3 + var4) >> 1;
 
             if (((var4 = (var3 + var4) >> 1) - var3 < 0 ? -(var4 - var3) : var4 - var3) >= 65) {
-              return 5;
+                return 5;
             }
         }
 
