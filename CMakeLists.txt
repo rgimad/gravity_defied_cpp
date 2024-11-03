@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.10)
 project(gravity_defied_cpp C CXX)
 set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
