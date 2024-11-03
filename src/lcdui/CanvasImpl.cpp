@@ -28,20 +28,20 @@ CanvasImpl::CanvasImpl(Canvas* canvas)
         0,
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        width, height,
-        SDL_WINDOW_SHOWN);
+        defaultWidth, defaultHeight,
+        SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     if (!window) {
         throw std::runtime_error(SDL_GetError());
     }
 
-    renderer = SDL_CreateRenderer(
-        window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
     if (!renderer) {
         throw std::runtime_error(SDL_GetError());
     }
 
+    SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
 }
@@ -62,12 +62,20 @@ void CanvasImpl::repaint()
 
 int CanvasImpl::getWidth()
 {
-    return width;
+    if (windowWidth < 0) {
+        return defaultWidth;
+    }
+
+    return windowWidth;
 }
 
 int CanvasImpl::getHeight()
 {
-    return height;
+    if (windowHeight < 0) {
+        return defaultHeight;
+    }
+
+    return windowHeight;
 }
 
 SDL_Renderer* CanvasImpl::getRenderer()

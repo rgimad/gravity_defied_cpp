@@ -40,10 +40,11 @@ void RecordStore::closeRecordStore()
 
 int RecordStore::addRecord(std::vector<int8_t> arr, int offset, int numBytes)
 {
-    log("addRecord()");
+    log("addRecord(" + std::to_string(arr.size()) + "," + std::to_string(offset) + "," + std::to_string(numBytes) + ")");
     assert(static_cast<int>(arr.size()) == numBytes);
     assert(offset == 0);
     int id = records->addRecord(arr);
+    log("record id = " + std::to_string(id));
     save();
     return id;
 }
@@ -72,6 +73,8 @@ RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath)
 
 RecordStore* RecordStore::openRecordStore(std::string name, bool createIfNecessary)
 {
+    log("openRecordStore(" + name + ", " + std::to_string(createIfNecessary) + ")");
+
     if (opened.find(name) == opened.end()) {
         opened[name] = createRecordStore(name, createIfNecessary);
     }
@@ -95,6 +98,7 @@ std::unique_ptr<RecordStore> RecordStore::createRecordStore(std::string name, bo
         rs->save();
         return rs;
     } else {
+        log("can't create record, file is missing");
         throw RecordStoreException();
     }
 }

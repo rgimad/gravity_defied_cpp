@@ -7,6 +7,7 @@
 
 void RecordManager::method_8(int var1, int var2)
 {
+    std::cout << "method_8 " << var1 << " " << var2 << std::endl;
     resetRecordsTime();
 
     try {
@@ -40,7 +41,7 @@ void RecordManager::method_8(int var1, int var2)
         }
 
         loadRecordInfo(var4);
-        recordEnum->destroy();
+        // recordEnum->destroy();
     }
 }
 
@@ -161,13 +162,17 @@ void RecordManager::writeRecordInfo()
         try {
             packedRecordInfoRecordId = recordStore->addRecord(packedRecordInfo, 0, 96);
         } catch (RecordStoreNotOpenException& var1) {
+            return;
         } catch (RecordStoreException& var2) {
+            return;
         }
     } else {
         try {
             recordStore->setRecord(packedRecordInfoRecordId, packedRecordInfo, 0, 96);
         } catch (RecordStoreNotOpenException& var3) {
+            return;
         } catch (RecordStoreException& var4) {
+            return;
         }
     }
 }
@@ -220,6 +225,7 @@ void RecordManager::deleteRecordStores()
                 // RecordStore *var10000 = recordStore;
                 RecordStore::deleteRecordStore(names[i]);
             } catch (RecordStoreException& var3) {
+                return;
             }
         }
     }
@@ -232,6 +238,7 @@ void RecordManager::closeRecordStore()
             recordStore->closeRecordStore();
             return;
         } catch (RecordStoreException& var1) {
+            return;
         }
     }
 }

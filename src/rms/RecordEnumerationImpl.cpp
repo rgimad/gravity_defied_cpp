@@ -36,6 +36,7 @@ void RecordEnumerationImpl::setRecord(int index, std::vector<int8_t> bytes)
     if (static_cast<int>(data.size()) <= index) {
         throw RecordStoreException();
     }
+
     data[index] = bytes;
 }
 
@@ -49,6 +50,7 @@ int RecordEnumerationImpl::nextRecordId()
     if (currentPos >= static_cast<int>(data.size())) {
         throw RecordStoreException();
     }
+
     return currentPos;
 }
 
@@ -65,6 +67,7 @@ void RecordEnumerationImpl::serialize(FileStream* outStream)
 
     for (auto i = data.cbegin(); i != data.cend(); i++) {
         outStream->writeVariable(&(temp = i->size()));
+
         for (auto j = i->cbegin(); j != i->cend(); j++) {
             int8_t buffer;
             outStream->writeVariable(&(buffer = *j));
@@ -82,6 +85,7 @@ void RecordEnumerationImpl::deserialize(FileStream* inStream)
     for (size_t i = 0; i < data.size(); ++i) {
         inStream->readVariable(&temp);
         data[i].resize(temp);
+
         for (size_t j = 0; j < data[i].size(); ++j) {
             inStream->readVariable(&data[i][j]);
         }

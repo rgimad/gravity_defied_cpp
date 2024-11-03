@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 project(gravity_defied_cpp C CXX)
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 unset(ENV{PKG_CONFIG_PATH})
 
@@ -77,7 +78,7 @@ endif()
 add_executable(GravityDefied ${SOURCES})
 
 target_compile_features(GravityDefied PRIVATE cxx_std_17)
-target_compile_options(GravityDefied PRIVATE -Wall -Wextra)
+target_compile_options(GravityDefied PRIVATE -Wall -Wextra -fsigned-char)
 
 target_include_directories(GravityDefied PRIVATE
                            ${SDL2_INCLUDE_DIRS}
