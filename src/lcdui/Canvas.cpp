@@ -1,7 +1,6 @@
 #include "Canvas.h"
 
 #include <stdexcept>
-#include <algorithm>
 
 #include "CanvasImpl.h"
 #include "Graphics.h"

@@ -14,6 +14,7 @@ if(WIN32)
 endif()
 
 find_package(PkgConfig REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 pkg_search_module(SDL2 REQUIRED IMPORTED_TARGET sdl2)
 pkg_search_module(SDL2_TTF REQUIRED IMPORTED_TARGET SDL2_ttf)
@@ -21,7 +22,9 @@ pkg_search_module(SDL2_IMAGE REQUIRED IMPORTED_TARGET SDL2_image)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
+    src/config.cpp
     src/utils/Time.cpp
+    src/utils/Hashing.cpp
     src/utils/EmbedFileStream.cpp
     src/main.cpp
     src/MathF16.cpp
@@ -98,14 +101,16 @@ if(WIN32)
                          ${SDL2_STATIC_LIBRARIES} 
                          ${SDL2_TTF_STATIC_LIBRARIES}
                          ${SDL2_IMAGE_STATIC_LIBRARIES} 
+                         OpenSSL::SSL
                          Assets::Assets)
 else()
     target_link_libraries(GravityDefied 
                           ${SDL2_LIBRARIES}
                           ${SDL2_TTF_LIBRARIES}
                           ${SDL2_IMAGE_LIBRARIES}
+                          OpenSSL::SSL
                           Assets::Assets)
 endif()
 
 # Copy assets to the build directory
-file(COPY assets/levels.mrg DESTINATION ${CMAKE_BINARY_DIR})
+# file(COPY assets/levels.mrg DESTINATION ${CMAKE_BINARY_DIR})

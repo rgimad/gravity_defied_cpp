@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <memory>
 #include <vector>
 
 #include "lcdui/Graphics.h"
@@ -66,7 +65,7 @@ private:
     std::vector<bool> activeActions = std::vector<bool>(7);
     std::vector<bool> activeKeys = std::vector<bool>(10);
 
-    // int fps;
+    int fps;
 
 public:
     GameCanvas(Micro* micro);
@@ -101,7 +100,7 @@ public:
     void clearScreenWithWhite();
     void setColor(int red, int green, int blue);
     void drawGame(Graphics* g);
-    void method_161(int var1, bool mode);
+    void drawProgressBar(int var1, bool mode);
     void method_163(int var1);
     void paint(Graphics* g);
     void init(GamePhysics* gamePhysics);

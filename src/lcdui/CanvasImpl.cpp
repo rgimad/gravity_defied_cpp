@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "Canvas.h"
+#include "../config.h"
 
 CanvasImpl::CanvasImpl(Canvas* canvas)
 {
@@ -24,12 +25,18 @@ CanvasImpl::CanvasImpl(Canvas* canvas)
         throw std::runtime_error(TTF_GetError());
     }
 
+    uint32_t windowFlags = SDL_WINDOW_SHOWN;
+
+    if (GlobalSetting::WindowFullscreen) {
+        windowFlags = windowFlags | SDL_WINDOW_FULLSCREEN_DESKTOP;
+    }
+
     window = SDL_CreateWindow(
         0,
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
         defaultWidth, defaultHeight,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_FULLSCREEN_DESKTOP);
+        windowFlags);
 
     if (!window) {
         throw std::runtime_error(SDL_GetError());
@@ -124,12 +131,16 @@ int CanvasImpl::convertKeyCharToKeyCode(SDL_Keycode keyCode)
     case SDLK_RETURN:
         return Canvas::Keys::FIRE;
     case SDLK_LEFT:
+    case SDLK_a:
         return Canvas::Keys::LEFT;
     case SDLK_RIGHT:
+    case SDLK_d:
         return Canvas::Keys::RIGHT;
     case SDLK_UP:
+    case SDLK_w:
         return Canvas::Keys::UP;
     case SDLK_DOWN:
+    case SDLK_s:
         return Canvas::Keys::DOWN;
     default:
         std::cout << "unknown keyEvent: " << keyCode << std::endl;

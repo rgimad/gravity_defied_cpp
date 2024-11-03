@@ -519,7 +519,7 @@ void MenuManager::method_201(int var1)
     micro->gamePhysics->method_53();
     micro->gameToMenu();
 
-    while (Micro::isInGameMenu && Micro::field_249 && currentGameMenu != nullptr) {
+    while (Micro::isInGameMenu && Micro::gameStarted && currentGameMenu != nullptr) {
         int64_t var20;
         if (micro->gamePhysics->isGenerateInputAI) {
             int var9;
@@ -568,7 +568,7 @@ void MenuManager::method_201(int var1)
     micro->timeMs += Time::currentTimeMillis() - currentTimeMillis;
     micro->gameCanvas->isDrawingTime = true;
     if (currentGameMenu == nullptr) {
-        Micro::field_249 = false;
+        Micro::gameStarted = false;
     }
 }
 
@@ -602,10 +602,10 @@ void MenuManager::processKeyCode(int keyCode)
 {
     if (currentGameMenu != nullptr) {
         switch (micro->gameCanvas->getGameAction(keyCode)) {
-        case 1: // UP
+        case Canvas::Keys::UP: // UP
             currentGameMenu->processGameActionUp();
             return;
-        case 2: // LEFT
+        case Canvas::Keys::LEFT: // LEFT
             currentGameMenu->processGameActionUpd(3);
             if (currentGameMenu == gameMenuHighscore) {
                 --field_360;
@@ -620,7 +620,7 @@ void MenuManager::processKeyCode(int keyCode)
         case 7:
         default:
             break;
-        case 5: // RIGHT
+        case Canvas::Keys::RIGHT: // RIGHT
             currentGameMenu->processGameActionUpd(2);
             if (currentGameMenu == gameMenuHighscore) {
                 ++field_360;
@@ -632,10 +632,10 @@ void MenuManager::processKeyCode(int keyCode)
                 return;
             }
             break;
-        case 6: // DOWN
+        case Canvas::Keys::DOWN: // DOWN
             currentGameMenu->processGameActionDown();
             return;
-        case 8: // FIRE
+        case Canvas::Keys::FIRE: // FIRE
             currentGameMenu->processGameActionUpd(1);
             return;
         }

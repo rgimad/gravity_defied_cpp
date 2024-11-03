@@ -12,23 +12,23 @@ class Micro {
 private:
     int64_t goLoadingStep();
     void destroyApp(bool var1);
-    std::filesystem::path mrgFilePath;
 
 public:
-    GameCanvas* gameCanvas;
-    LevelLoader* levelLoader;
-    GamePhysics* gamePhysics;
-    MenuManager* menuManager;
-    bool field_242 = false;
+    inline static bool isInGameMenu;
+    static bool gameStarted;
+    static int gameLoadingStateStage;
+
+    bool gameDestroyed = false;
+    bool isInited = false;
+    bool field_248 = false;
     int numPhysicsLoops = 2;
     int64_t timeMs = 0;
     int64_t gameTimeMs = 0;
     int64_t field_246 = 0;
-    bool isInited = false;
-    bool field_248 = false;
-    static bool field_249;
-    inline static bool isInGameMenu;
-    static int gameLoadingStateStage;
+    GameCanvas* gameCanvas;
+    LevelLoader* levelLoader;
+    GamePhysics* gamePhysics;
+    MenuManager* menuManager;
 
     Micro();
     ~Micro();

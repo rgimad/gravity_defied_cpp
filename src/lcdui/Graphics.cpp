@@ -1,5 +1,4 @@
 #include "Graphics.h"
-#include <memory>
 
 Graphics::Graphics(SDL_Renderer* renderer)
 {
@@ -239,6 +238,16 @@ void Graphics::drawImage(Image* const image, int x, int y, int anchor)
     x = getAnchorX(x, image->getWidth(), anchor);
     y = getAnchorY(y, image->getHeight(), anchor);
     SDL_Rect dstRect { x, y, image->getWidth(), image->getHeight() };
+    SDL_RenderCopy(renderer, texture, 0, &dstRect);
+    SDL_DestroyTexture(texture);
+}
+
+void Graphics::drawImage(Image* const image, int x, int y, int customW, int customH, int anchor)
+{
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image->getSurface());
+    x = getAnchorX(x, customW, anchor);
+    y = getAnchorY(y, customH, anchor);
+    SDL_Rect dstRect { x, y, customW, customH };
     SDL_RenderCopy(renderer, texture, 0, &dstRect);
     SDL_DestroyTexture(texture);
 }

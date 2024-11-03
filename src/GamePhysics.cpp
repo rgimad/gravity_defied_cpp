@@ -3,7 +3,6 @@
 #include "LevelLoader.h"
 #include "class_10.h"
 #include "MathF16.h"
-#include <algorithm>
 
 GamePhysics::GamePhysics(LevelLoader* levelLoader)
 {

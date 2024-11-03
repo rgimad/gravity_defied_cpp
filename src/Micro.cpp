@@ -5,10 +5,12 @@
 #include "MenuManager.h"
 #include "LevelLoader.h"
 #include "utils/Time.h"
+#include "utils/Hashing.h"
 #include "lcdui/CanvasImpl.h"
 #include "rms/RecordStore.h"
+#include "config.h"
 
-bool Micro::field_249 = false;
+bool Micro::gameStarted = false;
 int Micro::gameLoadingStateStage = 0;
 
 Micro::Micro()
@@ -45,7 +47,7 @@ int64_t Micro::goLoadingStep()
     int64_t startTimeMillis = Time::currentTimeMillis();
     switch (gameLoadingStateStage) {
     case 1:
-        levelLoader = new LevelLoader(mrgFilePath);
+        levelLoader = new LevelLoader(GlobalSetting::MrgFilePath);
         break;
     case 2:
         gamePhysics = new GamePhysics(levelLoader);
@@ -138,8 +140,8 @@ void Micro::restart(bool var1)
 void Micro::destroyApp(bool var1)
 {
     (void)var1;
-    field_249 = false;
-    field_242 = true;
+    gameStarted = false;
+    gameDestroyed = true;
     menuManager->saveSmthToRecordStoreAndCloseIt();
 }
 
@@ -153,12 +155,16 @@ void Micro::startApp(int argc, char** argv)
             return;
         }
 
-        this->mrgFilePath = argv1;
+        GlobalSetting::MrgFilePath = argv1;
     }
+
+    std::cout << "path: " << GlobalSetting::MrgFilePath << std::endl;
+    GlobalSetting::SavesPrefix = Hashing::HashFileMD5(GlobalSetting::MrgFilePath.string());
+    std::cout << "hash: " << GlobalSetting::SavesPrefix << std::endl;
 
     RecordStore::setRecordStoreDir(argv[0]);
 
-    field_249 = true;
+    gameStarted = true;
     // if (thread == null) {
     //     thread = new Thread(this);
     //     thread.start();
@@ -182,7 +188,7 @@ void Micro::run()
 
     int64_t var3 = 0L;
 
-    while (field_249) {
+    while (gameStarted) {
         int var5;
         if (gamePhysics->method_21() != menuManager->method_210()) {
             var5 = gameCanvas->loadSprites(menuManager->method_210());
@@ -260,7 +266,7 @@ void Micro::run()
                         restart(true);
                     }
 
-                    if (!field_249) {
+                    if (!gameStarted) {
                         break;
                     }
                 }
@@ -268,7 +274,7 @@ void Micro::run()
                 field_248 = var5 != 4;
             }
 
-            var10000 = field_249;
+            var10000 = gameStarted;
         } catch (std::exception& var15) {
             continue;
         }

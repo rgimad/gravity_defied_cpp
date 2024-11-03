@@ -15,6 +15,7 @@
 #endif
 
 #include "RecordStoreException.h"
+#include "../config.h"
 #include "../utils/FileStream.h"
 #include "../utils/String.h"
 
@@ -73,6 +74,13 @@ RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath)
 
 RecordStore* RecordStore::openRecordStore(std::string name, bool createIfNecessary)
 {
+    if (name.empty())
+    {
+        log("empty name");
+        return nullptr;
+    }
+
+    name = GlobalSetting::SavesPrefix + "_" + name;
     log("openRecordStore(" + name + ", " + std::to_string(createIfNecessary) + ")");
 
     if (opened.find(name) == opened.end()) {
@@ -132,13 +140,13 @@ void RecordStore::setRecordStoreDir([[maybe_unused]] const char* progName)
     const char* base = dirname(strdup(progName));
     recordStoreDir = std::filesystem::path(base) / "recordStore";
 #else
-    const char* homeDir = getenv("HOME");
-    if (!homeDir)
-        homeDir = getpwuid(getuid())->pw_dir;
+    // const char* homeDir = getenv("HOME");
+    // if (!homeDir)
+    //     homeDir = getpwuid(getuid())->pw_dir;
 
-    if (!homeDir)
-        throw std::system_error(errno, std::system_category(), "Error getting home directory");
+    // if (!homeDir)
+    //     throw std::system_error(errno, std::system_category(), "Error getting home directory");
 
-    recordStoreDir = std::filesystem::path(homeDir) / ".GravityDefied";
+    recordStoreDir = std::filesystem::path("./saves");
 #endif
 }

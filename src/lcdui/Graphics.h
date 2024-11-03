@@ -45,6 +45,7 @@ public:
     void drawArc(int x, int y, int w, int h, int startAngle, int arcAngle);
     void drawLine(int x1, int y1, int x2, int y2);
     void drawImage(Image* const image, int x, int y, int anchor);
+    void drawImage(Image* const image, int x, int y, int w, int h, int anchor);
     static int getAnchorX(int x, int size, int anchor);
     static int getAnchorY(int y, int size, int anchor);
 };

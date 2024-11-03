@@ -2,7 +2,6 @@
 
 #include <string>
 #include <filesystem>
-#include <memory>
 #include <unordered_map>
 
 #include "RecordEnumerationImpl.h"

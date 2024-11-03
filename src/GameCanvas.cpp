@@ -4,6 +4,8 @@
 #include "MenuManager.h"
 #include "lcdui/Image.h"
 #include "lcdui/FontStorage.h"
+#include "utils/Time.h"
+#include "config.h"
 
 #include <memory>
 #include <vector>
@@ -85,7 +87,7 @@ int GameCanvas::loadSprites(int flags)
         fenderImage = nullptr;
         engineImage = nullptr;
     }
-    
+
     if (flags & 2) {
         if (!bodyPartsImages[1]) {
             bodyPartsImages[1] = std::make_unique<Image>("blueleg.png");
@@ -251,12 +253,12 @@ void GameCanvas::drawTime(int64_t time10Ms)
 
     if (time10Ms > 3600000L) {
         setColor(0, 0, 0);
-        graphics->drawString("0:00.", width - defaultFontWidth00, height2 - 5, 40);
-        graphics->drawString("00", width - defaultFontWidth00, height2 - 5, 36);
+        graphics->drawString("0:00.", width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 40);
+        graphics->drawString("00", width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 36);
     } else {
         setColor(0, 0, 0);
-        graphics->drawString(stringWithTime, width - defaultFontWidth00, height2 - 5, 40);
-        graphics->drawString(time10MsToStringCache[time10MsPart], width - defaultFontWidth00, height2 - 5, 36);
+        graphics->drawString(stringWithTime, width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 40);
+        graphics->drawString(time10MsToStringCache[time10MsPart], width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 36);
     }
 }
 
@@ -384,7 +386,7 @@ void GameCanvas::setColor(int red, int green, int blue)
 void GameCanvas::drawGame(Graphics* g)
 {
     // synchronized (objectForSyncronization) {
-    if (Micro::field_249 && !micro->field_242) {
+    if (micro->gameStarted && !micro->gameDestroyed) {
         graphics = g;
 
         int var3;
@@ -393,20 +395,33 @@ void GameCanvas::drawGame(Graphics* g)
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
                 if (logoImage != nullptr) {
-                    graphics->drawImage(logoImage.get(), getWidth() / 2, getHeight() / 2, 3);
+                    graphics->drawImage(
+                        logoImage.get(),
+                        getWidth() / 2,
+                        getHeight() / 2,
+                        logoImage->getWidth() * GlobalSetting::LogoMultiplier,
+                        logoImage->getHeight() * GlobalSetting::LogoMultiplier,
+                        3);
                     drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5, getHeight() - spriteSizeY[16] - 7);
                     drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
                 }
             } else {
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
+
                 if (splashImage != nullptr) {
-                    graphics->drawImage(splashImage.get(), getWidth() / 2, getHeight() / 2, 3);
+                    graphics->drawImage(
+                        splashImage.get(),
+                        getWidth() / 2,
+                        getHeight() / 2,
+                        splashImage->getWidth() * GlobalSetting::SplashMultiplier,
+                        splashImage->getHeight() * GlobalSetting::SplashMultiplier,
+                        3);
                 }
             }
 
             var3 = (int)(((int64_t)(Micro::gameLoadingStateStage << 16) << 32) / 655360L >> 16);
-            method_161(var3, true);
+            drawProgressBar(var3, true);
         } else {
             if (height != getHeight()) {
                 updateSizeAndRepaint();
@@ -435,12 +450,12 @@ void GameCanvas::drawGame(Graphics* g)
             }
 
             // print fps to screen
-            // setColor(0, 0, 0);
-            // graphics->setFont(font);
-            // graphics->drawString("FPS: " + std::to_string(fps), defaultFontWidth00, height2 - 5, 36);
+            setColor(0, 0, 0);
+            graphics->setFont(font);
+            graphics->drawString("FPS: " + std::to_string(fps), defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 36);
 
             var3 = gamePhysics->method_52();
-            method_161(var3, false);
+            drawProgressBar(var3, false);
         }
 
         graphics = nullptr;
@@ -448,13 +463,23 @@ void GameCanvas::drawGame(Graphics* g)
     // }
 }
 
-void GameCanvas::method_161(int var1, bool mode)
+// draw progressbar
+void GameCanvas::drawProgressBar(int var1, bool mode)
 {
-    int h = mode ? height : height2;
+    const int h = mode ? height : height2;
+    const int barX = 1;
+    const int barY = h - GlobalSetting::BarScreenOffset - GlobalSetting::BarH;
+
     setColor(0, 0, 0);
-    graphics->fillRect(1, h - 4, width - 2, 3);
+    graphics->fillRect(barX, barY, width - (2 * barX), GlobalSetting::BarH);
+
     setColor(255, 255, 255);
-    graphics->fillRect(2, h - 3, (int)((int64_t)((width - 4) << 16) * (int64_t)var1 >> 16) >> 16, 1);
+    const int loadingBarX = barX + GlobalSetting::LoadingBarPadding;
+    graphics->fillRect(
+        loadingBarX,
+        barY + GlobalSetting::LoadingBarPadding,
+        (int)((int64_t)((width - 2 * loadingBarX) << 16) * (int64_t)var1 >> 16) >> 16,
+        GlobalSetting::BarH - (2 * GlobalSetting::LoadingBarPadding));
 }
 
 void GameCanvas::method_163(int var1)
@@ -464,15 +489,15 @@ void GameCanvas::method_163(int var1)
 
 void GameCanvas::paint(Graphics* graphics)
 {
-    // static int64_t time = 0;
-    // int64_t now = Time::currentTimeMillis();
-    // int64_t delta = now - time;
-    // time = now;
-    // if (delta != 0) {
-    //     fps = 1000 / delta;
-    //     // std::cout << "FPS: " << fps <<  std::endl;
-    //     //setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
-    // }
+    static int64_t time = 0;
+    int64_t now = Time::currentTimeMillis();
+    int64_t delta = now - time;
+    time = now;
+    if (delta != 0) {
+        fps = 1000 / delta;
+        // std::cout << "FPS: " << fps <<  std::endl;
+        // setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
+    }
 
     processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
     if (Micro::isInGameMenu && menuManager != nullptr) {
