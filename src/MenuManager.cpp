@@ -11,7 +11,6 @@
 #include "SettingsStringRender.h"
 #include "utils/Time.h"
 
-
 MenuManager::MenuManager(Micro* var1)
 {
     micro = var1;
@@ -23,7 +22,7 @@ void MenuManager::initPart(int var1)
     int var4;
     switch (var1) {
     case 1:
-        field_341 = defaultInputString;
+        playerName = defaultName;
         field_374 = { "On", "Off" };
         field_375 = { "Keyset 1", "Keyset 2", "Keyset 3" };
         recordManager = new RecordManager();
@@ -32,10 +31,10 @@ void MenuManager::initPart(int var1)
         field_339 = -1;
         field_340.clear();
         isRecordStoreOpened = false;
-        field_278 = std::vector<int8_t>(19);
+        savedData = std::vector<int8_t>(19);
 
-        for (int var11 = 0; var11 < 19; ++var11) {
-            field_278[var11] = -127;
+        for (int idx = 0; idx < 19; ++idx) {
+            savedData[idx] = -127;
         }
 
         try {
@@ -68,56 +67,55 @@ void MenuManager::initPart(int var1)
 
             if (var3.size() <= 19) {
                 for (std::size_t i = 0; i < var3.size(); ++i) {
-                    field_278[i] = var3[i];
+                    savedData[i] = var3[i];
                 }
             }
-
-            records->destroy();
         }
 
         var3 = method_216(16, (int8_t)-1);
         if (!var3.empty() && var3[0] != -1) {
             for (var4 = 0; var4 < 3; ++var4) {
-                field_341[var4] = var3[var4];
+                playerName[var4] = var3[var4];
             }
         }
 
-        if (field_341[0] == 82 && field_341[1] == 75 && field_341[2] == 69) {
+        // cheat code: set name to RKE to enable all leagues ???
+        if (playerName[0] == 82 && playerName[1] == 75 && playerName[2] == 69) {
             availableLeagues = 3;
-            field_344 = 2;
-            field_342[0] = (int8_t)(micro->levelLoader->levelNames[0].size() - 1);
-            field_342[1] = (int8_t)(micro->levelLoader->levelNames[1].size() - 1);
-            field_342[2] = (int8_t)(micro->levelLoader->levelNames[2].size() - 1);
+            availableLevels = 2;
+            availableTracks[0] = (int8_t)(micro->levelLoader->levelNames[0].size() - 1);
+            availableTracks[1] = (int8_t)(micro->levelLoader->levelNames[1].size() - 1);
+            availableTracks[2] = (int8_t)(micro->levelLoader->levelNames[2].size() - 1);
             return;
         }
 
         availableLeagues = 0;
-        field_344 = 1;
-        field_342[0] = 0;
-        field_342[1] = 0;
-        field_342[2] = -1;
+        availableLevels = 0;
+        availableTracks[0] = 0;
+        availableTracks[1] = 0;
+        availableTracks[2] = -1;
     }
         return;
     case 3:
-        isDisablePerspective = method_217(0, isDisablePerspective);
-        isDisabledShadows = method_217(1, isDisabledShadows);
-        isDisabledDriverSprite = method_217(2, isDisabledDriverSprite);
-        isDisabledBikeSprite = method_217(3, isDisabledBikeSprite);
-        field_367 = method_217(14, field_367);
-        isDisableLookAhead = method_217(4, isDisableLookAhead);
-        field_369 = method_217(11, field_369);
-        field_370 = method_217(10, field_370);
-        field_371 = method_217(12, field_371);
-        field_373 = method_217(15, field_373);
+        isDisablePerspective = getSettingOrDefault(0, isDisablePerspective);
+        isDisabledShadows = getSettingOrDefault(1, isDisabledShadows);
+        isDisabledDriverSprite = getSettingOrDefault(2, isDisabledDriverSprite);
+        isDisabledBikeSprite = getSettingOrDefault(3, isDisabledBikeSprite);
+        field_367 = getSettingOrDefault(14, field_367);
+        isDisableLookAhead = getSettingOrDefault(4, isDisableLookAhead);
+        field_369 = getSettingOrDefault(11, field_369);
+        field_370 = getSettingOrDefault(10, field_370);
+        field_371 = getSettingOrDefault(12, field_371);
+        field_373 = getSettingOrDefault(15, field_373);
         field_354 = field_370;
         field_355 = field_369;
 
-        if (field_341[0] != 82 || field_341[1] != 75 || field_341[2] != 69) {
-            availableLeagues = method_217(5, availableLeagues);
-            field_344 = method_217(6, field_344);
+        if (playerName[0] != 82 || playerName[1] != 75 || playerName[2] != 69) {
+            availableLeagues = getSettingOrDefault(5, availableLeagues);
+            availableLevels = getSettingOrDefault(6, availableLevels);
 
             for (var4 = 0; var4 < 3; ++var4) {
-                field_342[var4] = method_217(7 + var4, field_342[var4]);
+                availableTracks[var4] = getSettingOrDefault(7 + var4, availableTracks[var4]);
             }
         }
 
@@ -154,7 +152,7 @@ void MenuManager::initPart(int var1)
         settingStringGoToMain = new SettingsStringRender("Go to Main", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringContinue = new SettingsStringRender("Continue", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringPlayMenu = new SettingsStringRender("Play Menu", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-        
+
         std::shared_ptr boldSmallFont = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_SMALL);
         if (gameMenuAbout->xPos + boldSmallFont->stringWidth("http://www.codebrew.se/") >= getCanvasWidth()) {
             textRenderCodeBrewLink = new TextRender("www.codebrew.se", micro);
@@ -169,7 +167,7 @@ void MenuManager::initPart(int var1)
         return;
     case 5:
         gameMenuIngame = new GameMenu("Ingame", micro, gameMenuPlay);
-        gameMenuEnterName = new GameMenu("Enter Name", micro, gameMenuFinished, field_341);
+        gameMenuEnterName = new GameMenu("Enter Name", micro, gameMenuFinished, playerName);
         gameMenuConfirmClear = new GameMenu("Confirm Clear", micro, gameMenuOptions);
         gameMenuConfirmReset = new GameMenu("Confirm Reset", micro, gameMenuConfirmClear);
         taskPlayMenu = new TimerOrMotoPartOrMenuElem("Play Menu", gameMenuPlay, this);
@@ -187,12 +185,12 @@ void MenuManager::initPart(int var1)
         settingsStringLeague = new SettingsStringRender("League", field_371, this, leagueNames, false, micro, gameMenuPlay, false);
 
         try {
-            settingsStringTrack->setAvailableOptions(field_342[field_370]);
+            settingsStringTrack->setAvailableOptions(availableTracks[field_370]);
         } catch (std::exception& var5) {
             settingsStringTrack->setAvailableOptions(0);
         }
 
-        settingStringLevel->setAvailableOptions(field_344);
+        settingStringLevel->setAvailableOptions(availableLevels);
         settingsStringLeague->setAvailableOptions(availableLeagues);
         gameTimerTaskHighscore = new TimerOrMotoPartOrMenuElem("Highscore", gameMenuHighscore, this);
         gameMenuHighscore->addMenuElement(settingStringBack);
@@ -301,7 +299,7 @@ void MenuManager::initPart(int var1)
         gameMenuIngame->addMenuElement(taskHelp);
         gameMenuIngame->addMenuElement(settingStringPlayMenu);
         field_335 = new SettingsStringRender("Ok", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-        field_336 = new SettingsStringRender("Name - " + std::string(field_341), 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
+        field_336 = new SettingsStringRender("Name - " + std::string(playerName), 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         commandOk = new Command("Ok", 4, 1);
         commandBack = new Command("Back", 2, 1);
         method_1(gameMenuMain, false);
@@ -344,7 +342,7 @@ bool MenuManager::method_196()
 
 void MenuManager::method_197()
 {
-    recordManager->method_17(settingsStringLeague->getCurrentOptionPos(), field_341, field_337);
+    recordManager->method_17(settingsStringLeague->getCurrentOptionPos(), playerName, field_337);
     recordManager->writeRecordInfo();
     field_356 = false;
     gameMenuFinished->clearVector();
@@ -360,8 +358,8 @@ void MenuManager::method_197()
     recordManager->closeRecordStore();
     int8_t availableLeagues = -1;
     if (settingsStringTrack->getMaxAvailableOptionPos() >= settingsStringTrack->getCurrentOptionPos()) {
-        settingsStringTrack->setAvailableOptions(settingsStringTrack->getCurrentOptionPos() + 1 < field_342[settingStringLevel->getCurrentOptionPos()] ? field_342[settingStringLevel->getCurrentOptionPos()] : settingsStringTrack->getCurrentOptionPos() + 1);
-        field_342[settingStringLevel->getCurrentOptionPos()] = (int8_t)settingsStringTrack->getMaxAvailableOptionPos() < field_342[settingStringLevel->getCurrentOptionPos()] ? field_342[settingStringLevel->getCurrentOptionPos()] : (int8_t)settingsStringTrack->getMaxAvailableOptionPos();
+        settingsStringTrack->setAvailableOptions(settingsStringTrack->getCurrentOptionPos() + 1 < availableTracks[settingStringLevel->getCurrentOptionPos()] ? availableTracks[settingStringLevel->getCurrentOptionPos()] : settingsStringTrack->getCurrentOptionPos() + 1);
+        availableTracks[settingStringLevel->getCurrentOptionPos()] = (int8_t)settingsStringTrack->getMaxAvailableOptionPos() < availableTracks[settingStringLevel->getCurrentOptionPos()] ? availableTracks[settingStringLevel->getCurrentOptionPos()] : (int8_t)settingsStringTrack->getMaxAvailableOptionPos();
     }
 
     if (settingsStringTrack->getCurrentOptionPos() == settingsStringTrack->getMaxOptionPos()) {
@@ -370,20 +368,17 @@ void MenuManager::method_197()
         case 0:
             if (availableLeagues < 1) {
                 availableLeagues = 1;
-                availableLeagues = 1;
                 settingsStringLeague->setAvailableOptions(availableLeagues);
             }
             break;
         case 1:
             if (availableLeagues < 2) {
                 availableLeagues = 2;
-                availableLeagues = 2;
                 settingsStringLeague->setAvailableOptions(availableLeagues);
             }
             break;
         case 2:
             if (availableLeagues < 3) {
-                availableLeagues = 3;
                 availableLeagues = 3;
                 settingsStringLeague->setOptionsList(leagueNamesAll4);
                 leagueNames = leagueNamesAll4;
@@ -392,8 +387,8 @@ void MenuManager::method_197()
         }
 
         settingStringLevel->setAvailableOptions(settingStringLevel->getMaxAvailableOptionPos() + 1);
-        if (field_342[settingStringLevel->getMaxAvailableOptionPos()] == -1) {
-            field_342[settingStringLevel->getMaxAvailableOptionPos()] = 0;
+        if (availableTracks[settingStringLevel->getMaxAvailableOptionPos()] == -1) {
+            availableTracks[settingStringLevel->getMaxAvailableOptionPos()] = 0;
         }
     }
 
@@ -406,7 +401,7 @@ void MenuManager::method_197()
         if (settingStringLevel->getCurrentOptionPos() < settingStringLevel->getMaxOptionPos()) {
             settingStringLevel->setCurentOptionPos(settingStringLevel->getCurrentOptionPos() + 1);
             settingsStringTrack->setCurentOptionPos(0);
-            settingsStringTrack->setAvailableOptions(field_342[settingStringLevel->getCurrentOptionPos()]);
+            settingsStringTrack->setAvailableOptions(availableTracks[settingStringLevel->getCurrentOptionPos()]);
         }
 
         if (availableLeagues != -1) {
@@ -420,7 +415,7 @@ void MenuManager::method_197()
             bool var4 = true;
 
             for (int var5 = 0; var5 < 3; ++var5) {
-                if (field_342[var5] != static_cast<int>(micro->levelLoader->levelNames[var5].size() - 1)) {
+                if (availableTracks[var5] != static_cast<int>(micro->levelLoader->levelNames[var5].size() - 1)) {
                     var4 = false;
                 }
             }
@@ -678,15 +673,15 @@ void MenuManager::method_1(GameMenu* gm, bool var2)
         field_360 = settingsStringLeague->getCurrentOptionPos();
         method_207(field_360);
     } else if (gm == gameMenuFinished) {
-        field_341 = gameMenuEnterName->getStrArr();
-        field_336->setText("Name - " + std::string(field_341));
+        playerName = gameMenuEnterName->getStrArr();
+        field_336->setText("Name - " + std::string(playerName));
     } else if (gm == gameMenuPlay) {
         settingsStringTrack->setOptionsList(micro->levelLoader->levelNames[settingStringLevel->getCurrentOptionPos()]);
         if (currentGameMenu == field_299) {
             field_345[settingStringLevel->getCurrentOptionPos()] = settingsStringTrack->getCurrentOptionPos();
         }
 
-        settingsStringTrack->setAvailableOptions(field_342[settingStringLevel->getCurrentOptionPos()]);
+        settingsStringTrack->setAvailableOptions(availableTracks[settingStringLevel->getCurrentOptionPos()]);
         settingsStringTrack->setCurentOptionPos(field_345[settingStringLevel->getCurrentOptionPos()]);
     }
 
@@ -743,6 +738,7 @@ void MenuManager::saveSmthToRecordStoreAndCloseIt()
             recordStore->closeRecordStore();
             isRecordStoreOpened = false;
         } catch (RecordStoreException& var1) {
+            std::cout << var1.what() << std::endl;
         }
     }
 
@@ -751,8 +747,6 @@ void MenuManager::saveSmthToRecordStoreAndCloseIt()
 
 void MenuManager::method_208()
 {
-    copyThreeBytesFromArr(16, field_341);
-
     setValue(0, (int8_t)perspectiveSetting->getCurrentOptionPos());
     setValue(1, (int8_t)shadowsSetting->getCurrentOptionPos());
     setValue(2, (int8_t)driverSpriteSetting->getCurrentOptionPos());
@@ -765,21 +759,29 @@ void MenuManager::method_208()
     setValue(11, (int8_t)settingsStringTrack->getCurrentOptionPos());
     setValue(12, (int8_t)settingsStringLeague->getCurrentOptionPos());
 
+    setValue(16, (int8_t)playerName[0]);
+    setValue(17, (int8_t)playerName[1]);
+    setValue(18, (int8_t)playerName[2]);
+
     for (int i = 0; i < 3; ++i) {
-        setValue(7 + i, field_342[i]);
+        setValue(7 + i, availableTracks[i]);
     }
 
     if (recorcStoreRecordId == -1) {
         try {
-            recorcStoreRecordId = recordStore->addRecord(field_278, 0, 19);
+            recorcStoreRecordId = recordStore->addRecord(savedData, 0, 19);
         } catch (RecordStoreNotOpenException& var2) {
+            std::cout << var2.what() << std::endl;
         } catch (RecordStoreException& var3) {
+            std::cout << var3.what() << std::endl;
         }
     } else {
         try {
-            recordStore->setRecord(recorcStoreRecordId, field_278, 0, 19);
+            recordStore->setRecord(recorcStoreRecordId, savedData, 0, 19);
         } catch (RecordStoreNotOpenException& var4) {
+            std::cout << var4.what() << std::endl;
         } catch (RecordStoreException& var5) {
+            std::cout << var5.what() << std::endl;
         }
     }
 }
@@ -871,7 +873,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
 
             if (menuElement == settingStringPlayMenu) {
                 settingStringLevel->setCurentOptionPos(field_354);
-                settingsStringTrack->setAvailableOptions(field_342[field_354]);
+                settingsStringTrack->setAvailableOptions(availableTracks[field_354]);
                 settingsStringTrack->setCurentOptionPos(field_355);
                 method_1(currentGameMenu->getGameMenu(), false);
                 return;
@@ -890,7 +892,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
             if (menuElement == field_333) {
                 if (settingsStringLeague->getCurrentOptionPos() <= settingsStringLeague->getMaxAvailableOptionPos()) {
                     settingStringLevel->setCurentOptionPos(field_354);
-                    settingsStringTrack->setAvailableOptions(field_342[field_354]);
+                    settingsStringTrack->setAvailableOptions(availableTracks[field_354]);
                     settingsStringTrack->setCurentOptionPos(field_355);
                     micro->gamePhysics->setMotoLeague(settingsStringLeague->getCurrentOptionPos());
                     field_357 = true;
@@ -930,7 +932,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
 
                 if (menuElement == settingsStringTrack) {
                     if (settingsStringTrack->method_114()) {
-                        settingsStringTrack->setAvailableOptions(field_342[settingStringLevel->getCurrentOptionPos()]);
+                        settingsStringTrack->setAvailableOptions(availableTracks[settingStringLevel->getCurrentOptionPos()]);
                         settingsStringTrack->init();
                         field_299 = settingsStringTrack->getGameMenu();
                         method_1(field_299, false);
@@ -949,7 +951,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                     }
 
                     settingsStringTrack->setOptionsList(micro->levelLoader->levelNames[settingStringLevel->getCurrentOptionPos()]);
-                    settingsStringTrack->setAvailableOptions(field_342[settingStringLevel->getCurrentOptionPos()]);
+                    settingsStringTrack->setAvailableOptions(availableTracks[settingStringLevel->getCurrentOptionPos()]);
                     settingsStringTrack->setCurentOptionPos(field_345[settingStringLevel->getCurrentOptionPos()]);
                     settingsStringTrack->init();
                     return;
@@ -1013,38 +1015,29 @@ void MenuManager::method_215(int64_t var1)
     field_337 = var1;
 }
 
-std::vector<int8_t> MenuManager::method_216(int var1, int8_t var2)
+std::vector<int8_t> MenuManager::method_216(int var1, int8_t defaultValue)
 {
     switch (var1) {
     case 16: {
-        std::vector<int8_t> var3 = std::vector<int8_t>(3);
+        std::vector<int8_t> difficultySetting = std::vector<int8_t>(3);
 
-        for (int var4 = 0; var4 < 3; ++var4) {
-            var3[var4] = field_278[16 + var4];
+        for (int idx = 0; idx < 3; ++idx) {
+            difficultySetting[idx] = savedData[16 + idx];
         }
 
-        if (var3[0] == -127) {
-            var3[0] = var2;
+        if (difficultySetting[0] == -127) {
+            difficultySetting[0] = defaultValue;
         }
-        return var3;
+        return difficultySetting;
     }
     default:
         return std::vector<int8_t>();
     }
 }
 
-int8_t MenuManager::method_217(int var1, int8_t var2)
+int8_t MenuManager::getSettingOrDefault(int idx, int8_t defaultValue)
 {
-    return field_278[var1] == -127 ? var2 : field_278[var1];
-}
-
-void MenuManager::copyThreeBytesFromArr(int var1, char* var2)
-{
-    if (isRecordStoreOpened && var1 == 16) {
-        for (int i = 0; i < 3; ++i) {
-            field_278[16 + i] = var2[i];
-        }
-    }
+    return savedData[idx] == -127 ? defaultValue : savedData[idx];
 }
 
 std::string MenuManager::timeToString(int64_t time)
@@ -1076,7 +1069,7 @@ std::string MenuManager::timeToString(int64_t time)
 void MenuManager::setValue(int pos, int8_t value)
 {
     if (isRecordStoreOpened) {
-        field_278[pos] = value;
+        savedData[pos] = value;
     }
 }
 
@@ -1093,13 +1086,11 @@ void MenuManager::exit()
     settingStringLevel->setAvailableOptions(1);
     settingsStringTrack->setCurentOptionPos(0);
 
-    field_341[0] = 65;
-    field_341[1] = 65;
-    field_341[2] = 65;
+    playerName = defaultName;
     inputSetting->setCurentOptionPos(0);
-    field_342[0] = 0;
-    field_342[1] = 0;
-    field_342[2] = -1;
+    availableTracks[0] = 0;
+    availableTracks[1] = 0;
+    availableTracks[2] = -1;
     availableLeagues = 0;
     method_208();
     recordManager->deleteRecordStores();
