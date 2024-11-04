@@ -226,40 +226,9 @@ void GameCanvas::drawHelmet(int x, int y, int angleF16)
 
 void GameCanvas::drawTime(int64_t time10Ms)
 {
-    int seconds = (int)(time10Ms / 100L);
-    int time10MsPart = (int)(time10Ms % 100L);
-    if (timeInSeconds != seconds || stringWithTime.empty()) {
-        std::string zeroPadding;
-        if (seconds % 60 >= 10) {
-            zeroPadding = "";
-        } else {
-            zeroPadding = "0";
-        }
-
-        stringWithTime = std::to_string(seconds / 60) + ":" + zeroPadding + std::to_string(seconds % 60) + ".";
-        timeInSeconds = seconds;
-    }
-
-    if (time10MsToStringCache[time10MsPart].empty()) {
-        std::string zeroPadding;
-        if (time10MsPart >= 10) {
-            zeroPadding = "";
-        } else {
-            zeroPadding = "0";
-        }
-
-        time10MsToStringCache[time10MsPart] = zeroPadding + std::to_string(time10Ms % 100L);
-    }
-
-    if (time10Ms > 3600000L) {
-        setColor(0, 0, 0);
-        graphics->drawString("0:00.", width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 40);
-        graphics->drawString("00", width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 36);
-    } else {
-        setColor(0, 0, 0);
-        graphics->drawString(stringWithTime, width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 40);
-        graphics->drawString(time10MsToStringCache[time10MsPart], width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 36);
-    }
+    const std::string timeStr = Time::timeToString(time10Ms);
+    setColor(0, 0, 0);
+    graphics->drawString(timeStr, width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 40);
 }
 
 void GameCanvas::method_150(int var1)

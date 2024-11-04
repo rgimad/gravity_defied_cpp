@@ -78,10 +78,8 @@ private:
     SettingsStringRender* field_334;
     SettingsStringRender* field_335;
     SettingsStringRender* field_336;
-    int64_t field_337;
-    int field_338;
-    int field_339;
-    std::string field_340;
+    int64_t trackTimeMs;
+    std::string trackTimeFormatted;
     char* playerName;
     char availableTracks[4];
     char defaultName[4] = "AAA";
@@ -125,7 +123,7 @@ private:
     std::vector<int8_t> method_216(int var1, int8_t var2);
     int8_t getSettingOrDefault(int var1, int8_t var2);
     // void copyThreeBytesFromArr(int var1, char* var2);
-    std::string timeToString(int64_t time);
+    // std::string timeToString(int64_t time);
     void setValue(int pos, int8_t value);
     void exit();
     int getCountOfRecordStoresWithPrefix(int prefixNumber);

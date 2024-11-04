@@ -52,9 +52,6 @@ private:
     int timerId = 0;
     std::vector<Timer> timers;
     Command* commandMenu;
-    inline static std::string stringWithTime = "";
-    std::vector<std::string> time10MsToStringCache = std::vector<std::string>(100);
-    int timeInSeconds = -1;
     inline static int flagAnimationTime = 0;
     inline static int field_226 = 0;
     const int startFlagAnimationTimeToSpriteNo[4] = { 12, 10, 11, 10 };

@@ -11,7 +11,6 @@
 #include "SettingsStringRender.h"
 #include "utils/Time.h"
 
-
 MenuManager::MenuManager(Micro* var1)
 {
     micro = var1;
@@ -27,10 +26,8 @@ void MenuManager::initPart(int var1)
         field_374 = { "On", "Off" };
         field_375 = { "Keyset 1", "Keyset 2", "Keyset 3" };
         recordManager = new RecordManager();
-        field_337 = -1L;
-        field_338 = -1;
-        field_339 = -1;
-        field_340.clear();
+        trackTimeMs = -1L;
+        trackTimeFormatted.clear();
         isRecordStoreOpened = false;
         savedData = std::vector<int8_t>(19);
 
@@ -155,7 +152,7 @@ void MenuManager::initPart(int var1)
         settingStringGoToMain = new SettingsStringRender("Go to Main", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringContinue = new SettingsStringRender("Continue", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
         settingStringPlayMenu = new SettingsStringRender("Play Menu", 0, this, std::vector<std::string>(), false, micro, gameMenuMain, true);
-        
+
         std::shared_ptr boldSmallFont = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_SMALL);
         if (gameMenuAbout->xPos + boldSmallFont->stringWidth("http://www.codebrew.se/") >= getCanvasWidth()) {
             textRenderCodeBrewLink = new TextRender("www.codebrew.se", micro);
@@ -345,11 +342,12 @@ bool MenuManager::method_196()
 
 void MenuManager::method_197()
 {
-    recordManager->method_17(settingsStringLeague->getCurrentOptionPos(), playerName, field_337);
+    std::cout << "method_197 " << playerName << " " << trackTimeMs << std::endl;
+    recordManager->method_17(settingsStringLeague->getCurrentOptionPos(), playerName, trackTimeMs);
     recordManager->writeRecordInfo();
     field_356 = false;
     gameMenuFinished->clearVector();
-    gameMenuFinished->addMenuElement(new TextRender("Time: " + field_340, micro));
+    gameMenuFinished->addMenuElement(new TextRender("Time: " + trackTimeFormatted, micro));
     std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
 
     for (std::size_t var2 = 0; var2 < var1.size(); ++var2) {
@@ -476,8 +474,8 @@ void MenuManager::method_201(int var1)
         field_354 = settingStringLevel->getCurrentOptionPos();
         field_355 = settingsStringTrack->getCurrentOptionPos();
         recordManager->method_8(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
-        int var2 = recordManager->getPosOfNewRecord(settingsStringLeague->getCurrentOptionPos(), field_337);
-        field_340 = timeToString(field_337);
+        int var2 = recordManager->getPosOfNewRecord(settingsStringLeague->getCurrentOptionPos(), trackTimeMs);
+        trackTimeFormatted = Time::timeToString(trackTimeMs);
         if (var2 >= 0 && var2 <= 2) {
             TextRender* var3 = new TextRender("", micro);
             var3->setDx(GameCanvas::spriteSizeX[5] + 1);
@@ -496,7 +494,7 @@ void MenuManager::method_201(int var1)
             }
 
             gameMenuFinished->addMenuElement(var3);
-            TextRender* var4 = new TextRender("" + field_340, micro);
+            TextRender* var4 = new TextRender(trackTimeFormatted, micro);
             var4->setDx(GameCanvas::spriteSizeX[5] + 1);
             gameMenuFinished->addMenuElement(var4);
             gameMenuFinished->addMenuElement(field_335);
@@ -1017,7 +1015,7 @@ int MenuManager::method_214()
 
 void MenuManager::method_215(int64_t var1)
 {
-    field_337 = var1;
+    trackTimeMs = var1;
 }
 
 std::vector<int8_t> MenuManager::method_216(int var1, int8_t defaultValue)
@@ -1053,32 +1051,6 @@ int8_t MenuManager::getSettingOrDefault(int idx, int8_t defaultValue)
 //         }
 //     }
 // }
-
-std::string MenuManager::timeToString(int64_t time)
-{
-    field_338 = (int)(time / 100L);
-    field_339 = (int)(time % 100L);
-    std::string timeStr;
-    if (field_338 / 60 < 10) {
-        timeStr = " 0" + std::to_string(field_338 / 60);
-    } else {
-        timeStr = " " + std::to_string(field_338 / 60);
-    }
-
-    if (field_338 % 60 < 10) {
-        timeStr = timeStr + ":0" + std::to_string(field_338 % 60);
-    } else {
-        timeStr = timeStr + ":" + std::to_string(field_338 % 60);
-    }
-
-    if (field_339 < 10) {
-        timeStr = timeStr + ".0" + std::to_string(field_339);
-    } else {
-        timeStr = timeStr + "." + std::to_string(field_339);
-    }
-
-    return timeStr;
-}
 
 void MenuManager::setValue(int pos, int8_t value)
 {

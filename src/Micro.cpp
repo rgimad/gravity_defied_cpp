@@ -182,6 +182,7 @@ void Micro::run()
     gameCanvas->setCommandListener(gameCanvas);
     restart(false);
     menuManager->method_201(0);
+
     if (menuManager->method_196()) {
         restart(true);
     }
@@ -190,6 +191,7 @@ void Micro::run()
 
     while (gameStarted) {
         int var5;
+
         if (gamePhysics->method_21() != menuManager->method_210()) {
             var5 = gameCanvas->loadSprites(menuManager->method_210());
             gamePhysics->method_22(var5);
@@ -200,6 +202,7 @@ void Micro::run()
         try {
             if (isInGameMenu) {
                 menuManager->method_201(1);
+
                 if (menuManager->method_196()) {
                     restart(true);
                 }
@@ -242,6 +245,7 @@ void Micro::run()
                     // } catch (InterruptedException var12) {
                     // }
                     int64_t var7 = 1000L;
+
                     if (field_246 > 0L) {
                         var7 = std::min(field_246 - Time::currentTimeMillis(), static_cast<int64_t>(1000));
                     }
@@ -262,6 +266,7 @@ void Micro::run()
                     goalLoop();
                     menuManager->method_215(gameTimeMs / 10L);
                     menuManager->method_201(2);
+
                     if (menuManager->method_196()) {
                         restart(true);
                     }
@@ -286,6 +291,7 @@ void Micro::run()
         try {
             gamePhysics->method_53();
             int64_t var1;
+
             if ((var1 = Time::currentTimeMillis()) - var3 < 30L) {
                 // try {
                 //     synchronized (this) {
@@ -311,6 +317,7 @@ void Micro::run()
 void Micro::goalLoop()
 {
     int64_t var4 = 0L;
+
     if (!gamePhysics->field_69) {
         gameCanvas->scheduleGameTimerTask("Wheelie!", 1000);
     } else {
@@ -336,6 +343,7 @@ void Micro::goalLoop()
                 //     return;
                 // }
                 int64_t deltaTime;
+
                 if ((deltaTime = timeMs - Time::currentTimeMillis()) > 0L) {
                     Time::sleep(deltaTime);
                 }
@@ -346,6 +354,7 @@ void Micro::goalLoop()
 
         gamePhysics->method_53();
         int64_t var2;
+
         if ((var2 = Time::currentTimeMillis()) - var4 < 30L) {
             // try {
             //     synchronized (this) {

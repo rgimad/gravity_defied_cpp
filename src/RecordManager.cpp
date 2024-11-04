@@ -5,13 +5,19 @@
 #include "rms/RecordStoreNotOpenException.h"
 #include "rms/InvalidRecordIDException.h"
 
-void RecordManager::method_8(int var1, int var2)
+// method_8 0 9
+// openRecordStore(ecff3f91391c012620ea3f638ef4f21d_09, 1)
+// createRecordStore(ecff3f91391c012620ea3f638ef4f21d_09, 1)
+// enumerateRecords()
+// method_197 AAA 2476
+
+void RecordManager::method_8(const int level, const int track)
 {
-    std::cout << "method_8 " << var1 << " " << var2 << std::endl;
+    std::cout << "method_8 " << level << track << std::endl;
     resetRecordsTime();
 
     try {
-        str = std::to_string(var1) + std::to_string(var2);
+        const std::string str = std::to_string(level) + std::to_string(track);
         recordStore = RecordStore::openRecordStore(str, true);
     } catch (RecordStoreException& var9) {
         return;
@@ -70,9 +76,9 @@ void RecordManager::pushLongAs5Bytes(std::vector<int8_t> var1, int var2, int64_t
 void RecordManager::loadRecordInfo(std::vector<int8_t> var1)
 {
     int offset = 0;
-
     int league;
     int pos;
+
     for (league = 0; league < 4; ++league) {
         for (pos = 0; pos < 3; ++pos) {
             recordTimeMs[league][pos] = load5BytesAsLong(var1, offset);
@@ -92,9 +98,9 @@ void RecordManager::loadRecordInfo(std::vector<int8_t> var1)
 void RecordManager::getLevelInfo(std::vector<int8_t> var1)
 {
     int shift = 0;
+    uint8_t league;
+    uint8_t recordNo;
 
-    int league;
-    int recordNo;
     for (league = 0; league < 4; ++league) {
         for (recordNo = 0; recordNo < 3; ++recordNo) {
             pushLongAs5Bytes(var1, shift, recordTimeMs[league][recordNo]);
@@ -120,44 +126,49 @@ void RecordManager::resetRecordsTime()
     }
 }
 
-std::vector<std::string> RecordManager::getRecordDescription(int var1)
+std::vector<std::string> RecordManager::getRecordDescription(const int league)
 {
-    std::vector<std::string> var2 = std::vector<std::string>(3);
+    std::vector<std::string> recordsDescription = std::vector<std::string>(3);
 
-    for (int var3 = 0; var3 < 3; ++var3) {
-        if (recordTimeMs[var1][var3] != 0L) {
-            int var4 = (int)recordTimeMs[var1][var3] / 100;
-            int var5 = (int)recordTimeMs[var1][var3] % 100;
-            var2[var3] = "" + std::string(recordName[var1][var3]) + " ";
+    for (uint8_t record_number = 0; record_number < 3; ++record_number) {
+        if (recordTimeMs[league][record_number] != 0L) {
+            std::stringstream ss;
+            ss << recordName[league][record_number] << ' '
+               << Time::timeToString(recordTimeMs[league][record_number]);
+            recordsDescription[record_number] = ss.str();
+            // int var4 = (int)recordTimeMs[var1][var3] / 100;
+            // int var5 = (int)recordTimeMs[var1][var3] % 100;
+            // var2[var3] = "" + std::string(recordName[var1][var3]) + " ";
 
-            if (var4 / 60 < 10) {
-                var2[var3] = var2[var3] + " 0" + std::to_string(var4 / 60);
-            } else {
-                var2[var3] = var2[var3] + " " + std::to_string(var4 / 60);
-            }
+            // if (var4 / 60 < 10) {
+            //     var2[var3] = var2[var3] + " 0" + std::to_string(var4 / 60);
+            // } else {
+            //     var2[var3] = var2[var3] + " " + std::to_string(var4 / 60);
+            // }
 
-            if (var4 % 60 < 10) {
-                var2[var3] = var2[var3] + ":0" + std::to_string(var4 % 60);
-            } else {
-                var2[var3] = var2[var3] + ":" + std::to_string(var4 % 60);
-            }
+            // if (var4 % 60 < 10) {
+            //     var2[var3] = var2[var3] + ":0" + std::to_string(var4 % 60);
+            // } else {
+            //     var2[var3] = var2[var3] + ":" + std::to_string(var4 % 60);
+            // }
 
-            if (var5 < 10) {
-                var2[var3] = var2[var3] + ".0" + std::to_string(var5);
-            } else {
-                var2[var3] = var2[var3] + "." + std::to_string(var5);
-            }
+            // if (var5 < 10) {
+            //     var2[var3] = var2[var3] + ".0" + std::to_string(var5);
+            // } else {
+            //     var2[var3] = var2[var3] + "." + std::to_string(var5);
+            // }
         } else {
-            var2[var3].clear();
+            recordsDescription[record_number].clear();
         }
     }
 
-    return var2;
+    return recordsDescription;
 }
 
 void RecordManager::writeRecordInfo()
 {
     getLevelInfo(packedRecordInfo);
+
     if (packedRecordInfoRecordId == -1) {
         try {
             packedRecordInfoRecordId = recordStore->addRecord(packedRecordInfo, 0, 96);
@@ -188,10 +199,13 @@ int RecordManager::getPosOfNewRecord(int league, int64_t timeMs)
     return 3;
 }
 
-void RecordManager::method_17(int league, char* values, int64_t timeMs)
+void RecordManager::method_17(int league, char* playerName, int64_t timeMs)
 {
-    int newRecordPos;
-    if ((newRecordPos = getPosOfNewRecord(league, timeMs)) != 3) {
+    std::cout << "method_17 " << league << " " << playerName << " " << timeMs << std::endl;
+    const int newRecordPos = getPosOfNewRecord(league, timeMs);
+    std::cout << "record pos " << newRecordPos << std::endl;
+
+    if (newRecordPos < 3) {
         if (timeMs > 16777000L) {
             timeMs = 16777000L; // 3 int8_ts, not five, wtf?
         }
@@ -200,13 +214,19 @@ void RecordManager::method_17(int league, char* values, int64_t timeMs)
         recordTimeMs[league][newRecordPos] = timeMs;
 
         for (auto i = 0; i < PLAYER_NAME_MAX; ++i) {
-            recordName[league][newRecordPos][i] = values[i];
+            recordName[league][newRecordPos][i] = playerName[i];
         }
     }
 }
 
 void RecordManager::addNewRecord(int gameLevel, int position)
 {
+    if (position <= 0) {
+        return;
+    }
+
+    std::cout << "addNewRecord " << gameLevel << " " << position << std::endl;
+
     for (auto pos = 2; pos > position; --pos) {
         recordTimeMs[gameLevel][pos] = recordTimeMs[gameLevel][pos - 1];
         for (auto i = 0; i < PLAYER_NAME_MAX; ++i) {
