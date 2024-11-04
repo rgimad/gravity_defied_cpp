@@ -10,9 +10,6 @@ class Canvas;
 
 class CanvasImpl {
 private:
-    const int defaultWidth = 640;
-    const int defaultHeight = 480;
-
     int windowWidth = -1;
     int windowHeight = -1;
 

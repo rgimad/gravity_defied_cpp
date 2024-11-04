@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "config.h"
 #include "utils/Time.h"
 
 class RecordStore;
@@ -16,47 +17,46 @@ public:
         PLAYER_NAME_MAX = 3,
     };
 
-    inline static const int unused = 3;
+    // inline static const int unused = 3;
 
-    void method_8(const int level, const int track);
-    std::vector<std::string> getRecordDescription(const int league);
+    void method_8(const uint8_t level, const uint8_t track);
+    std::vector<std::string> getRecordDescription(const uint8_t league);
     void writeRecordInfo();
-    int getPosOfNewRecord(int league, int64_t timeMs);
-    void method_17(int league, char* values, int64_t timeMs);
+    uint8_t getPosOfNewRecord(const uint8_t league, const int64_t timeMs);
+    void method_17(const uint8_t league, char* playerName, int64_t timeMs);
     void deleteRecordStores();
     void closeRecordStore();
 
 private:
-    // struct Record {
-    //     int64_t timeMs;
-    //     // uint8_t timeMs[5];
-    //     char playerName[3];
-    // };
-    // static_assert(sizeof(Record) == 16);
-
-    // struct LeagueRecords {
-    //     Record records[3];
-    // };
-    // struct RecordsSaveData {
-    //     LeagueRecords leagueRecors[4];
-    // };
-
-    // static_assert(sizeof(char[4]) == 4);
-    // static_assert(sizeof(int64_t) == 8);
-    // static_assert(sizeof(RecordsSaveData) == 96);
-
-    std::vector<std::vector<int64_t>> recordTimeMs = std::vector<std::vector<int64_t>>(4, std::vector<int64_t>(3));
     // 4: league, 100, 175, 225, 350,
     // 3: three best times
-    char recordName[LEAGUES_MAX][RECORD_NO_MAX][PLAYER_NAME_MAX + 1];
+    struct __attribute__((packed)) Record {
+        int64_t timeMs : 40;
+        char playerName[PLAYER_NAME_MAX];
+    };
+    static_assert(sizeof(Record) == 8);
+
+    struct __attribute__((packed)) LeagueRecords {
+        Record records[RECORD_NO_MAX];
+    };
+    static_assert(sizeof(LeagueRecords) == 24);
+
+    struct __attribute__((packed)) RecordsSaveData {
+        LeagueRecords leagueRecords[LEAGUES_MAX];
+    };
+    static_assert(sizeof(RecordsSaveData) == 96);
+
+    union RecordsSaveDataConverter {
+        RecordsSaveData recordsSaveData;
+        int8_t bytes[sizeof(RecordsSaveData)];
+    };
+    static_assert(sizeof(RecordsSaveDataConverter) == sizeof(RecordsSaveData));
+
     RecordStore* recordStore = nullptr;
     int packedRecordInfoRecordId = -1;
-    std::vector<int8_t> packedRecordInfo = std::vector<int8_t>(96);
+    RecordsSaveData recordsSaveData;
 
-    int64_t load5BytesAsLong(std::vector<int8_t> var1, int offset);
-    void pushLongAs5Bytes(std::vector<int8_t> var1, int var2, int64_t var3);
     void loadRecordInfo(std::vector<int8_t> var1);
-    void getLevelInfo(std::vector<int8_t> var1);
     void resetRecordsTime();
-    void addNewRecord(int gameLevel, int position);
+    void addNewRecord(const uint8_t league, const uint8_t position);
 };

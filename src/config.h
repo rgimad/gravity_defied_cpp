@@ -13,6 +13,9 @@ struct GlobalSetting {
     static uint8_t LoadingBarPadding;
     static uint8_t BarScreenOffset;
     static uint8_t BarH;
+    static uint16_t DefaultScreenWidth;
+    static uint16_t DefaultScreenHeight;
     static std::string SavesPrefix;
+    static std::string GlobalSaveFileName;
     static std::filesystem::path MrgFilePath;
 };

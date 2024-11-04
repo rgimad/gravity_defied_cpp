@@ -35,7 +35,7 @@ CanvasImpl::CanvasImpl(Canvas* canvas)
         0,
         SDL_WINDOWPOS_UNDEFINED,
         SDL_WINDOWPOS_UNDEFINED,
-        defaultWidth, defaultHeight,
+        GlobalSetting::DefaultScreenWidth, GlobalSetting::DefaultScreenHeight,
         windowFlags);
 
     if (!window) {
@@ -70,7 +70,7 @@ void CanvasImpl::repaint()
 int CanvasImpl::getWidth()
 {
     if (windowWidth < 0) {
-        return defaultWidth;
+        return GlobalSetting::DefaultScreenWidth;
     }
 
     return windowWidth;
@@ -79,7 +79,7 @@ int CanvasImpl::getWidth()
 int CanvasImpl::getHeight()
 {
     if (windowHeight < 0) {
-        return defaultHeight;
+        return GlobalSetting::DefaultScreenHeight;
     }
 
     return windowHeight;

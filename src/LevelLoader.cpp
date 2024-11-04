@@ -87,8 +87,10 @@ void LevelLoader::method_87()
 
 int LevelLoader::method_88(int var1, int var2)
 {
+    std::cout << "method_88 " << var1 << " " << var2 << std::endl;
     field_125 = var1;
     field_126 = var2;
+
     if (field_126 >= static_cast<int>(levelNames[field_125].size())) {
         field_126 = 0;
     }
@@ -99,10 +101,13 @@ int LevelLoader::method_88(int var1, int var2)
 
 void LevelLoader::method_89(int var1, int var2)
 {
+    std::cout << "method_89 " << var1 << " " << var2 << std::endl;
     levelFileStream->setPos(levelOffsetInFile[var1 - 1][var2 - 1]);
+
     if (gameLevel == nullptr) {
         gameLevel = new GameLevel();
     }
+
     gameLevel->load(levelFileStream);
     method_96(gameLevel);
 }

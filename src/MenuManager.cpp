@@ -10,6 +10,7 @@
 #include "GameMenu.h"
 #include "SettingsStringRender.h"
 #include "utils/Time.h"
+#include "config.h"
 
 MenuManager::MenuManager(Micro* var1)
 {
@@ -36,7 +37,7 @@ void MenuManager::initPart(int var1)
         }
 
         try {
-            recordStore = RecordStore::openRecordStore("GDTRStates", true);
+            recordStore = RecordStore::openRecordStore(GlobalSetting::GlobalSaveFileName, true);
             isRecordStoreOpened = true;
             return;
         } catch (RecordStoreException& var9) {
@@ -474,8 +475,9 @@ void MenuManager::method_201(int var1)
         field_354 = settingStringLevel->getCurrentOptionPos();
         field_355 = settingsStringTrack->getCurrentOptionPos();
         recordManager->method_8(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
-        int var2 = recordManager->getPosOfNewRecord(settingsStringLeague->getCurrentOptionPos(), trackTimeMs);
+        const uint8_t var2 = recordManager->getPosOfNewRecord(settingsStringLeague->getCurrentOptionPos(), trackTimeMs);
         trackTimeFormatted = Time::timeToString(trackTimeMs);
+
         if (var2 >= 0 && var2 <= 2) {
             TextRender* var3 = new TextRender("", micro);
             var3->setDx(GameCanvas::spriteSizeX[5] + 1);
