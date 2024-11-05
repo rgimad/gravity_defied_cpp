@@ -39,6 +39,16 @@ void RecordStore::closeRecordStore()
     // nothing
 }
 
+int RecordStore::addOrUpdateRecord(int recordId, std::vector<int8_t> arr, int offset, int numBytes)
+{
+    if (recordId == -1) {
+        return this->addRecord(arr, offset, numBytes);
+    } 
+
+    this->setRecord(recordId, arr, offset, numBytes);
+    return recordId;
+}
+
 int RecordStore::addRecord(std::vector<int8_t> arr, int offset, int numBytes)
 {
     log("addRecord(" + std::to_string(arr.size()) + "," + std::to_string(offset) + "," + std::to_string(numBytes) + ")");

@@ -88,22 +88,12 @@ void RecordManager::writeRecordInfo()
     };
     std::vector<int8_t> packedRecordInfo(std::begin(converter.bytes), std::end(converter.bytes));
 
-    if (packedRecordInfoRecordId == -1) {
-        try {
-            packedRecordInfoRecordId = recordStore->addRecord(packedRecordInfo, 0, 96);
-        } catch (RecordStoreNotOpenException& var1) {
-            return;
-        } catch (RecordStoreException& var2) {
-            return;
-        }
-    } else {
-        try {
-            recordStore->setRecord(packedRecordInfoRecordId, packedRecordInfo, 0, 96);
-        } catch (RecordStoreNotOpenException& var3) {
-            return;
-        } catch (RecordStoreException& var4) {
-            return;
-        }
+    try {
+        packedRecordInfoRecordId = recordStore->addOrUpdateRecord(packedRecordInfoRecordId, packedRecordInfo, 0, 96);
+    } catch (RecordStoreNotOpenException& var3) {
+        return;
+    } catch (RecordStoreException& var4) {
+        return;
     }
 }
 

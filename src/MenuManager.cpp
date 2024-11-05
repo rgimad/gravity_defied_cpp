@@ -772,22 +772,12 @@ void MenuManager::method_208()
         setValue(7 + i, availableTracks[i]);
     }
 
-    if (recorcStoreRecordId == -1) {
-        try {
-            recorcStoreRecordId = recordStore->addRecord(savedData, 0, 19);
-        } catch (RecordStoreNotOpenException& var2) {
-            std::cout << var2.what() << std::endl;
-        } catch (RecordStoreException& var3) {
-            std::cout << var3.what() << std::endl;
-        }
-    } else {
-        try {
-            recordStore->setRecord(recorcStoreRecordId, savedData, 0, 19);
-        } catch (RecordStoreNotOpenException& var4) {
-            std::cout << var4.what() << std::endl;
-        } catch (RecordStoreException& var5) {
-            std::cout << var5.what() << std::endl;
-        }
+    try {
+        recorcStoreRecordId = recordStore->addOrUpdateRecord(recorcStoreRecordId, savedData, 0, 19);
+    } catch (RecordStoreNotOpenException& var4) {
+        std::cout << var4.what() << std::endl;
+    } catch (RecordStoreException& var5) {
+        std::cout << var5.what() << std::endl;
     }
 }
 

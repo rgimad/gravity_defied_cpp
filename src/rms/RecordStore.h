@@ -31,4 +31,5 @@ public:
     RecordEnumeration* enumerateRecords(RecordFilter* filter, RecordComparator* comparator, bool keepUpdated);
     int addRecord(std::vector<int8_t> arr, int offset, int numBytes);
     void setRecord(int recordId, std::vector<int8_t> arr, int offset, int numBytes);
+    int addOrUpdateRecord(int recordId, std::vector<int8_t> arr, int offset, int numBytes);
 };
