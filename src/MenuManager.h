@@ -21,6 +21,32 @@ class IGameMenuElement;
 
 class MenuManager : public IMenuManager {
 private:
+    struct Settings {
+        int8_t perspective;
+        int8_t shadows;
+        int8_t driverSprite;
+        int8_t bikeSprite;
+        int8_t lookAhead;
+        int8_t league;
+        int8_t level;
+        int8_t availableEasyTracks;
+        int8_t availableMediumTracks;
+        int8_t availableHardTracks;
+        int8_t unknown;
+        int8_t selectedTrack;
+        int8_t selectedLeague;
+        int8_t unknown2;
+        int8_t input;
+        int8_t unknown3;
+        char playerName[3];
+    };
+    static_assert(sizeof(Settings) == 19);
+
+    union SettingsConverter {
+        Settings settings;
+        int8_t bytes[sizeof(Settings)];
+    };
+
     std::vector<int8_t> savedData;
     Micro* micro;
     RecordManager* recordManager;
@@ -110,7 +136,7 @@ private:
     int8_t field_370 = 0;
     int8_t field_371 = 0;
     int8_t field_372 = 0;
-    int8_t field_373 = 0;
+    // int8_t field_373 = 0;
     std::vector<std::string> field_374;
     std::vector<std::string> field_375;
     std::unique_ptr<TextRender> field_376;
@@ -153,9 +179,9 @@ public:
     void processMenu(IGameMenuElement* menuElement);
     int method_210();
     void method_211(int var1);
-    int method_212();
-    int method_213();
-    int method_214();
+    // int method_212();
+    // int method_213();
+    // int method_214();
     void method_215(int64_t var1);
     void removeOkAndBackCommands();
     void addOkAndBackCommands();

@@ -11,4 +11,5 @@ Makefile
 cmake_install.cmake
 libAssets.a
 saves
+a.out
 

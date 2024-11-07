@@ -113,7 +113,7 @@ void CanvasImpl::processEvents()
             if (keyCode != 0) {
                 canvas->publicKeyReleased(keyCode);
             } else {
-                if (sdlCode == SDLK_ESCAPE) {
+                if (sdlCode == SDLK_ESCAPE || sdlCode == SDLK_BACKSPACE) {
                     // std::cout << "ESC released" << std::endl;
                     canvas->pressedEsc();
                 }

@@ -107,7 +107,7 @@ void MenuManager::initPart(int var1)
         field_369 = getSettingOrDefault(11, field_369);
         field_370 = getSettingOrDefault(10, field_370);
         field_371 = getSettingOrDefault(12, field_371);
-        field_373 = getSettingOrDefault(15, field_373);
+        // field_373 = getSettingOrDefault(15, field_373);
         field_354 = field_370;
         field_355 = field_369;
 
@@ -343,9 +343,34 @@ bool MenuManager::method_196()
 
 void MenuManager::method_197()
 {
-    std::cout << "method_197 " << playerName << " " << trackTimeMs << std::endl;
-    recordManager->method_17(settingsStringLeague->getCurrentOptionPos(), playerName, trackTimeMs);
-    recordManager->writeRecordInfo();
+    // std::cout << "method_197 " << playerName << " " << trackTimeMs << std::endl;
+    recordManager->loadRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
+    {
+        std::cout << "AFTER LOAD" << std::endl;
+        std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
+        
+        for (auto &i: var1) {
+            std::cout << i << std::endl;
+        }
+    }
+    recordManager->addNewRecord(settingsStringLeague->getCurrentOptionPos(), playerName, trackTimeMs);
+    {
+        std::cout << "ADD NEW RECORD" << std::endl;
+        std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
+        
+        for (auto &i: var1) {
+            std::cout << i << std::endl;
+        }
+    }
+    recordManager->writeRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
+    {
+        std::cout << "AFTER WRITE" << std::endl;
+        std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
+        
+        for (auto &i: var1) {
+            std::cout << i << std::endl;
+        }
+    }
     field_356 = false;
     gameMenuFinished->clearVector();
     gameMenuFinished->addMenuElement(new TextRender("Time: " + trackTimeFormatted, micro));
@@ -357,7 +382,7 @@ void MenuManager::method_197()
         }
     }
 
-    recordManager->closeRecordStore();
+    // recordManager->closeRecordStore();
     int8_t availableLeagues = -1;
     if (settingsStringTrack->getMaxAvailableOptionPos() >= settingsStringTrack->getCurrentOptionPos()) {
         settingsStringTrack->setAvailableOptions(settingsStringTrack->getCurrentOptionPos() + 1 < availableTracks[settingStringLevel->getCurrentOptionPos()] ? availableTracks[settingStringLevel->getCurrentOptionPos()] : settingsStringTrack->getCurrentOptionPos() + 1);
@@ -407,7 +432,7 @@ void MenuManager::method_197()
         }
 
         if (availableLeagues != -1) {
-            addTextRender(gameMenuFinished, "Congratultions! You have successfully unlocked a new league: " + leagueNames[availableLeagues]);
+            addTextRender(gameMenuFinished, "Congratulations! You have successfully unlocked a new league: " + leagueNames[availableLeagues]);
             if (availableLeagues == 3) {
                 gameMenuFinished->addMenuElement(new TextRender("Enjoy...", micro));
             }
@@ -474,11 +499,11 @@ void MenuManager::method_201(int var1)
         gameMenuFinished->clearVector();
         field_354 = settingStringLevel->getCurrentOptionPos();
         field_355 = settingsStringTrack->getCurrentOptionPos();
-        recordManager->method_8(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
+        recordManager->loadRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
         const uint8_t var2 = recordManager->getPosOfNewRecord(settingsStringLeague->getCurrentOptionPos(), trackTimeMs);
         trackTimeFormatted = Time::timeToString(trackTimeMs);
 
-        if (var2 >= 0 && var2 <= 2) {
+        if (var2 < RecordManager::RECORD_NO_MAX) {
             TextRender* var3 = new TextRender("", micro);
             var3->setDx(GameCanvas::spriteSizeX[5] + 1);
             switch (var2) {
@@ -703,7 +728,7 @@ void MenuManager::method_1(GameMenu* gm, bool var2)
 void MenuManager::method_207(int var1)
 {
     gameMenuHighscore->clearVector();
-    recordManager->method_8(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
+    recordManager->loadRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
     gameMenuHighscore->addMenuElement(new TextRender(micro->levelLoader->getName(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos()), micro));
     gameMenuHighscore->addMenuElement(new TextRender("LEAGUE: " + settingsStringLeague->getOptionsList()[var1], micro));
     std::vector<std::string> var2 = recordManager->getRecordDescription(var1);
@@ -724,7 +749,7 @@ void MenuManager::method_207(int var1)
         }
     }
 
-    recordManager->closeRecordStore();
+    // recordManager->closeRecordStore();
     if (var2[0] == "") {
         gameMenuHighscore->addMenuElement(new TextRender("No Highscores", micro));
     }
@@ -738,7 +763,7 @@ void MenuManager::saveSmthToRecordStoreAndCloseIt()
         method_208();
 
         try {
-            recordStore->closeRecordStore();
+            // recordStore->closeRecordStore();
             isRecordStoreOpened = false;
         } catch (RecordStoreException& var1) {
             std::cout << var1.what() << std::endl;
@@ -751,6 +776,27 @@ void MenuManager::saveSmthToRecordStoreAndCloseIt()
 void MenuManager::method_208()
 {
     // copyThreeBytesFromArr(16, playerName);
+    Settings settingToSave = {
+        .perspective = (int8_t)perspectiveSetting->getCurrentOptionPos(),
+        .shadows = (int8_t)shadowsSetting->getCurrentOptionPos(),
+        .driverSprite = (int8_t)driverSpriteSetting->getCurrentOptionPos(),
+        .bikeSprite = (int8_t)bikeSpriteSetting->getCurrentOptionPos(),
+        .lookAhead = (int8_t)lookAheadSetting->getCurrentOptionPos(),
+        .league = (int8_t)settingsStringLeague->getMaxAvailableOptionPos(),
+        .level = (int8_t)settingStringLevel->getMaxAvailableOptionPos(),
+        .availableEasyTracks =  (int8_t)availableTracks[0],
+        .availableMediumTracks =  (int8_t)availableTracks[1],
+        .availableHardTracks =  (int8_t)availableTracks[2],
+        .unknown = (int8_t)settingStringLevel->getMaxAvailableOptionPos(),
+        .selectedTrack = (int8_t)settingsStringTrack->getCurrentOptionPos(),
+        .selectedLeague = (int8_t)settingsStringLeague->getCurrentOptionPos(),
+        .unknown2 = -127,
+        .input = (int8_t)inputSetting->getCurrentOptionPos(),
+        .unknown3 = -127,
+        .playerName = {}
+    };
+    strcpy(settingToSave.playerName, playerName);
+    SettingsConverter settingsConverter = { .settings = settingToSave };
 
     setValue(0, (int8_t)perspectiveSetting->getCurrentOptionPos());
     setValue(1, (int8_t)shadowsSetting->getCurrentOptionPos());
@@ -990,20 +1036,20 @@ void MenuManager::method_211(int var1)
     }
 }
 
-int MenuManager::method_212()
-{
-    return settingStringLevel->getCurrentOptionPos();
-}
+// int MenuManager::method_212()
+// {
+//     return settingStringLevel->getCurrentOptionPos();
+// }
 
-int MenuManager::method_213()
-{
-    return settingsStringTrack->getCurrentOptionPos();
-}
+// int MenuManager::method_213()
+// {
+//     return settingsStringTrack->getCurrentOptionPos();
+// }
 
-int MenuManager::method_214()
-{
-    return settingsStringLeague->getCurrentOptionPos();
-}
+// int MenuManager::method_214()
+// {
+//     return settingsStringLeague->getCurrentOptionPos();
+// }
 
 void MenuManager::method_215(int64_t var1)
 {

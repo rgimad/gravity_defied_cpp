@@ -3,11 +3,18 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
+#include <list>
+#include <vector>
 
 #include "config.h"
 #include "utils/Time.h"
 
-class RecordStore;
+#include "rms/RecordStore.h"
+#include "rms/RecordStoreException.h"
+#include "rms/RecordStoreNotOpenException.h"
+#include "rms/InvalidRecordIDException.h"
+
+// class RecordStore;
 
 class RecordManager {
 public:
@@ -19,32 +26,32 @@ public:
 
     // inline static const int unused = 3;
 
-    void method_8(const uint8_t level, const uint8_t track);
+    void loadRecordInfo(const uint8_t level, const uint8_t track);
     std::vector<std::string> getRecordDescription(const uint8_t league);
-    void writeRecordInfo();
-    uint8_t getPosOfNewRecord(const uint8_t league, const int64_t timeMs);
-    void method_17(const uint8_t league, char* playerName, int64_t timeMs);
+    uint8_t getPosOfNewRecord(const uint8_t league, const int64_t timeMs) const;
+    void writeRecordInfo(const uint8_t level, const uint8_t track);
+    void addNewRecord(const uint8_t league, char* playerName, int64_t timeMs);
     void deleteRecordStores();
-    void closeRecordStore();
+    // void closeRecordStore();
 
 private:
     // 4: league, 100, 175, 225, 350,
     // 3: three best times
-    struct __attribute__((packed)) Record {
-        int64_t timeMs : 40;
+    struct /*__attribute__((packed))*/ Record {
+        int64_t timeMs;
         char playerName[PLAYER_NAME_MAX];
     };
-    static_assert(sizeof(Record) == 8);
+    static_assert(sizeof(Record) == 16);
 
-    struct __attribute__((packed)) LeagueRecords {
+    struct /*__attribute__((packed))*/ LeagueRecords {
         Record records[RECORD_NO_MAX];
     };
-    static_assert(sizeof(LeagueRecords) == 24);
+    static_assert(sizeof(LeagueRecords) == 48);
 
-    struct __attribute__((packed)) RecordsSaveData {
+    struct /*__attribute__((packed))*/ RecordsSaveData {
         LeagueRecords leagueRecords[LEAGUES_MAX];
     };
-    static_assert(sizeof(RecordsSaveData) == 96);
+    static_assert(sizeof(RecordsSaveData) == 192);
 
     union RecordsSaveDataConverter {
         RecordsSaveData recordsSaveData;
@@ -52,11 +59,11 @@ private:
     };
     static_assert(sizeof(RecordsSaveDataConverter) == sizeof(RecordsSaveData));
 
-    RecordStore* recordStore = nullptr;
-    int packedRecordInfoRecordId = -1;
-    RecordsSaveData recordsSaveData;
+    // RecordStore* recordStore = nullptr;
+    // int packedRecordInfoRecordId = -1;
+    RecordsSaveDataConverter recordsSaveDataConverter;
+    // RecordsSaveData recordsSaveData;
 
-    void loadRecordInfo(std::vector<int8_t> var1);
     void resetRecordsTime();
-    void addNewRecord(const uint8_t league, const uint8_t position);
+    // void shiftRecords(const uint8_t league, const uint8_t position);
 };
