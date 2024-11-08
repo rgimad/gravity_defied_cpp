@@ -34,6 +34,7 @@ set(SOURCES
     src/class_10.cpp
     src/GameLevel.cpp
     src/LevelLoader.cpp
+    src/MRGLoader.cpp
     src/Micro.cpp
     src/TextRender.cpp
     src/GameMenu.cpp
@@ -49,8 +50,8 @@ set(SOURCES
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
     src/lcdui/FontStorage.cpp
-    src/rms/RecordEnumerationImpl.cpp
-    src/rms/RecordStore.cpp
+    # src/rms/RecordEnumerationImpl.cpp
+    # src/rms/RecordStore.cpp
 )
 
 include(cmake/CMakeRC.cmake)

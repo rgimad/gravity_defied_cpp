@@ -7,7 +7,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <iostream>
-#include<array>
+#include <array>
 
 #include "utils/FileStream.h"
 
@@ -35,6 +35,6 @@ struct LevelTracks {
     std::vector<Track> tracks;
 };
 
-static std::array<MRGLoader::LevelTracks, 3> loadLevels(const std::filesystem::path& mrgFilePath);
-static MRGLoader::TrackInfo loadTrack(const std::filesystem::path& mrgFilePath, const uint32_t fileOffset);
+std::array<MRGLoader::LevelTracks, 3> loadLevels(const std::filesystem::path& mrgFilePath);
+MRGLoader::TrackInfo loadTrack(const std::filesystem::path& mrgFilePath, const uint32_t fileOffset);
 };

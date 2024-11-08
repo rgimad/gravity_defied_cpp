@@ -5,7 +5,12 @@
 #include <string>
 #include <fstream>
 #include <stdexcept>
+#include <climits>
 
+#include "config.h"
+#include "utils/FileStream.h"
+#include "utils/EmbedFileStream.h"
+#include "MRGLoader.h"
 #include "GamePhysics.h"
 #include "GameCanvas.h"
 #include "GameLevel.h"
@@ -17,7 +22,9 @@ private:
     std::vector<std::vector<int>> field_121;
     int field_123[3];
     int field_124[3];
-    inline static std::vector<std::vector<int>> levelOffsetInFile = std::vector<std::vector<int>>(3);
+    // inline static std::vector<std::vector<int>> levelOffsetInFile = std::vector<std::vector<int>>(3);
+    std::array<MRGLoader::LevelTracks, 3> trackHeaders;
+    std::filesystem::path mrgFilePath;
 
     int field_132 = 0;
     static int field_133;
@@ -25,8 +32,8 @@ private:
     static int field_135;
     static int field_136;
 
-    FileStream* levelFileStream;
-    void loadLevels();
+    // FileStream* levelFileStream;
+    // void loadLevels();
 
 public:
     static const int field_114;
@@ -37,9 +44,9 @@ public:
     static bool isEnabledPerspective;
     static bool isEnabledShadows;
     GameLevel* gameLevel = nullptr;
-    int field_125 = 0;
-    int field_126 = -1;
-    std::vector<std::vector<std::string>> levelNames = std::vector<std::vector<std::string>>(3);
+    int loadedLevel = 0;
+    int loadedTrack = -1;
+    // std::vector<std::vector<std::string>> levelNames = std::vector<std::vector<std::string>>(3);
     int field_129;
     int field_130;
     int field_131;
@@ -47,13 +54,15 @@ public:
     int field_138;
 
     LevelLoader(const std::filesystem::path& mrgFilePath);
-    ~LevelLoader();
+    // ~LevelLoader();
 
-    std::string getName(int league, int level);
+    std::string getName(const int level, const int track) const;
+    int getTracksCount(const int level) const;
 
-    void method_87();
-    int method_88(int var1, int var2);
-    void method_89(int var1, int var2);
+    void loadNextTrack();
+    int loadTrack(const int level, const int track);
+    std::vector<std::string> GetTrackNames(const int level) const;
+    // void method_89(int var1, int var2);
 
     void method_90(int var1);
     int method_91();

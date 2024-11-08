@@ -8,21 +8,11 @@
 
 #include "config.h"
 #include "utils/Time.h"
-
-#include "rms/RecordStore.h"
-#include "rms/RecordStoreException.h"
-#include "rms/RecordStoreNotOpenException.h"
-#include "rms/InvalidRecordIDException.h"
-
-// class RecordStore;
+#include "utils/FileStream.h"
 
 class RecordManager {
 public:
-    enum {
-        LEAGUES_MAX = 4,
-        RECORD_NO_MAX = 3,
-        PLAYER_NAME_MAX = 3,
-    };
+    
 
     // inline static const int unused = 3;
 
@@ -40,6 +30,7 @@ private:
     struct /*__attribute__((packed))*/ Record {
         int64_t timeMs;
         char playerName[PLAYER_NAME_MAX];
+        uint8_t padding[5];
     };
     static_assert(sizeof(Record) == 16);
 
@@ -59,11 +50,5 @@ private:
     };
     static_assert(sizeof(RecordsSaveDataConverter) == sizeof(RecordsSaveData));
 
-    // RecordStore* recordStore = nullptr;
-    // int packedRecordInfoRecordId = -1;
     RecordsSaveDataConverter recordsSaveDataConverter;
-    // RecordsSaveData recordsSaveData;
-
-    void resetRecordsTime();
-    // void shiftRecords(const uint8_t league, const uint8_t position);
 };

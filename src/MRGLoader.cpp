@@ -32,7 +32,7 @@ static MRGLoader::LevelTracks loadLevel(FileStream& levelFileStream, const uint8
     return levelTracks;
 }
 
-static std::array<MRGLoader::LevelTracks, 3> MRGLoader::loadLevels(const std::filesystem::path& mrgFilePath)
+std::array<MRGLoader::LevelTracks, 3> MRGLoader::loadLevels(const std::filesystem::path& mrgFilePath)
 {
     FileStream levelFileStream(mrgFilePath, std::ios::in | std::ios::binary);
     std::array<MRGLoader::LevelTracks, 3> levels;
@@ -44,7 +44,7 @@ static std::array<MRGLoader::LevelTracks, 3> MRGLoader::loadLevels(const std::fi
     return levels;
 }
 
-static MRGLoader::TrackInfo MRGLoader::loadTrack(const std::filesystem::path& mrgFilePath, const uint32_t fileOffset)
+MRGLoader::TrackInfo MRGLoader::loadTrack(const std::filesystem::path& mrgFilePath, const uint32_t fileOffset)
 {
     FileStream levelFileStream(mrgFilePath, std::ios::in | std::ios::binary);
     levelFileStream.setPos(fileOffset);
@@ -183,9 +183,9 @@ static MRGLoader::TrackInfo MRGLoader::loadTrack(const std::filesystem::path& mr
 //     }
 // }
 
-int main(void)
-{
-    std::array<MRGLoader::LevelTracks, 3> levels = MRGLoader::loadLevels("./levels.mrg");
-    MRGLoader::loadTrack("./levels.mrg", levels[0].tracks[0].offset);
-    return 0;
-}
+// int main(void)
+// {
+//     std::array<MRGLoader::LevelTracks, 3> levels = MRGLoader::loadLevels("./levels.mrg");
+//     MRGLoader::loadTrack("./levels.mrg", levels[0].tracks[0].offset);
+//     return 0;
+// }

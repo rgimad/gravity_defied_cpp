@@ -5,6 +5,14 @@
 #include <filesystem>
 #include <string>
 
+enum {
+    LEAGUES_MAX = 4,
+    RECORD_NO_MAX = 3,
+    PLAYER_NAME_MAX = 3,
+};
+
+const char cheatCode[] = "RKE";
+
 struct GlobalSetting {
     static bool WindowFullscreen;
     static uint8_t LogoMultiplier;

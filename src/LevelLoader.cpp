@@ -1,8 +1,4 @@
 #include "LevelLoader.h"
-#include "utils/FileStream.h"
-#include "utils/EmbedFileStream.h"
-
-#include <climits>
 
 int LevelLoader::field_133 = 0;
 int LevelLoader::field_134 = 0;
@@ -17,100 +13,136 @@ const int LevelLoader::field_118 = 1;
 bool LevelLoader::isEnabledPerspective = true;
 bool LevelLoader::isEnabledShadows = true;
 
-LevelLoader::LevelLoader(const std::filesystem::path& mrgFilePath)
+LevelLoader::LevelLoader(const std::filesystem::path& path)
 {
     for (int i = 0; i < 3; ++i) {
         field_123[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] + 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] + 19660) >> 1) >> 16);
         field_124[i] = (int)((int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) * (int64_t)((GamePhysics::const175_1_half[i] - 19660) >> 1) >> 16);
     }
 
-    if (!mrgFilePath.string().empty()) {
-        FileStream* fileStream = new FileStream(mrgFilePath, std::ios::in | std::ios::binary);
+    this->mrgFilePath = path;
+    // if (!mrgFilePath.string().empty()) {
+    //     FileStream* fileStream = new FileStream(mrgFilePath, std::ios::in | std::ios::binary);
 
-        if (!fileStream->isOpen()) {
-            throw std::system_error(errno, std::system_category(), "Failed to open " + mrgFilePath.string());
-        }
+    //     if (!fileStream->isOpen()) {
+    //         throw std::system_error(errno, std::system_category(), "Failed to open " + mrgFilePath.string());
+    //     }
 
-        levelFileStream = fileStream;
-    } else {
-        EmbedFileStream* embedFileStream = new EmbedFileStream("levels.mrg");
-        levelFileStream = static_cast<FileStream*>(embedFileStream);
+    //     levelFileStream = fileStream;
+    // } else {
+    //     EmbedFileStream* embedFileStream = new EmbedFileStream("levels.mrg");
+    //     levelFileStream = static_cast<FileStream*>(embedFileStream);
+    // }
+
+    // loadLevels();
+    trackHeaders = MRGLoader::loadLevels(this->mrgFilePath);
+    loadNextTrack();
+}
+
+// LevelLoader::~LevelLoader()
+// {
+//     delete levelFileStream;
+// }
+
+// void LevelLoader::loadLevels()
+// {
+//     std::vector<int8_t> var3(40);
+//     std::vector<int> var4(3);
+
+//     for (int league = 0; league < 3; ++league) {
+//         levelFileStream->readVariable(&var4[league], true);
+//         levelOffsetInFile[league] = std::vector<int>(var4[league]);
+//         levelNames[league] = std::vector<std::string>(var4[league]);
+
+//         for (int levelNp = 0; levelNp < var4[league]; ++levelNp) {
+//             int var7;
+//             levelFileStream->readVariable(&var7, true);
+//             levelOffsetInFile[league][levelNp] = var7;
+
+//             for (int var8 = 0; var8 < 40; ++var8) {
+//                 levelFileStream->readVariable(&var3[var8], true);
+
+//                 if (var3[var8] == 0) {
+//                     std::string s = std::string(reinterpret_cast<char*>(var3.data()), var8);
+//                     std::replace(s.begin(), s.end(), '_', ' ');
+//                     levelNames[league][levelNp] = s;
+//                     break;
+//                 }
+//             }
+//         }
+//     }
+// }
+
+std::string LevelLoader::getName(const int level, const int track) const
+{
+    const MRGLoader::LevelTracks l = trackHeaders.at(level);
+    const int tracksCount = static_cast<int>(l.tracks.size());
+
+    if (level < 3 && track < tracksCount) {
+        return l.tracks.at(track).trackName;
     }
 
-    loadLevels();
-    method_87();
+    return "---";
 }
 
-LevelLoader::~LevelLoader()
+int LevelLoader::getTracksCount(const int level) const 
 {
-    delete levelFileStream;
+    const MRGLoader::LevelTracks l = trackHeaders.at(level);
+    return static_cast<int>(l.tracks.size());
 }
 
-void LevelLoader::loadLevels()
+std::vector<std::string> LevelLoader::GetTrackNames(const int level) const 
 {
-    std::vector<int8_t> var3(40);
-    std::vector<int> var4(3);
+    const MRGLoader::LevelTracks levelTracks = trackHeaders.at(level);
+    std::vector<std::string> trackNames{};
 
-    for (int league = 0; league < 3; ++league) {
-        levelFileStream->readVariable(&var4[league], true);
-        levelOffsetInFile[league] = std::vector<int>(var4[league]);
-        levelNames[league] = std::vector<std::string>(var4[league]);
-
-        for (int levelNp = 0; levelNp < var4[league]; ++levelNp) {
-            int var7;
-            levelFileStream->readVariable(&var7, true);
-            levelOffsetInFile[league][levelNp] = var7;
-
-            for (int var8 = 0; var8 < 40; ++var8) {
-                levelFileStream->readVariable(&var3[var8], true);
-
-                if (var3[var8] == 0) {
-                    std::string s = std::string(reinterpret_cast<char*>(var3.data()), var8);
-                    std::replace(s.begin(), s.end(), '_', ' ');
-                    levelNames[league][levelNp] = s;
-                    break;
-                }
-            }
-        }
-    }
-}
-
-std::string LevelLoader::getName(int league, int level)
-{
-    return league < 3 && level < static_cast<int>(levelNames[league].size()) ? levelNames[league][level] : "---";
-}
-
-void LevelLoader::method_87()
-{
-    method_88(field_125, field_126 + 1);
-}
-
-int LevelLoader::method_88(int var1, int var2)
-{
-    // std::cout << "method_88 " << var1 << " " << var2 << std::endl;
-    field_125 = var1;
-    field_126 = var2;
-
-    if (field_126 >= static_cast<int>(levelNames[field_125].size())) {
-        field_126 = 0;
+    for (auto &track: levelTracks.tracks) {
+        trackNames.push_back(track.trackName);
     }
 
-    method_89(field_125 + 1, field_126 + 1);
-    return field_126;
+    return trackNames;
 }
 
-void LevelLoader::method_89(int var1, int var2)
+void LevelLoader::loadNextTrack()
 {
-    // std::cout << "method_89 " << var1 << " " << var2 << std::endl;
-    levelFileStream->setPos(levelOffsetInFile[var1 - 1][var2 - 1]);
+    loadTrack(loadedLevel, loadedTrack + 1);
+}
+
+int LevelLoader::loadTrack(const int level, const int track)
+{
+    std::cout << "loadTrack " << level << " " << track << std::endl;
+    loadedLevel = level;
+    loadedTrack = track;
+
+    const MRGLoader::LevelTracks l = trackHeaders.at(level);
+    const int tracksCount = static_cast<int>(l.tracks.size());
+
+    if (loadedTrack >= tracksCount) {
+        loadedTrack = 0;
+    }
+
+    const MRGLoader::Track t = l.tracks.at(loadedTrack);
+    FileStream levelFileStream{mrgFilePath, std::ios::in | std::ios::binary};
+    levelFileStream.setPos(t.offset);
 
     if (gameLevel == nullptr) {
         gameLevel = new GameLevel();
     }
 
-    gameLevel->load(levelFileStream);
+    gameLevel->load(&levelFileStream);
     method_96(gameLevel);
+    // method_89(loadedLevel + 1, loadedTrack + 1);
+    return loadedTrack;
 }
+
+// void LevelLoader::method_89(const int level, const int track)
+// {
+//     std::cout << "method_89 " << level << " " << track << std::endl;
+
+//     const MRGLoader::LevelTracks l = trackHeaders.at(level);
+//     const MRGLoader::Track t = l.tracks.at(track);
+
+// }
 
 void LevelLoader::method_90(int var1)
 {

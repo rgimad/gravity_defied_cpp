@@ -43,7 +43,7 @@ int RecordStore::addOrUpdateRecord(int recordId, std::vector<int8_t> arr, int of
 {
     if (recordId == -1) {
         return this->addRecord(arr, offset, numBytes);
-    } 
+    }
 
     this->setRecord(recordId, arr, offset, numBytes);
     return recordId;
@@ -84,8 +84,7 @@ RecordEnumerationImpl* RecordStore::load(std::filesystem::path filePath)
 
 RecordStore* RecordStore::openRecordStore(std::string name, bool createIfNecessary)
 {
-    if (name.empty())
-    {
+    if (name.empty()) {
         log("empty name");
         return nullptr;
     }

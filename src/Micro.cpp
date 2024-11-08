@@ -7,7 +7,6 @@
 #include "utils/Time.h"
 #include "utils/Hashing.h"
 #include "lcdui/CanvasImpl.h"
-#include "rms/RecordStore.h"
 #include "config.h"
 
 bool Micro::gameStarted = false;
@@ -162,7 +161,8 @@ void Micro::startApp(int argc, char** argv)
     GlobalSetting::SavesPrefix = Hashing::HashFileMD5(GlobalSetting::MrgFilePath.string());
     std::cout << "hash: " << GlobalSetting::SavesPrefix << std::endl;
 
-    RecordStore::setRecordStoreDir(argv[0]);
+    // TODO: 
+    // RecordStore::setRecordStoreDir(argv[0]);
 
     gameStarted = true;
     // if (thread == null) {

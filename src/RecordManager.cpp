@@ -2,22 +2,12 @@
 
 void RecordManager::loadRecordInfo(const uint8_t level, const uint8_t track)
 {
-    // resetRecordsTime();
+    recordsSaveDataConverter = { .bytes = {} };
     std::string saveFileName = "./saves/" + GlobalSetting::SavesPrefix + "_" + std::to_string(level) + std::to_string(track);
     std::cout << "loadRecordInfo " << saveFileName << std::endl;
-    
+
     FileStream levelFileStream(saveFileName, std::ios::in | std::ios::binary);
     levelFileStream.readVariable(&recordsSaveDataConverter.bytes, false, sizeof(RecordsSaveData));
-}
-
-void RecordManager::resetRecordsTime()
-{
-    recordsSaveDataConverter = { .bytes = {} };
-    // for (uint8_t league = 0; league < LEAGUES_MAX; ++league) {
-    //     for (uint8_t pos = 0; pos < RECORD_NO_MAX; ++pos) {
-    //         recordsSaveData.leagueRecords[league].records[pos].timeMs = 0L;
-    //     }
-    // }
 }
 
 std::vector<std::string> RecordManager::getRecordDescription(const uint8_t league)
@@ -29,7 +19,9 @@ std::vector<std::string> RecordManager::getRecordDescription(const uint8_t leagu
 
         if (record.timeMs != 0L) {
             std::stringstream ss;
-            ss << record.playerName << ' ' << Time::timeToString(record.timeMs);
+            ss << std::string(record.playerName, PLAYER_NAME_MAX)
+               << ' '
+               << Time::timeToString(record.timeMs);
             recordsDescription[i] = ss.str();
         } else {
             recordsDescription[i].clear();
@@ -85,24 +77,26 @@ void RecordManager::addNewRecord(const uint8_t league, char* playerName, int64_t
 
     recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[newRecordPos] = {
         .timeMs = timeMs,
-        .playerName = {}
+        .playerName = {},
+        .padding = {0, 0, 0, 0, 0}
     };
-    strcpy(recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[newRecordPos].playerName, playerName);
+    strncpy(recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[newRecordPos].playerName, playerName, PLAYER_NAME_MAX);
 }
 
 void RecordManager::deleteRecordStores()
 {
-    std::vector<std::string> names = RecordStore::listRecordStores();
+    // TODO:
+    // std::vector<std::string> names = RecordStore::listRecordStores();
 
-    for (std::size_t i = 0; i < names.size(); ++i) {
-        if (names[i] != GlobalSetting::GlobalSaveFileName) {
-            try {
-                RecordStore::deleteRecordStore(names[i]);
-            } catch (RecordStoreException& var3) {
-                return;
-            }
-        }
-    }
+    // for (std::size_t i = 0; i < names.size(); ++i) {
+    //     if (names[i] != GlobalSetting::GlobalSaveFileName) {
+    //         try {
+    //             RecordStore::deleteRecordStore(names[i]);
+    //         } catch (RecordStoreException& var3) {
+    //             return;
+    //         }
+    //     }
+    // }
 }
 
 // void RecordManager::closeRecordStore()
