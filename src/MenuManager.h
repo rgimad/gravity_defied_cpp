@@ -4,7 +4,20 @@
 #include <string>
 #include <memory>
 
+#include "rms/RecordStoreException.h"
+#include "rms/RecordStoreNotOpenException.h"
+#include "rms/RecordStore.h"
+#include "lcdui/FontStorage.h"
+#include "TextRender.h"
+#include "RecordManager.h"
+#include "Micro.h"
+#include "LevelLoader.h"
+#include "GameMenu.h"
+#include "SettingsStringRender.h"
+#include "utils/Time.h"
+#include "config.h"
 #include "IMenuManager.h"
+#include "SettingsManager.h"
 
 class Micro;
 class RecordManager;
@@ -21,33 +34,9 @@ class IGameMenuElement;
 
 class MenuManager : public IMenuManager {
 private:
-    struct Settings {
-        int8_t perspective;
-        int8_t shadows;
-        int8_t driverSprite;
-        int8_t bikeSprite;
-        int8_t lookAhead;
-        int8_t league;
-        int8_t level;
-        int8_t availableEasyTracks;
-        int8_t availableMediumTracks;
-        int8_t availableHardTracks;
-        int8_t unknown;
-        int8_t selectedTrack;
-        int8_t selectedLeague;
-        int8_t unknown2;
-        int8_t input;
-        int8_t unknown3;
-        char playerName[3];
-    };
-    static_assert(sizeof(Settings) == 19);
+    SettingsManager::Settings settings;
 
-    union SettingsConverter {
-        Settings settings;
-        int8_t bytes[sizeof(Settings)];
-    };
-
-    std::vector<int8_t> savedData;
+    // std::vector<int8_t> savedData;
     Micro* micro;
     RecordManager* recordManager;
     Command* commandOk;
@@ -106,39 +95,39 @@ private:
     SettingsStringRender* field_336;
     int64_t trackTimeMs;
     std::string trackTimeFormatted;
-    char* playerName;
-    char availableTracks[4];
+    // char* playerName;
+    // char availableTracks[4];
     char defaultName[4] = "AAA";
-    int8_t availableLeagues = 0;
-    int8_t availableLevels = 0;
+    // int8_t availableLeagues = 0;
+    // int8_t availableLevels = 0;
     std::vector<int> field_345 = { 0, 0, 0 };
     std::vector<std::vector<std::string>> levelNames;
     std::vector<std::string> leagueNames = std::vector<std::string>(3);
     std::vector<std::string> leagueNamesAll4;
-    RecordStore* recordStore;
-    int recorcStoreRecordId = -1;
-    bool isRecordStoreOpened;
+    // RecordStore* recordStore;
+    // int recorcStoreRecordId = -1;
+    // bool isRecordStoreOpened;
     std::unique_ptr<Image> rasterImage;
     TextRender* textRenderCodeBrewLink;
     int field_354 = 0;
     int field_355 = 0;
     bool field_356 = false;
     bool field_357 = false;
-    std::vector<std::string> field_361 = { "Easy", "Medium", "Pro" };
+    std::vector<std::string> levelLabels = { "Easy", "Medium", "Pro" };
     int64_t field_362 = 0L;
-    int8_t isDisablePerspective = 0;
-    int8_t isDisabledShadows = 0;
-    int8_t isDisabledDriverSprite = 0;
-    int8_t isDisabledBikeSprite = 0;
-    int8_t field_367 = 0;
-    int8_t isDisableLookAhead = 0;
-    int8_t field_369 = 0;
-    int8_t field_370 = 0;
-    int8_t field_371 = 0;
+    // int8_t isDisablePerspective = 0;
+    // int8_t isDisabledShadows = 0;
+    // int8_t isDisabledDriverSprite = 0;
+    // int8_t isDisabledBikeSprite = 0;
+    // int8_t field_367 = 0;
+    // int8_t isDisableLookAhead = 0;
+    // int8_t field_369 = 0;
+    // int8_t field_370 = 0;
+    // int8_t field_371 = 0;
     int8_t field_372 = 0;
     // int8_t field_373 = 0;
-    std::vector<std::string> field_374;
-    std::vector<std::string> field_375;
+    std::vector<std::string> onOffLabels;
+    std::vector<std::string> inputLabels;
     std::unique_ptr<TextRender> field_376;
     // Alert alert = nullptr; // TODO
 
@@ -146,11 +135,11 @@ private:
     void method_197();
     void fillCanvasWithImage(Graphics* graphics);
     void processNonFireKeyCode(int keyCode);
-    std::vector<int8_t> method_216(int var1, int8_t var2);
-    int8_t getSettingOrDefault(int var1, int8_t var2);
+    // std::vector<int8_t> method_216(int var1, int8_t var2);
+    // int8_t getSettingOrDefault(int var1, int8_t var2);
     // void copyThreeBytesFromArr(int var1, char* var2);
     // std::string timeToString(int64_t time);
-    void setValue(int pos, int8_t value);
+    // void setValue(int pos, int8_t value);
     void exit();
     int getCountOfRecordStoresWithPrefix(int prefixNumber);
 

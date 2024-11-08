@@ -40,6 +40,7 @@ set(SOURCES
     src/SettingsStringRender.cpp
     src/MenuManager.cpp
     src/RecordManager.cpp
+    src/SettingsManager.cpp
     src/Timer.cpp
     src/lcdui/CanvasImpl.cpp
     src/lcdui/Canvas.cpp
