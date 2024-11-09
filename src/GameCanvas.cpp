@@ -1,14 +1,4 @@
 #include "GameCanvas.h"
-#include "MathF16.h"
-#include "GamePhysics.h"
-#include "MenuManager.h"
-#include "lcdui/Image.h"
-#include "lcdui/FontStorage.h"
-#include "utils/Time.h"
-#include "config.h"
-
-#include <memory>
-#include <vector>
 
 GameCanvas::GameCanvas(Micro* micro)
 {
@@ -116,7 +106,7 @@ int GameCanvas::loadSprites(int flags)
 
 void GameCanvas::method_129()
 {
-    method_164();
+    resetActions();
 }
 
 void GameCanvas::setViewPosition(int dx, int dy)
@@ -451,10 +441,10 @@ void GameCanvas::drawProgressBar(int var1, bool mode)
         GlobalSetting::BarH - (2 * GlobalSetting::LoadingBarPadding));
 }
 
-void GameCanvas::method_163(int var1)
-{
-    field_232 = var1;
-}
+// void GameCanvas::method_163(int var1)
+// {
+//     field_232 = var1;
+// }
 
 void GameCanvas::paint(Graphics* graphics)
 {
@@ -476,40 +466,47 @@ void GameCanvas::paint(Graphics* graphics)
     }
 }
 
-void GameCanvas::method_164()
+void GameCanvas::resetActions()
 {
-    int var1;
-    for (var1 = 0; var1 < 10; ++var1) {
-        activeKeys[var1] = false;
-    }
-
-    for (var1 = 0; var1 < 7; ++var1) {
-        activeActions[var1] = false;
-    }
+    activeActions[Keys::UP] = false;
+    activeActions[Keys::DOWN] = false;
+    activeActions[Keys::LEFT] = false;
+    activeActions[Keys::RIGHT] = false;
+    activeActions[Keys::FIRE] = false;
+    activeActions[Keys::BACK] = false;
 }
 
 void GameCanvas::handleUpdatedInput()
 {
-    int var1 = 0;
-    int var2 = 0;
-    int var3 = field_232;
+    int verticalMovement = 0; // var1
+    int horizontalMovement = 0; // var2
+    // int var3 = field_232;
 
-    int var4;
-    for (var4 = 0; var4 < 10; ++var4) {
-        if (activeKeys[var4]) {
-            var1 += field_231[var3][var4][0];
-            var2 += field_231[var3][var4][1];
+    // int var4;
+    // for (var4 = 0; var4 < 10; ++var4) {
+    //     if (activeKeys[var4]) {
+    //         var1 += field_231[var3][var4][0];
+    //         var2 += field_231[var3][var4][1];
+    //     }
+    // }
+
+    // for (var4 = 0; var4 < 7; ++var4) {
+    //     if (activeActions[var4]) {
+    //         var1 += field_230[var4][0];
+    //         var2 += field_230[var4][1];
+    //     }
+    // }
+
+    for (const auto& [action, isActive] : activeActions) {
+        if (!isActive) {
+            continue;
         }
+
+        verticalMovement += availableActions[action][0];
+        horizontalMovement += availableActions[action][1];
     }
 
-    for (var4 = 0; var4 < 7; ++var4) {
-        if (activeActions[var4]) {
-            var1 += field_230[var4][0];
-            var2 += field_230[var4][1];
-        }
-    }
-
-    gamePhysics->method_30(var1, var2);
+    gamePhysics->method_30(verticalMovement, horizontalMovement);
 }
 
 void GameCanvas::processTimers()
@@ -524,30 +521,15 @@ void GameCanvas::processTimers()
     }
 }
 
-void GameCanvas::processKeyPressed(int keyCode)
+void GameCanvas::processKeyPressed(const Keys keyCode)
 {
-    int action = getGameAction(keyCode);
-    int numKey;
-    // KEY_NUM0 - KEY_NUM10 is 48-58
-    if ((numKey = keyCode - 48) >= 0 && numKey < 10) {
-        activeKeys[numKey] = true;
-    } else if (action >= 0 && action < 7) {
-        activeActions[action] = true;
-    }
-
+    activeActions[keyCode] = true;
     handleUpdatedInput();
 }
 
-void GameCanvas::processKeyReleased(int keyCode)
+void GameCanvas::processKeyReleased(const Keys keyCode)
 {
-    int action = getGameAction(keyCode);
-    int numKey;
-    if ((numKey = keyCode - 48) >= 0 && numKey < 10) {
-        activeKeys[numKey] = false;
-    } else if (action >= 0 && action < 7) {
-        activeActions[action] = false;
-    }
-
+    activeActions[keyCode] = false;
     handleUpdatedInput();
 }
 
@@ -579,17 +561,22 @@ void GameCanvas::method_168(Command* var1, Displayable* var2)
     }
 }
 
-void GameCanvas::keyPressed(int var1)
+void GameCanvas::keyPressed(const Keys var1)
 {
     if (Micro::isInGameMenu && menuManager != nullptr) {
         menuManager->processKeyCode(var1);
+        return;
     }
 
     processKeyPressed(var1);
 }
 
-void GameCanvas::keyReleased(int var1)
+void GameCanvas::keyReleased(const Keys var1)
 {
+    if (var1 == Keys::BACK) {
+        pressedEsc();
+    }
+
     processKeyReleased(var1);
 }
 

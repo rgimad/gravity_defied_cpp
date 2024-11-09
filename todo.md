@@ -1,3 +1,0 @@
-- [ ] scaling font
-- [ ] fix another problem with saving highscore
-- [ ] change keybinds

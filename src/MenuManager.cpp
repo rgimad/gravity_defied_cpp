@@ -10,7 +10,7 @@ void MenuManager::initPart(int var1)
 {
     // int var4;
     switch (var1) {
-    case 1:
+    case 1: {
         // playerName = defaultName;
         recordManager = new RecordManager();
         trackTimeMs = -1L;
@@ -30,6 +30,8 @@ void MenuManager::initPart(int var1)
         //     isRecordStoreOpened = false;
         //     return;
         // }
+        return;
+    }
     case 2: {
         // recorcStoreRecordId = -1;
 
@@ -86,9 +88,9 @@ void MenuManager::initPart(int var1)
         // settings.availableTracks[0] = 0;
         // settings.availableTracks[1] = 0;
         // settings.availableTracks[2] = -1;
-    }
         return;
-    case 3:
+    }
+    case 3: {
         // isDisablePerspective = getSettingOrDefault(0, isDisablePerspective);
         // isDisabledShadows = getSettingOrDefault(1, isDisabledShadows);
         // isDisabledDriverSprite = getSettingOrDefault(2, isDisabledDriverSprite);
@@ -122,7 +124,7 @@ void MenuManager::initPart(int var1)
         LevelLoader::isEnabledPerspective = settings.perspective == 0;
         LevelLoader::isEnabledShadows = settings.shadows == 0;
         micro->gamePhysics->setEnableLookAhead(settings.lookAhead == 0);
-        micro->gameCanvas->method_163(settings.input);
+        // micro->gameCanvas->method_163(settings.input);
         micro->gameCanvas->method_124(field_372 == 0);
         leagueNamesAll4 = { "100cc", "175cc", "220cc", "325cc" };
         // levelNames = micro->levelLoader->levelNames;
@@ -136,6 +138,7 @@ void MenuManager::initPart(int var1)
 
         field_360 = settings.selectedLeague;
         return;
+    }
     case 4: {
         gameMenuMain = new GameMenu("Main", micro, nullptr);
         gameMenuPlay = new GameMenu("Play", micro, gameMenuMain);
@@ -157,9 +160,9 @@ void MenuManager::initPart(int var1)
         textRenderCodeBrewLink->setFont(boldSmallFont);
         gameMenuHighscore = new GameMenu("Highscore", micro, gameMenuPlay);
         gameMenuFinished = new GameMenu("Finished!", micro, gameMenuPlay);
-    }
         return;
-    case 5:
+    }
+    case 5: {
         gameMenuIngame = new GameMenu("Ingame", micro, gameMenuPlay);
         gameMenuEnterName = new GameMenu("Enter Name", micro, gameMenuFinished, settings.playerName);
         gameMenuConfirmClear = new GameMenu("Confirm Clear", micro, gameMenuOptions);
@@ -200,16 +203,17 @@ void MenuManager::initPart(int var1)
         shadowsSetting = new SettingsStringRender("Shadows", settings.shadows, this, onOffLabels, true, micro, gameMenuOptions, false);
         driverSpriteSetting = new SettingsStringRender("Driver sprite", settings.driverSprite, this, onOffLabels, true, micro, gameMenuOptions, false);
         bikeSpriteSetting = new SettingsStringRender("Bike sprite", settings.bikeSprite, this, onOffLabels, true, micro, gameMenuOptions, false);
-        inputSetting = new SettingsStringRender("Input", settings.input, this, inputLabels, false, micro, gameMenuOptions, false);
+        // inputSetting = new SettingsStringRender("Input", settings.input, this, inputLabels, false, micro, gameMenuOptions, false);
         lookAheadSetting = new SettingsStringRender("Look ahead", settings.lookAhead, this, onOffLabels, true, micro, gameMenuOptions, false);
         clearHighscoreSetting = new TimerOrMotoPartOrMenuElem("Clear highscore", gameMenuConfirmClear, this);
         return;
-    case 6:
+    }
+    case 6: {
         gameMenuOptions->addMenuElement(perspectiveSetting);
         gameMenuOptions->addMenuElement(shadowsSetting);
         gameMenuOptions->addMenuElement(driverSpriteSetting);
         gameMenuOptions->addMenuElement(bikeSpriteSetting);
-        gameMenuOptions->addMenuElement(inputSetting);
+        // gameMenuOptions->addMenuElement(inputSetting);
         gameMenuOptions->addMenuElement(lookAheadSetting);
         gameMenuOptions->addMenuElement(clearHighscoreSetting);
         gameMenuOptions->addMenuElement(settingStringBack);
@@ -230,18 +234,18 @@ void MenuManager::initPart(int var1)
         addTextRender(field_317, "Race to the finish line as fast as you can without crashing. By leaning forward and backward you can adjust the rotation of your bike. By landing on both wheels after jumping, your bike won't crash as easily. Beware, the levels tend to get harder and harder...");
         field_317->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(field_318);
-        field_319 = new GameMenu("Keys", micro, gameMenuHelp);
-        field_320 = new TimerOrMotoPartOrMenuElem("Keys", field_319, this);
-        addTextRender(field_319, "- " + inputLabels[0] + " -");
-        addTextRender(field_319, "UP accelerates, DOWN brakes, RIGHT leans forward and LEFT leans backward. 1 accelerates and leans backward. 3 accelerates and leans forward. 7 brakes and leans backward. 9 brakes and leans forward.");
-        field_319->addMenuElement(field_376.get());
-        addTextRender(field_319, "- " + inputLabels[1] + " -");
-        addTextRender(field_319, "1 accelerates, 4 brakes, 6 leans forward and 5 leans backward.");
-        field_319->addMenuElement(field_376.get());
-        addTextRender(field_319, "- " + inputLabels[2] + " -");
-        addTextRender(field_319, "3 accelerates, 6 brakes, 5 leans forward and 4 leans backward.");
-        field_319->addMenuElement(settingStringBack);
-        gameMenuHelp->addMenuElement(field_320);
+        // field_319 = new GameMenu("Keys", micro, gameMenuHelp);
+        // field_320 = new TimerOrMotoPartOrMenuElem("Keys", field_319, this);
+        // addTextRender(field_319, "- " + inputLabels[0] + " -");
+        // addTextRender(field_319, "UP accelerates, DOWN brakes, RIGHT leans forward and LEFT leans backward. 1 accelerates and leans backward. 3 accelerates and leans forward. 7 brakes and leans backward. 9 brakes and leans forward.");
+        // field_319->addMenuElement(field_376.get());
+        // addTextRender(field_319, "- " + inputLabels[1] + " -");
+        // addTextRender(field_319, "1 accelerates, 4 brakes, 6 leans forward and 5 leans backward.");
+        // field_319->addMenuElement(field_376.get());
+        // addTextRender(field_319, "- " + inputLabels[2] + " -");
+        // addTextRender(field_319, "3 accelerates, 6 brakes, 5 leans forward and 4 leans backward.");
+        // field_319->addMenuElement(settingStringBack);
+        // gameMenuHelp->addMenuElement(field_320);
         field_321 = new GameMenu("Unlocking", micro, gameMenuHelp);
         field_322 = new TimerOrMotoPartOrMenuElem("Unlocking", field_321, this);
         addTextRender(field_321, "By completing the easier levels, new levels will be unlocked. You will also gain access to higher leagues where more advanced bikes with different characteristics are available.");
@@ -253,7 +257,8 @@ void MenuManager::initPart(int var1)
         gameMenuOptionsHighscoreDescription->addMenuElement(settingStringBack);
         gameMenuHelp->addMenuElement(taskHighscore);
         return;
-    case 7:
+    }
+    case 7: {
         gameMenuOptions2 = new GameMenu("Options", micro, gameMenuHelp);
         field_326 = new TimerOrMotoPartOrMenuElem("Options", gameMenuOptions2, this);
 
@@ -268,9 +273,9 @@ void MenuManager::initPart(int var1)
         gameMenuOptions2->addMenuElement(field_376.get());
         addTextRender(gameMenuOptions2, "Bike Sprite: On / Off");
         addTextRender(gameMenuOptions2, "Default: <On>. <On> uses a texture for the bike. <Off> uses line graphics.");
-        gameMenuOptions2->addMenuElement(field_376.get());
-        addTextRender(gameMenuOptions2, "Input: Keyset 1,2,3 ");
-        addTextRender(gameMenuOptions2, "Default: <1>. Determines which type of input should be used when playing. See \"Keys\" in the help menu for more info.");
+        // gameMenuOptions2->addMenuElement(field_376.get());
+        // addTextRender(gameMenuOptions2, "Input: Keyset 1,2,3 ");
+        // addTextRender(gameMenuOptions2, "Default: <1>. Determines which type of input should be used when playing. See \"Keys\" in the help menu for more info.");
         gameMenuOptions2->addMenuElement(field_376.get());
         addTextRender(gameMenuOptions2, "Look ahead: On/Off");
         addTextRender(gameMenuOptions2, "Default: <On>. Turns on and off smart camera movement.");
@@ -299,7 +304,8 @@ void MenuManager::initPart(int var1)
         method_1(gameMenuMain, false);
 
         rasterImage = std::make_unique<Image>("raster.png");
-
+        return;
+    }
     default:
         break;
     }
@@ -336,34 +342,10 @@ bool MenuManager::method_196()
 
 void MenuManager::method_197()
 {
-    // std::cout << "method_197 " << playerName << " " << trackTimeMs << std::endl;
     recordManager->loadRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
-    {
-        std::cout << "AFTER LOAD" << std::endl;
-        std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
-
-        for (auto& i : var1) {
-            std::cout << i << std::endl;
-        }
-    }
     recordManager->addNewRecord(settingsStringLeague->getCurrentOptionPos(), settings.playerName, trackTimeMs);
-    {
-        std::cout << "ADD NEW RECORD" << std::endl;
-        std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
-
-        for (auto& i : var1) {
-            std::cout << i << std::endl;
-        }
-    }
     recordManager->writeRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
-    {
-        std::cout << "AFTER WRITE" << std::endl;
-        std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
 
-        for (auto& i : var1) {
-            std::cout << i << std::endl;
-        }
-    }
     currentLevelFinished = false;
     gameMenuFinished->clearVector();
     gameMenuFinished->addMenuElement(new TextRender("Time: " + trackTimeFormatted, micro));
@@ -618,55 +600,57 @@ void MenuManager::fillCanvasWithImage(Graphics* graphics)
     }
 }
 
-void MenuManager::processNonFireKeyCode(int keyCode)
+void MenuManager::processKeyCode(const Keys keyCode)
 {
-    if (micro->gameCanvas->getGameAction(keyCode) != 8) {
-        // if not fire
-        processKeyCode(keyCode);
+    if (currentGameMenu == nullptr) {
+        return;
     }
-}
 
-void MenuManager::processKeyCode(int keyCode)
-{
-    if (currentGameMenu != nullptr) {
-        switch (micro->gameCanvas->getGameAction(keyCode)) {
-        case Canvas::Keys::UP: // UP
-            currentGameMenu->processGameActionUp();
-            return;
-        case Canvas::Keys::LEFT: // LEFT
-            currentGameMenu->processGameActionUpd(3);
-            if (currentGameMenu == gameMenuHighscore) {
-                --field_360;
-                if (field_360 < 0) {
-                    field_360 = 0;
-                }
+    switch (keyCode) {
+    case Keys::UP: {
+        currentGameMenu->processGameActionUp();
+        return;
+    }
+    case Keys::LEFT: {
+        currentGameMenu->processGameActionUpd(3);
 
-                method_207(field_360);
+        if (currentGameMenu == gameMenuHighscore) {
+            --field_360;
+            if (field_360 < 0) {
+                field_360 = 0;
             }
-        case 3:
-        case 4:
-        case 7:
-        default:
-            break;
-        case Canvas::Keys::RIGHT: // RIGHT
-            currentGameMenu->processGameActionUpd(2);
-            if (currentGameMenu == gameMenuHighscore) {
-                ++field_360;
-                if (field_360 > settingsStringLeague->getMaxAvailableOptionPos()) {
-                    field_360 = settingsStringLeague->getMaxAvailableOptionPos();
-                }
 
-                method_207(field_360);
-                return;
+            method_207(field_360);
+        }
+
+        return;
+    }
+    case Keys::RIGHT: {
+        currentGameMenu->processGameActionUpd(2);
+
+        if (currentGameMenu == gameMenuHighscore) {
+            ++field_360;
+            if (field_360 > settingsStringLeague->getMaxAvailableOptionPos()) {
+                field_360 = settingsStringLeague->getMaxAvailableOptionPos();
             }
-            break;
-        case Canvas::Keys::DOWN: // DOWN
-            currentGameMenu->processGameActionDown();
-            return;
-        case Canvas::Keys::FIRE: // FIRE
-            currentGameMenu->processGameActionUpd(1);
+
+            method_207(field_360);
             return;
         }
+
+        return;
+    }
+    case Keys::DOWN: {
+        currentGameMenu->processGameActionDown();
+        return;
+    }
+    case Keys::FIRE: {
+        currentGameMenu->processGameActionUpd(1);
+        return;
+    }
+    default: {
+        return;
+    }
     }
 }
 
@@ -794,7 +778,8 @@ void MenuManager::method_208()
     settings.selectedTrack = (int8_t)settingsStringTrack->getCurrentOptionPos();
     settings.selectedLeague = (int8_t)settingsStringLeague->getCurrentOptionPos();
     settings.unknown2 = -127;
-    settings.input = (int8_t)inputSetting->getCurrentOptionPos();
+    // settings.input = (int8_t)inputSetting->getCurrentOptionPos();
+    settings.input = 0;
     settings.unknown3 = -127;
 
     // strcpy(settingToSave.playerName, playerName);
@@ -878,14 +863,14 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                 return;
             }
         } else {
-            if (menuElement == inputSetting) {
-                if (inputSetting->method_114()) {
-                    inputSetting->setCurentOptionPos(inputSetting->getCurrentOptionPos() + 1);
-                }
+            // if (menuElement == inputSetting) {
+            //     if (inputSetting->method_114()) {
+            //         inputSetting->setCurentOptionPos(inputSetting->getCurrentOptionPos() + 1);
+            //     }
 
-                micro->gameCanvas->method_163(inputSetting->getCurrentOptionPos());
-                return;
-            }
+            //     micro->gameCanvas->method_163(inputSetting->getCurrentOptionPos());
+            //     return;
+            // }
 
             if (menuElement == lookAheadSetting) {
                 micro->gamePhysics->setEnableLookAhead(lookAheadSetting->getCurrentOptionPos() == 0);
@@ -1093,11 +1078,12 @@ void MenuManager::exit()
     settingsStringTrack->setCurentOptionPos(0);
 
     // playerName = defaultName;
-    inputSetting->setCurentOptionPos(0);
     // availableTracks[0] = 0;
     // availableTracks[1] = 0;
     // availableTracks[2] = -1;
     // availableLeagues = 0;
+
+    // inputSetting->setCurentOptionPos(0);
     method_208();
     recordManager->deleteRecordStores();
 }
@@ -1119,6 +1105,7 @@ void MenuManager::addOkAndBackCommands()
 
 int MenuManager::getCountOfRecordStoresWithPrefix(int prefixNumber)
 {
+    (void)prefixNumber;
     // TODO:
     // std::vector<std::string> storeNames = RecordStore::listRecordStores();
     // if (recordManager != nullptr && !storeNames.empty()) {

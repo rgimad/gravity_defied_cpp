@@ -378,9 +378,9 @@ void Micro::setMode(int mode)
 
 void Micro::showHelp(const char* progName)
 {
-    std::cout << "Usage: " << progName << " <FILE>" << std::endl
-              << "Example:" << std::endl
-              << "  " << progName << " levels.mrg  # A path to a custom levels file could be specified" << std::endl
-              << "  " << progName << "             # When no path is specified, the built-in levels file will be used" << std::endl
+    std::cout << "Usage: " << progName << " <FILE>\n"
+              << "Example:\n"
+              << "  " << progName << " levels.mrg  # A path to a custom levels file could be specified\n"
+              << "  " << progName << "             # When no path is specified, the built-in levels file will be used\n"
               << std::endl;
 }

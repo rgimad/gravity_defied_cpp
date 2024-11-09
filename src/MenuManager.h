@@ -16,19 +16,6 @@
 #include "IMenuManager.h"
 #include "SettingsManager.h"
 
-// class Micro;
-// class RecordManager;
-// class Command;
-// class GameMenu;
-// class TimerOrMotoPartOrMenuElem;
-// class SettingsStringRender;
-// class RecordStore;
-// class Image;
-// class TextRender;
-// class Graphics;
-// class Displayable;
-// class IGameMenuElement;
-
 class MenuManager : public IMenuManager {
 private:
     SettingsManager::Settings settings;
@@ -63,7 +50,7 @@ private:
     SettingsStringRender* shadowsSetting;
     SettingsStringRender* driverSpriteSetting;
     SettingsStringRender* bikeSpriteSetting;
-    SettingsStringRender* inputSetting;
+    // SettingsStringRender* inputSetting;
     SettingsStringRender* lookAheadSetting;
     TimerOrMotoPartOrMenuElem* clearHighscoreSetting;
     TimerOrMotoPartOrMenuElem* field_313;
@@ -124,15 +111,10 @@ private:
     std::unique_ptr<TextRender> field_376;
 
     // Alert alert = nullptr; // TODO
-    char defaultName[4] = "AAA";
-    std::vector<std::string> onOffLabels = { "On", "Off" };;
-    std::vector<std::string> inputLabels = { "Keyset 1", "Keyset 2", "Keyset 3" };
-    std::vector<std::string> levelLabels = { "Easy", "Medium", "Pro" };
 
     void addTextRender(GameMenu* gameMenu, std::string text);
     void method_197();
     void fillCanvasWithImage(Graphics* graphics);
-    void processNonFireKeyCode(int keyCode);
     // std::vector<int8_t> method_216(int var1, int8_t var2);
     // int8_t getSettingOrDefault(int var1, int8_t var2);
     // std::string timeToString(int64_t time);
@@ -172,5 +154,5 @@ public:
     void removeOkAndBackCommands();
     void addOkAndBackCommands();
     /* synchronized */ void method_202(Graphics* var1);
-    void processKeyCode(int keyCode);
+    void processKeyCode(const Keys keyCode);
 };

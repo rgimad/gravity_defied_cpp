@@ -1,14 +1,5 @@
 #include "CanvasImpl.h"
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <stdexcept>
-#include <iostream>
-
-#include "Canvas.h"
-#include "../config.h"
-
 CanvasImpl::CanvasImpl(Canvas* canvas)
 {
     this->canvas = canvas;
@@ -100,23 +91,17 @@ void CanvasImpl::processEvents()
             exit(0); // IMPROVE This is a super dumb way to finish the game, but it works
             break;
         case SDL_KEYDOWN: {
-            int keyCode = convertKeyCharToKeyCode(e.key.keysym.sym);
-            // std::cout << "Key pressed: " << keyCode << std::endl;
-            if (keyCode != 0) {
+            const Keys keyCode = convertKeyCharToKeyCode(e.key.keysym.sym);
+
+            if (keyCode != Keys::NONE) {
                 canvas->publicKeyPressed(keyCode);
             }
         } break;
         case SDL_KEYUP: {
-            int sdlCode = e.key.keysym.sym;
-            int keyCode = convertKeyCharToKeyCode(sdlCode);
-            // std::cout << "Key released: " << keyCode << std::endl;
-            if (keyCode != 0) {
+            const Keys keyCode = convertKeyCharToKeyCode(e.key.keysym.sym);
+
+            if (keyCode != Keys::NONE) {
                 canvas->publicKeyReleased(keyCode);
-            } else {
-                if (sdlCode == SDLK_ESCAPE || sdlCode == SDLK_BACKSPACE) {
-                    // std::cout << "ESC released" << std::endl;
-                    canvas->pressedEsc();
-                }
             }
         } break;
         default:
@@ -125,27 +110,20 @@ void CanvasImpl::processEvents()
     }
 }
 
-int CanvasImpl::convertKeyCharToKeyCode(SDL_Keycode keyCode)
+Keys CanvasImpl::convertKeyCharToKeyCode(const SDL_Keycode keyCode)
 {
-    switch (keyCode) {
-    case SDLK_RETURN:
-        return Canvas::Keys::FIRE;
-    case SDLK_LEFT:
-    case SDLK_a:
-        return Canvas::Keys::LEFT;
-    case SDLK_RIGHT:
-    case SDLK_d:
-        return Canvas::Keys::RIGHT;
-    case SDLK_UP:
-    case SDLK_w:
-        return Canvas::Keys::UP;
-    case SDLK_DOWN:
-    case SDLK_s:
-        return Canvas::Keys::DOWN;
-    default:
-        std::cout << "unknown keyEvent: " << keyCode << std::endl;
-        return 0;
+    std::cout << "KEY " << keyCode << "; MENU " << Micro::isInGameMenu << std::endl;
+
+    if (Micro::isInGameMenu && menuKeyMappings.count(keyCode) > 0) {
+        return menuKeyMappings[keyCode];
     }
+
+    if (!Micro::isInGameMenu && gameKeyMappings.count(keyCode) > 0) {
+        return gameKeyMappings[keyCode];
+    }
+
+    std::cout << "unknown keyEvent: " << keyCode << std::endl;
+    return Keys::NONE;
 }
 
 void CanvasImpl::setWindowTitle(const std::string& title)

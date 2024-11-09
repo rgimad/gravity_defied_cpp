@@ -26,9 +26,10 @@ static MRGLoader::LevelTracks loadLevel(FileStream& levelFileStream, const uint8
     std::cout << levelTracks.tracksCount << " TRACKS" << std::endl;
 
     for (auto& i : levelTracks.tracks) {
-        std::cout << i.offset << " " << i.trackName << std::endl;
+        std::cout << i.offset << " " << i.trackName << '\n';
     }
 
+    std::cout << std::endl;
     return levelTracks;
 }
 
@@ -109,9 +110,10 @@ MRGLoader::TrackInfo MRGLoader::loadTrack(const std::filesystem::path& mrgFilePa
     }
 
     for (auto& i : trackInfo.points) {
-        std::cout << "X: " << i.x << " Y: " << i.y << std::endl;
+        std::cout << "X: " << i.x << " Y: " << i.y << '\n';
     }
 
+    std::cout << std::endl;
     return trackInfo;
 }
 

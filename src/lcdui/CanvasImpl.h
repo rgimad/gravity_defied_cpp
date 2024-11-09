@@ -1,10 +1,14 @@
 #pragma once
 
 #include <memory>
-
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <stdexcept>
+#include <iostream>
+
+#include "Canvas.h"
+#include "../config.h"
 
 class Canvas;
 
@@ -18,7 +22,7 @@ private:
     SDL_Window* window;
     SDL_Renderer* renderer;
 
-    static int convertKeyCharToKeyCode(SDL_Keycode keyCode);
+    static Keys convertKeyCharToKeyCode(const SDL_Keycode keyCode);
 
 public:
     CanvasImpl(Canvas* canvas);
