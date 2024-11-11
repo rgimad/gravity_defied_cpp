@@ -3,8 +3,10 @@
 void RecordManager::loadRecordInfo(const uint8_t level, const uint8_t track)
 {
     recordsSaveDataConverter = { .bytes = {} };
-    std::string saveFileName = "./saves/" + GlobalSetting::SavesPrefix + "_" + std::to_string(level) + std::to_string(track);
-    std::cout << "loadRecordInfo " << saveFileName << std::endl;
+
+    const std::string trackSaveName = std::to_string(level) + std::to_string(track) + ".dat";
+    const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix / trackSaveName;
+    Log::write(Log::LogLevel::Info, "loadRecordInfo %s\n", saveFileName.c_str());
 
     FileStream levelFileStream(saveFileName, std::ios::in | std::ios::binary);
     levelFileStream.readVariable(&recordsSaveDataConverter.bytes, false, sizeof(RecordsSaveData));
@@ -33,8 +35,9 @@ std::vector<std::string> RecordManager::getRecordDescription(const uint8_t leagu
 
 void RecordManager::writeRecordInfo(const uint8_t level, const uint8_t track)
 {
-    std::string saveFileName = "./saves/" + GlobalSetting::SavesPrefix + "_" + std::to_string(level) + std::to_string(track);
-    std::cout << "writeRecordInfo " << saveFileName << std::endl;
+    const std::string trackSaveName = std::to_string(level) + std::to_string(track) + ".dat";
+    const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix / trackSaveName;
+    Log::write(Log::LogLevel::Info, "writeRecordInfo %s\n", saveFileName.c_str());
 
     FileStream levelFileStream(saveFileName, std::ios::out | std::ios::binary);
     levelFileStream.writeVariable(&recordsSaveDataConverter.bytes, sizeof(RecordsSaveData));
@@ -55,9 +58,9 @@ uint8_t RecordManager::getPosOfNewRecord(const uint8_t league, const int64_t tim
 
 void RecordManager::addNewRecord(const uint8_t league, char* playerName, int64_t timeMs)
 {
-    std::cout << "addNewRecord " << (int)league << " " << playerName << " " << timeMs << std::endl;
+    Log::write(Log::LogLevel::Info, "addNewRecord %d %s %d\n", (int)league, playerName, timeMs);
     const uint8_t newRecordPos = getPosOfNewRecord(league, timeMs);
-    std::cout << "record pos " << (int)newRecordPos << std::endl;
+    Log::write(Log::LogLevel::Info, "Record pos %d\n", (int)newRecordPos);
 
     if (newRecordPos >= 3) {
         // out of scope, we save only first 3 records
@@ -78,7 +81,7 @@ void RecordManager::addNewRecord(const uint8_t league, char* playerName, int64_t
     recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[newRecordPos] = {
         .timeMs = timeMs,
         .playerName = {},
-        .padding = {0, 0, 0, 0, 0}
+        .padding = { 0, 0, 0, 0, 0 }
     };
     strncpy(recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[newRecordPos].playerName, playerName, PLAYER_NAME_MAX);
 }

@@ -11,7 +11,7 @@ inline void hash_combine(std::size_t& seed, const T& v)
 
 class Command {
 public:
-    enum Type {
+    enum class Type {
         SCREEN = 1,
         BACK = 2,
         CANCEL = 3,
@@ -40,10 +40,10 @@ public:
         }
     };
 
-    Command(std::string name, int type, int priority);
+    Command(const std::string name, const Command::Type type, const int priority);
     ~Command();
 
     const std::string name;
-    const int type;
+    const Command::Type type;
     const int priority;
 };

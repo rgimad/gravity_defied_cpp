@@ -33,7 +33,7 @@ public:
     Micro();
     ~Micro();
 
-    void startApp(int argc, char** argv);
+    void startApp();
 
     void gameToMenu();
     void menuToGame();

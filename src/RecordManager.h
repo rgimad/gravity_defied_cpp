@@ -7,13 +7,12 @@
 #include <vector>
 
 #include "config.h"
+#include "utils/Log.h"
 #include "utils/Time.h"
 #include "utils/FileStream.h"
 
 class RecordManager {
 public:
-    
-
     // inline static const int unused = 3;
 
     void loadRecordInfo(const uint8_t level, const uint8_t track);

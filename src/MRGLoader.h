@@ -9,6 +9,7 @@
 #include <iostream>
 #include <array>
 
+#include "utils/Log.h"
 #include "utils/FileStream.h"
 
 namespace MRGLoader {

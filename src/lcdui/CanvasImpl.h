@@ -9,6 +9,7 @@
 
 #include "Canvas.h"
 #include "../config.h"
+#include "../utils/Log.h"
 
 class Canvas;
 

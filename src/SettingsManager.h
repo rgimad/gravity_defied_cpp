@@ -10,6 +10,7 @@
 #include <array>
 
 #include "config.h"
+#include "utils/Log.h"
 #include "utils/FileStream.h"
 
 class SettingsManager {
@@ -38,6 +39,7 @@ public:
         int8_t bytes[sizeof(Settings)];
     };
 
+    static void initSettings();
     static SettingsManager::Settings loadSettings();
     static void saveSettings(SettingsManager::Settings settings);
 private:

@@ -15,6 +15,7 @@
 #include "GameCanvas.h"
 #include "GameLevel.h"
 #include "TimerOrMotoPartOrMenuElem.h"
+#include "utils/Log.h"
 #include "utils/FileStream.h"
 
 class LevelLoader {
@@ -62,7 +63,6 @@ public:
     void loadNextTrack();
     int loadTrack(const int level, const int track);
     std::vector<std::string> GetTrackNames(const int level) const;
-    // void method_89(int var1, int var2);
 
     void method_90(int var1);
     int method_91();

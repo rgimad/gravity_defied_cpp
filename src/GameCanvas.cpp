@@ -21,7 +21,7 @@ GameCanvas::GameCanvas(Micro* micro)
     dx = 0;
     dy = height2;
 
-    commandMenu = new Command("Menu", 1, 1);
+    commandMenu = new Command("Menu", Command::Type::SCREEN, 1);
     defaultFontWidth00 = defaultFont->stringWidth("00") + 3;
 }
 

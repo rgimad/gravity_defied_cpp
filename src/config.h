@@ -9,21 +9,20 @@
 #include <array>
 #include <vector>
 
-enum {
-    LEAGUES_MAX = 4,
-    RECORD_NO_MAX = 3,
-    PLAYER_NAME_MAX = 3,
-};
 
-enum Keys {
-    NONE = 0,
-    UP = 1,
-    DOWN = 6,
-    LEFT = 2,
-    RIGHT = 5,
-    FIRE = 8,
-    BACK = 9,
-    // MENU = 10
+constexpr int LEAGUES_MAX = 4;
+constexpr int RECORD_NO_MAX = 3;
+constexpr int PLAYER_NAME_MAX = 3;
+
+
+enum class Keys {
+    NONE, // = 0,
+    UP, // = 1,
+    DOWN, // = 6,
+    LEFT, // = 2,
+    RIGHT, // = 5,
+    FIRE, // = 8,
+    BACK, // = 9,
 };
 
 static std::map<SDL_Keycode, Keys> gameKeyMappings = {
@@ -32,7 +31,7 @@ static std::map<SDL_Keycode, Keys> gameKeyMappings = {
     { SDLK_UP, Keys::UP },
     { SDLK_DOWN, Keys::DOWN },
 
-    { SDLK_RETURN, Keys::UP},
+    { SDLK_RETURN, Keys::UP },
     { SDLK_ESCAPE, Keys::BACK },
     { SDLK_BACKSPACE, Keys::DOWN },
 };
@@ -42,20 +41,21 @@ static std::map<SDL_Keycode, Keys> menuKeyMappings = {
     { SDLK_UP, Keys::UP },
     { SDLK_DOWN, Keys::DOWN },
 
-    { SDLK_RETURN, Keys::FIRE},
+    { SDLK_RETURN, Keys::FIRE },
     { SDLK_ESCAPE, Keys::BACK },
     { SDLK_BACKSPACE, Keys::BACK },
 };
 
 static std::map<Keys, std::array<int, 2>> availableActions = {
-    { Keys::UP, {1, 0} },
-    { Keys::DOWN, {-1, 0}  },
-    { Keys::LEFT, {0, -1} },
-    { Keys::RIGHT, {0, 1} },
+    { Keys::UP, { 1, 0 } },
+    { Keys::DOWN, { -1, 0 } },
+    { Keys::LEFT, { 0, -1 } },
+    { Keys::RIGHT, { 0, 1 } },
     // { Keys::FIRE, {1, 0} },
     // { Keys::BACK, {-1, 0} },
 };
-static std::vector<std::string> onOffLabels = { "On", "Off" };;
+static std::vector<std::string> onOffLabels = { "On", "Off" };
+
 static std::vector<std::string> inputLabels = { "Keyset 1", "Keyset 2", "Keyset 3" };
 static std::vector<std::string> levelLabels = { "Easy", "Medium", "Pro" };
 
@@ -73,6 +73,7 @@ struct GlobalSetting {
     static uint16_t DefaultScreenWidth;
     static uint16_t DefaultScreenHeight;
     static std::string SavesPrefix;
-    static std::string GlobalSaveFileName;
+    static std::filesystem::path GlobalSaveFileName;
+    static std::filesystem::path SavesPath;
     static std::filesystem::path MrgFilePath;
 };

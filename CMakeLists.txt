@@ -23,6 +23,7 @@ pkg_search_module(SDL2_IMAGE REQUIRED IMPORTED_TARGET SDL2_image)
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
     src/config.cpp
+    src/utils/Log.cpp
     src/utils/Time.cpp
     src/utils/Hashing.cpp
     src/utils/EmbedFileStream.cpp
@@ -50,8 +51,6 @@ set(SOURCES
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
     src/lcdui/FontStorage.cpp
-    # src/rms/RecordEnumerationImpl.cpp
-    # src/rms/RecordStore.cpp
 )
 
 include(cmake/CMakeRC.cmake)

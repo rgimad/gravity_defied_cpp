@@ -110,7 +110,7 @@ void LevelLoader::loadNextTrack()
 
 int LevelLoader::loadTrack(const int level, const int track)
 {
-    std::cout << "loadTrack " << level << " " << track << std::endl;
+    Log::write(Log::LogLevel::Info, "loadTrack %d %d\n", level, track);
     loadedLevel = level;
     loadedTrack = track;
 
@@ -131,18 +131,8 @@ int LevelLoader::loadTrack(const int level, const int track)
 
     gameLevel->load(&levelFileStream);
     method_96(gameLevel);
-    // method_89(loadedLevel + 1, loadedTrack + 1);
     return loadedTrack;
 }
-
-// void LevelLoader::method_89(const int level, const int track)
-// {
-//     std::cout << "method_89 " << level << " " << track << std::endl;
-
-//     const MRGLoader::LevelTracks l = trackHeaders.at(level);
-//     const MRGLoader::Track t = l.tracks.at(track);
-
-// }
 
 void LevelLoader::method_90(int var1)
 {

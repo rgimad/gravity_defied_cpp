@@ -22,14 +22,12 @@ static MRGLoader::LevelTracks loadLevel(FileStream& levelFileStream, const uint8
         levelTracks.tracks.push_back(track);
     }
 
-    std::cout << "LEVEL " << (uint32_t)level << std::endl;
-    std::cout << levelTracks.tracksCount << " TRACKS" << std::endl;
+    Log::write(Log::LogLevel::Info, "Level %d, Tracks %d\n", level, levelTracks.tracksCount);
 
     for (auto& i : levelTracks.tracks) {
-        std::cout << i.offset << " " << i.trackName << '\n';
+        Log::write(Log::LogLevel::Info, "%d %s\n", i.offset, i.trackName.c_str());
     }
 
-    std::cout << std::endl;
     return levelTracks;
 }
 
@@ -116,78 +114,3 @@ MRGLoader::TrackInfo MRGLoader::loadTrack(const std::filesystem::path& mrgFilePa
     std::cout << std::endl;
     return trackInfo;
 }
-
-// void GameLevel::load(FileStream* inStream)
-// {
-//     init();
-//     int8_t c;
-//     inStream->readVariable(&c, true);
-//     if (c == 50) {
-//         char var3[20];
-//         inStream->readVariable(var3, false, 20);
-//     }
-
-//     finishFlagPoint = 0;
-//     startFlagPoint = 0;
-//     int pointX, pointY;
-//     short pointsCount;
-//     inStream->readVariable(&startPosX, true);
-//     inStream->readVariable(&startPosY, true);
-//     inStream->readVariable(&finishPosX, true);
-//     inStream->readVariable(&finishPosY, true);
-//     inStream->readVariable(&pointsCount, true);
-//     inStream->readVariable(&pointX, true);
-//     inStream->readVariable(&pointY, true);
-//     int offsetX = pointX;
-//     int offsetY = pointY;
-//     addPointSimple(pointX, pointY);
-
-//     for (int i = 1; i < pointsCount; ++i) {
-//         int8_t modeOrDx;
-//         inStream->readVariable(&modeOrDx, true);
-//         if (modeOrDx == -1) {
-//             offsetY = 0;
-//             offsetX = 0;
-//             inStream->readVariable(&pointX, true);
-//             inStream->readVariable(&pointY, true);
-//         } else {
-//             pointX = modeOrDx;
-//             int8_t temp;
-//             inStream->readVariable(&temp, true);
-//             pointY = temp;
-//         }
-
-//         offsetX += pointX;
-//         offsetY += pointY;
-//         addPointSimple(offsetX, offsetY);
-//     }
-// }
-
-// void GameLevel::addPointSimple(int var1, int var2)
-// {
-//     addPoint(var1 << 16 >> 3, var2 << 16 >> 3);
-// }
-
-// void GameLevel::addPoint(int x, int y)
-// {
-//     if (pointPositions.empty() || static_cast<int>(pointPositions.size()) <= pointsCount) {
-//         int var3 = 100;
-//         if (!pointPositions.empty()) {
-//             var3 = var3 < static_cast<int>(pointPositions.size()) + 30 ? pointPositions.size() + 30 : var3;
-//         }
-//         pointPositions.resize(var3, std::vector<int>(2)); // ABOBA
-//     }
-
-//     if (pointsCount == 0 || pointPositions[pointsCount - 1][0] < x) {
-//         pointPositions[pointsCount][0] = x;
-//         pointPositions[pointsCount][1] = y;
-//         ++pointsCount;
-//     }
-// }
-
-// int main(void)
-// {
-//     std::array<MRGLoader::LevelTracks, 3> levels = MRGLoader::loadLevels("./levels.mrg");
-//     MRGLoader::loadTrack("./levels.mrg", levels[0].tracks[0].offset);
-//     return 0;
-// }

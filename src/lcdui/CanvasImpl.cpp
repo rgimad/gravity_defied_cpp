@@ -112,7 +112,7 @@ void CanvasImpl::processEvents()
 
 Keys CanvasImpl::convertKeyCharToKeyCode(const SDL_Keycode keyCode)
 {
-    std::cout << "KEY " << keyCode << "; MENU " << Micro::isInGameMenu << std::endl;
+    Log::write(Log::LogLevel::Debug, "KEY %d; Menu: %d\n", keyCode, Micro::isInGameMenu);
 
     if (Micro::isInGameMenu && menuKeyMappings.count(keyCode) > 0) {
         return menuKeyMappings[keyCode];
@@ -122,7 +122,7 @@ Keys CanvasImpl::convertKeyCharToKeyCode(const SDL_Keycode keyCode)
         return gameKeyMappings[keyCode];
     }
 
-    std::cout << "unknown keyEvent: " << keyCode << std::endl;
+    Log::write(Log::LogLevel::Warning, "unknown keyEvent: %d\n", keyCode);
     return Keys::NONE;
 }
 

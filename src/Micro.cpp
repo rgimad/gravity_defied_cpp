@@ -5,7 +5,6 @@
 #include "MenuManager.h"
 #include "LevelLoader.h"
 #include "utils/Time.h"
-#include "utils/Hashing.h"
 #include "lcdui/CanvasImpl.h"
 #include "config.h"
 
@@ -144,26 +143,9 @@ void Micro::destroyApp(bool var1)
     menuManager->saveSmthToRecordStoreAndCloseIt();
 }
 
-void Micro::startApp(int argc, char** argv)
+void Micro::startApp()
 {
-    if (argc > 1) {
-        std::string argv1(argv[1]);
-
-        if (argv1 == "-h" || argv1 == "--help") {
-            showHelp(argv[0]);
-            return;
-        }
-
-        GlobalSetting::MrgFilePath = argv1;
-    }
-
-    std::cout << "path: " << GlobalSetting::MrgFilePath << std::endl;
-    GlobalSetting::SavesPrefix = Hashing::HashFileMD5(GlobalSetting::MrgFilePath.string());
-    std::cout << "hash: " << GlobalSetting::SavesPrefix << std::endl;
-
-    // TODO: 
-    // RecordStore::setRecordStoreDir(argv[0]);
-
+    SettingsManager::initSettings();
     gameStarted = true;
     // if (thread == null) {
     //     thread = new Thread(this);
@@ -374,13 +356,4 @@ void Micro::goalLoop()
 void Micro::setMode(int mode)
 {
     gamePhysics->setMode(mode);
-}
-
-void Micro::showHelp(const char* progName)
-{
-    std::cout << "Usage: " << progName << " <FILE>\n"
-              << "Example:\n"
-              << "  " << progName << " levels.mrg  # A path to a custom levels file could be specified\n"
-              << "  " << progName << "             # When no path is specified, the built-in levels file will be used\n"
-              << std::endl;
 }
