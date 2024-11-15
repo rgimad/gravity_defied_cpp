@@ -76,7 +76,7 @@ private:
     SettingsStringRender* field_334;
     SettingsStringRender* field_335;
     SettingsStringRender* field_336;
-    int64_t trackTimeMs;
+    uint64_t trackTimeMs;
     std::string trackTimeFormatted;
     std::vector<int> field_345 = { 0, 0, 0 };
     std::vector<std::string> leagueNames = std::vector<std::string>(3);
@@ -86,7 +86,7 @@ private:
     int field_354 = 0;
     int field_355 = 0;
     bool currentLevelFinished = false;
-    bool field_357 = false;
+    bool restartNeeded = false;
     int8_t field_372 = 0;
     std::unique_ptr<TextRender> field_376;
 
@@ -107,7 +107,7 @@ public:
     void initPart(int var1);
     int getCurrentLevel();
     int getCurrentTrack();
-    bool method_196();
+    bool isRestartNeeded();
     void repaint();
     int getCanvasHeight();
     int getCanvasWidth();
@@ -123,7 +123,7 @@ public:
     void processMenu(IGameMenuElement* menuElement);
     int method_210();
     void method_211(int var1);
-    void method_215(int64_t var1);
+    void setGameTimeMs(const uint64_t var1);
     void removeOkAndBackCommands();
     void addOkAndBackCommands();
     /* synchronized */ void method_202(Graphics* var1);

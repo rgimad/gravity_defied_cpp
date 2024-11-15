@@ -19,9 +19,9 @@ This is the C++ & SDL2 port of Gravity Defied, which includes all the features o
 
 # TODO
 
-- [ ] create saves directory and global setting file when missing
+- [X] create saves directory and global setting file when missing
 - [ ] config file
-- [ ] command line flags
+- [X] command line flags
 - [ ] level file selector
 - [ ] further refactoring
 - [ ] scaling game (or at least font)

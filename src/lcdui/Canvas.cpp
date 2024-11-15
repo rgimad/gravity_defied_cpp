@@ -6,10 +6,6 @@ Canvas::Canvas()
     graphics = std::make_unique<Graphics>(impl->getRenderer());
 }
 
-Canvas::~Canvas()
-{
-}
-
 int Canvas::getWidth()
 {
     return impl->getWidth();

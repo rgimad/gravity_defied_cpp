@@ -41,7 +41,6 @@ public:
     };
 
     Command(const std::string name, const Command::Type type, const int priority);
-    ~Command();
 
     const std::string name;
     const Command::Type type;

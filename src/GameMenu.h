@@ -13,7 +13,7 @@ class Graphics;
 class GameMenu {
 private:
     GameMenu* gameMenu;
-    std::string field_94;
+    std::string name;
     int field_95;
     std::vector<IGameMenuElement*> vector;
     Micro* micro;
@@ -37,8 +37,8 @@ public:
     int xPos;
 
     GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputString = nullptr);
-    void method_68(int var1);
-    void method_69(std::string var1);
+    // void method_68(int var1);
+    // void method_69(std::string var1);
     void method_70();
     void method_71();
     void addMenuElement(IGameMenuElement* var1);
@@ -48,7 +48,7 @@ public:
     void render_76(Graphics* graphics);
     void setGameMenu(GameMenu* gameMenu);
     GameMenu* getGameMenu();
-    int method_79();
+    // int method_79();
     void clearVector();
     std::string makeString();
     char* getStrArr() const;

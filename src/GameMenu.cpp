@@ -11,13 +11,13 @@
 
 GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputString)
 {
-    field_94 = var1;
+    name = var1;
     field_95 = -1;
     this->micro = micro;
     gameMenu = var3;
     canvasWidth = micro->gameCanvas->getWidth();
     canvasHeight = micro->gameCanvas->getHeight();
-    
+
     font = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_LARGE);
     font3 = FontStorage::getFont(Font::STYLE_PLAIN, Font::SIZE_SMALL);
 
@@ -30,6 +30,7 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
     TextRender::setDefaultFont(font3);
     TextRender::setMaxArea(canvasWidth, canvasHeight);
     field_101 = 1;
+
     if (canvasWidth <= 100) {
         xPos = 6;
     } else {
@@ -37,13 +38,14 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
     }
 
     if (canvasHeight <= 100) {
-        field_94 = "";
+        name = "";
     }
 
     field_104 = xPos + 7;
     field_103 = 2;
     field_110 = 0;
-    if (field_94 != "") {
+
+    if (name != "") {
         field_107 = (canvasHeight - (field_101 << 1) - 10 - font->getBaselinePosition()) / (font2->getBaselinePosition() + field_103);
     } else {
         field_107 = (canvasHeight - (field_101 << 1) - 10) / (font2->getBaselinePosition() + field_103);
@@ -63,15 +65,15 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
     }
 }
 
-void GameMenu::method_68(int var1)
-{
-    field_103 = var1;
-}
+// void GameMenu::method_68(int var1)
+// {
+//     field_103 = var1;
+// }
 
-void GameMenu::method_69(std::string var1)
-{
-    field_94 = var1;
-}
+// void GameMenu::method_69(std::string var1)
+// {
+//     name = var1;
+// }
 
 void GameMenu::method_70()
 {
@@ -90,6 +92,7 @@ void GameMenu::method_70()
 
             field_105 = 0;
             field_106 = vector.size() - 1;
+
             if (field_106 > field_107 - 1) {
                 field_106 = field_107 - 1;
             }
@@ -109,11 +112,13 @@ void GameMenu::method_71()
     }
 
     field_105 = vector.size() - field_107;
+
     if (field_105 < 0) {
         field_105 = 0;
     }
 
     field_106 = vector.size() - 1;
+
     if (field_106 > field_95 + field_107) {
         field_106 = field_95 + field_107;
     }
@@ -124,7 +129,8 @@ void GameMenu::addMenuElement(IGameMenuElement* var1)
     int var2 = field_101;
     field_107 = 1;
     vector.push_back(var1);
-    if (field_94 != "") {
+
+    if (name != "") {
         var2 = font->getBaselinePosition() + 2;
     }
 
@@ -164,6 +170,7 @@ void GameMenu::processGameActionDown()
         }
 
         --strArr[nameCursorPos];
+
         if (strArr[nameCursorPos] < 65) {
             strArr[nameCursorPos] = 32;
             return;
@@ -177,6 +184,7 @@ void GameMenu::processGameActionDown()
         }
 
         ++field_95;
+
         if (field_95 > static_cast<int>(vector.size()) - 1) {
             method_70();
             return;
@@ -185,6 +193,7 @@ void GameMenu::processGameActionDown()
         bool var3 = false;
 
         int var2;
+
         for (var2 = field_95; var2 <= field_106 + 1; ++var2) {
             if (vector[var2]->isNotTextRender()) {
                 var3 = true;
@@ -204,6 +213,7 @@ void GameMenu::processGameActionDown()
         if (field_95 > field_106) {
             ++field_105;
             ++field_106;
+
             if (field_106 > static_cast<int>(vector.size()) - 1) {
                 field_106 = vector.size() - 1;
             }
@@ -222,20 +232,22 @@ void GameMenu::processGameActionUp()
         }
 
         ++strArr[nameCursorPos];
+
         if (strArr[nameCursorPos] > 90) {
             strArr[nameCursorPos] = 32;
             return;
         }
     } else if (vector.size() != 0) {
         --field_95;
+
         if (field_95 < 0) {
             method_71();
             return;
         }
 
         bool var3 = false;
-
         int var2;
+
         for (var2 = field_95; var2 >= field_105; --var2) {
             if (vector[var2]->isNotTextRender()) {
                 var3 = true;
@@ -246,6 +258,7 @@ void GameMenu::processGameActionUp()
         if (!var3) {
             if (field_105 > 0) {
                 --field_105;
+
                 if (static_cast<int>(vector.size()) > field_107 - 1) {
                     --field_106;
                     return;
@@ -258,8 +271,10 @@ void GameMenu::processGameActionUp()
         }
 
         field_95 = var2;
+
         if (field_95 < field_105) {
             --field_105;
+
             if (field_105 < 0) {
                 field_95 = 0;
                 field_105 = 0;
@@ -286,13 +301,16 @@ void GameMenu::processGameActionUpd(int var1)
             return;
         case 2:
             ++nameCursorPos;
+
             if (nameCursorPos > 2) {
                 nameCursorPos = 2;
                 return;
             }
+
             break;
         case 3:
             --nameCursorPos;
+
             if (nameCursorPos < 0) {
                 nameCursorPos = 0;
             }
@@ -302,6 +320,7 @@ void GameMenu::processGameActionUpd(int var1)
         if (field_95 != -1) {
             for (int var2 = field_95; var2 < static_cast<int>(vector.size()); ++var2) {
                 IGameMenuElement* var3;
+
                 if ((var3 = vector[var2]) != nullptr && var3->isNotTextRender()) {
                     var3->menuElemMethod(var1);
                     return;
@@ -315,6 +334,7 @@ void GameMenu::render_76(Graphics* graphics)
 {
     int var2;
     int i;
+
     if (field_111) {
         graphics->setColor(0, 0, 20);
         graphics->setFont(font);
@@ -325,6 +345,7 @@ void GameMenu::render_76(Graphics* graphics)
 
         for (i = 0; i < 3; ++i) {
             graphics->drawChar((char)strArr[i], xPos + i * font2->charWidth('W') + 1, var2, 17);
+
             if (i == nameCursorPos) {
                 graphics->drawChar('^', xPos + i * font2->charWidth('W') + 1, var2 + font2->getHeight(), 17);
             }
@@ -333,9 +354,10 @@ void GameMenu::render_76(Graphics* graphics)
     } else {
         graphics->setColor(0, 0, 0);
         var2 = field_101;
-        if (field_94 != "") {
+
+        if (name != "") {
             graphics->setFont(font);
-            graphics->drawString(field_94, xPos, var2, 20);
+            graphics->drawString(name, xPos, var2, 20);
             var2 += font->getBaselinePosition() + 2;
         }
 
@@ -355,6 +377,7 @@ void GameMenu::render_76(Graphics* graphics)
             IGameMenuElement* var4 = vector[i];
             graphics->setColor(0, 0, 0);
             var4->render(graphics, var2, field_104);
+
             if (i == field_95 && var4->isNotTextRender()) {
                 int var5 = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
                 int var6 = var2 + font2->getBaselinePosition() / 2 - micro->gameCanvas->helmetSpriteHeight / 2;
@@ -362,6 +385,7 @@ void GameMenu::render_76(Graphics* graphics)
                 graphics->drawImage(micro->gameCanvas->helmetImage.get(), var5 - micro->gameCanvas->helmetSpriteWidth * (field_110 % 6), var6 - micro->gameCanvas->helmetSpriteHeight * (field_110 / 6), 20);
                 graphics->setClip(0, 0, canvasWidth, canvasHeight);
                 ++field_110;
+
                 if (field_110 > 30) {
                     field_110 = 0;
                 }
@@ -395,10 +419,10 @@ GameMenu* GameMenu::getGameMenu()
     return gameMenu;
 }
 
-int GameMenu::method_79()
-{
-    return field_95;
-}
+// int GameMenu::method_79()
+// {
+//     return field_95;
+// }
 
 void GameMenu::clearVector()
 {

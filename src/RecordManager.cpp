@@ -12,12 +12,12 @@ void RecordManager::loadRecordInfo(const uint8_t level, const uint8_t track)
     levelFileStream.readVariable(&recordsSaveDataConverter.bytes, false, sizeof(RecordsSaveData));
 }
 
-std::vector<std::string> RecordManager::getRecordDescription(const uint8_t league)
+std::array<std::string_view, RECORD_NO_MAX> RecordManager::getRecordDescription(const uint8_t league) const
 {
-    std::vector<std::string> recordsDescription = std::vector<std::string>(RECORD_NO_MAX);
+    std::array<std::string_view, RECORD_NO_MAX> recordsDescription;
 
     for (uint8_t i = 0; i < RECORD_NO_MAX; ++i) {
-        Record record = recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[i];
+        const Record record = recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[i];
 
         if (record.timeMs != 0L) {
             std::stringstream ss;
@@ -26,7 +26,7 @@ std::vector<std::string> RecordManager::getRecordDescription(const uint8_t leagu
                << Time::timeToString(record.timeMs);
             recordsDescription[i] = ss.str();
         } else {
-            recordsDescription[i].clear();
+            recordsDescription[i] = "";
         }
     }
 
@@ -43,12 +43,12 @@ void RecordManager::writeRecordInfo(const uint8_t level, const uint8_t track)
     levelFileStream.writeVariable(&recordsSaveDataConverter.bytes, sizeof(RecordsSaveData));
 }
 
-uint8_t RecordManager::getPosOfNewRecord(const uint8_t league, const int64_t timeMs) const
+uint8_t RecordManager::getPosOfNewRecord(const uint8_t league, const uint64_t timeMs) const
 {
     for (uint8_t i = 0; i < RECORD_NO_MAX; ++i) {
         const Record record = recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[i];
 
-        if (record.timeMs > timeMs || record.timeMs <= 0L) {
+        if (record.timeMs > timeMs || record.timeMs == 0L) {
             return i;
         }
     }
@@ -56,7 +56,7 @@ uint8_t RecordManager::getPosOfNewRecord(const uint8_t league, const int64_t tim
     return 3;
 }
 
-void RecordManager::addNewRecord(const uint8_t league, char* playerName, int64_t timeMs)
+void RecordManager::addNewRecord(const uint8_t league, const char* playerName, const uint64_t timeMs)
 {
     Log::write(Log::LogLevel::Info, "addNewRecord %d %s %d\n", (int)league, playerName, timeMs);
     const uint8_t newRecordPos = getPosOfNewRecord(league, timeMs);
@@ -65,10 +65,6 @@ void RecordManager::addNewRecord(const uint8_t league, char* playerName, int64_t
     if (newRecordPos >= 3) {
         // out of scope, we save only first 3 records
         return;
-    }
-
-    if (timeMs > 16777000L) {
-        timeMs = 16777000L; // 3 int8_ts, not five, wtf?
     }
 
     if (newRecordPos < (RECORD_NO_MAX - 1)) {
@@ -86,7 +82,7 @@ void RecordManager::addNewRecord(const uint8_t league, char* playerName, int64_t
     strncpy(recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[newRecordPos].playerName, playerName, PLAYER_NAME_MAX);
 }
 
-void RecordManager::deleteRecordStores()
+void RecordManager::deleteRecordStores() const
 {
     // TODO:
     // std::vector<std::string> names = RecordStore::listRecordStores();
@@ -101,15 +97,3 @@ void RecordManager::deleteRecordStores()
     //     }
     // }
 }
-
-// void RecordManager::closeRecordStore()
-// {
-//     // if (recordStore != nullptr) {
-//     //     try {
-//     //         recordStore->closeRecordStore();
-//     //         return;
-//     //     } catch (RecordStoreException& var1) {
-//     //         return;
-//     //     }
-//     // }
-// }

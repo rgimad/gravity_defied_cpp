@@ -29,7 +29,6 @@ public:
     std::vector<std::vector<int>> pointPositions;
 
     GameLevel();
-    ~GameLevel();
     void init();
     void method_174(int var1, int var2, int var3, int var4);
     int getStartPosX();

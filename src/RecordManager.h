@@ -5,6 +5,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <algorithm>
 
 #include "config.h"
 #include "utils/Log.h"
@@ -13,32 +14,27 @@
 
 class RecordManager {
 public:
-    // inline static const int unused = 3;
-
     void loadRecordInfo(const uint8_t level, const uint8_t track);
-    std::vector<std::string> getRecordDescription(const uint8_t league);
-    uint8_t getPosOfNewRecord(const uint8_t league, const int64_t timeMs) const;
+    std::array<std::string_view, RECORD_NO_MAX> getRecordDescription(const uint8_t league) const;
+    uint8_t getPosOfNewRecord(const uint8_t league, const uint64_t timeMs) const;
     void writeRecordInfo(const uint8_t level, const uint8_t track);
-    void addNewRecord(const uint8_t league, char* playerName, int64_t timeMs);
-    void deleteRecordStores();
-    // void closeRecordStore();
+    void addNewRecord(const uint8_t league, const char* playerName, const uint64_t timeMs);
+    void deleteRecordStores() const;
 
 private:
-    // 4: league, 100, 175, 225, 350,
-    // 3: three best times
-    struct /*__attribute__((packed))*/ Record {
-        int64_t timeMs;
+    struct Record {
+        uint64_t timeMs;
         char playerName[PLAYER_NAME_MAX];
         uint8_t padding[5];
     };
     static_assert(sizeof(Record) == 16);
 
-    struct /*__attribute__((packed))*/ LeagueRecords {
+    struct LeagueRecords {
         Record records[RECORD_NO_MAX];
     };
     static_assert(sizeof(LeagueRecords) == 48);
 
-    struct /*__attribute__((packed))*/ RecordsSaveData {
+    struct RecordsSaveData {
         LeagueRecords leagueRecords[LEAGUES_MAX];
     };
     static_assert(sizeof(RecordsSaveData) == 192);

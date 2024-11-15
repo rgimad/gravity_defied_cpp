@@ -10,11 +10,11 @@ int64_t currentTimeMillis()
                 std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
-std::string timeToString(const int64_t time)
+std::string timeToString(const uint64_t time)
 {
-    const int minutes = (int)(time / 100L / 60L);
-    const int seconds = (int)(time / 100L % 60L);
-    const int subseconds = (int)(time % 100L);
+    const uint32_t minutes = (uint32_t)(time / 100L / 60L);
+    const uint32_t seconds = (uint32_t)(time / 100L % 60L);
+    const uint32_t subseconds = (uint32_t)(time % 100L);
 
     std::stringstream ss;
     ss << std::setfill('0')
@@ -26,7 +26,7 @@ std::string timeToString(const int64_t time)
     return ss.str();
 }
 
-void sleep(int64_t ms)
+void sleep(const uint64_t ms)
 {
     SDL_Delay(ms);
 }

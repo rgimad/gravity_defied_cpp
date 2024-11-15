@@ -15,10 +15,6 @@ Micro::Micro()
 {
 }
 
-Micro::~Micro()
-{
-}
-
 void Micro::setNumPhysicsLoops(int value)
 {
     numPhysicsLoops = value;
@@ -165,7 +161,7 @@ void Micro::run()
     restart(false);
     menuManager->method_201(0);
 
-    if (menuManager->method_196()) {
+    if (menuManager->isRestartNeeded()) {
         restart(true);
     }
 
@@ -185,7 +181,7 @@ void Micro::run()
             if (isInGameMenu) {
                 menuManager->method_201(1);
 
-                if (menuManager->method_196()) {
+                if (menuManager->isRestartNeeded()) {
                     restart(true);
                 }
             }
@@ -246,10 +242,10 @@ void Micro::run()
                     }
 
                     goalLoop();
-                    menuManager->method_215(gameTimeMs / 10L);
+                    menuManager->setGameTimeMs(gameTimeMs / 10L);
                     menuManager->method_201(2);
 
-                    if (menuManager->method_196()) {
+                    if (menuManager->isRestartNeeded()) {
                         restart(true);
                     }
 

@@ -31,7 +31,6 @@ public:
     MenuManager* menuManager;
 
     Micro();
-    ~Micro();
 
     void startApp();
 

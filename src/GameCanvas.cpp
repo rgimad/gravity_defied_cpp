@@ -214,7 +214,7 @@ void GameCanvas::drawHelmet(int x, int y, int angleF16)
     }
 }
 
-void GameCanvas::drawTime(int64_t time10Ms)
+void GameCanvas::drawTime(uint64_t time10Ms)
 {
     const std::string timeStr = Time::timeToString(time10Ms);
     setColor(0, 0, 0);

@@ -14,6 +14,5 @@ public:
     std::vector<std::unique_ptr<TimerOrMotoPartOrMenuElem>> motoComponents = std::vector<std::unique_ptr<TimerOrMotoPartOrMenuElem>>(6);
 
     class_10();
-    ~class_10();
     void reset();
 };

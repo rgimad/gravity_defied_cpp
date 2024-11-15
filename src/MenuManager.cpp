@@ -11,9 +11,9 @@ void MenuManager::initPart(int var1)
     switch (var1) {
     case 1: {
         recordManager = new RecordManager();
-        trackTimeMs = -1L;
+        trackTimeMs = 0;
         trackTimeFormatted.clear();
-        
+
         return;
     }
     case 2: {
@@ -22,7 +22,7 @@ void MenuManager::initPart(int var1)
         if (settings.playerName[0] < 'A' || settings.playerName[0] > 'Z') {
             strncpy(settings.playerName, defaultName, PLAYER_NAME_MAX);
         }
-        
+
         // cheat code: set name to RKE to enable all leagues ???
         if (strncmp(settings.playerName, cheatCode, PLAYER_NAME_MAX) == 0) {
             settings.availableLeagues = 3;
@@ -253,14 +253,14 @@ int MenuManager::getCurrentTrack()
     return settingsStringTrack->getCurrentOptionPos();
 }
 
-bool MenuManager::method_196()
+bool MenuManager::isRestartNeeded()
 {
-    if (field_357) {
-        field_357 = false;
+    if (restartNeeded) {
+        restartNeeded = false;
         return true;
-    } else {
-        return false;
     }
+
+    return false;
 }
 
 void MenuManager::method_197()
@@ -272,16 +272,20 @@ void MenuManager::method_197()
     currentLevelFinished = false;
     gameMenuFinished->clearVector();
     gameMenuFinished->addMenuElement(new TextRender("Time: " + trackTimeFormatted, micro));
-    std::vector<std::string> var1 = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
+    const std::array<std::string_view, RECORD_NO_MAX> recordDescriptions = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
 
-    for (std::size_t var2 = 0; var2 < var1.size(); ++var2) {
-        if (var1[var2] != "") {
-            gameMenuFinished->addMenuElement(new TextRender(std::to_string(var2 + 1) + "." + var1[var2], micro));
+    for (uint8_t i = 0; i < recordDescriptions.size(); ++i) {
+        if (recordDescriptions[i].empty()) {
+            continue;
         }
+
+        std::stringstream ss;
+        ss << (i + 1) << "." << recordDescriptions[i];
+        gameMenuFinished->addMenuElement(new TextRender(ss.str(), micro));
     }
 
-    // recordManager->closeRecordStore();
     int8_t availableLeagues = -1;
+
     if (settingsStringTrack->getMaxAvailableOptionPos() >= settingsStringTrack->getCurrentOptionPos()) {
         settingsStringTrack->setAvailableOptions(settingsStringTrack->getCurrentOptionPos() + 1 < settings.availableTracks[settingStringLevel->getCurrentOptionPos()] ? settings.availableTracks[settingStringLevel->getCurrentOptionPos()] : settingsStringTrack->getCurrentOptionPos() + 1);
         settings.availableTracks[settingStringLevel->getCurrentOptionPos()] = (int8_t)settingsStringTrack->getMaxAvailableOptionPos() < settings.availableTracks[settingStringLevel->getCurrentOptionPos()] ? settings.availableTracks[settingStringLevel->getCurrentOptionPos()] : (int8_t)settingsStringTrack->getMaxAvailableOptionPos();
@@ -307,7 +311,7 @@ void MenuManager::method_197()
 
     int var3 = getCountOfRecordStoresWithPrefix(settingStringLevel->getCurrentOptionPos());
     addTextRender(gameMenuFinished, var3 + " of " + std::to_string(micro->levelLoader->getTracksCount(settingStringLevel->getCurrentOptionPos())) + " tracks in " + levelLabels[settingStringLevel->getCurrentOptionPos()] + " completed.");
-    
+
     if (!currentLevelFinished) {
         field_333->setText("Restart: " + micro->levelLoader->getName(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos()));
         field_334->setText("Next: " + micro->levelLoader->getName(field_354, field_355 + 1));
@@ -372,13 +376,13 @@ void MenuManager::method_201(int var1)
     case 0:
         method_1(gameMenuMain, false);
         micro->gamePhysics->enableGenerateInputAI();
-        field_357 = true;
+        restartNeeded = true;
         break;
     case 1:
         field_354 = settingStringLevel->getCurrentOptionPos();
         field_355 = settingsStringTrack->getCurrentOptionPos();
         field_333->setText("Restart: " + micro->levelLoader->getName(field_354, field_355));
-        field_357 = false;
+        restartNeeded = false;
         method_1(gameMenuIngame, false);
         break;
     case 2: {
@@ -581,6 +585,7 @@ GameMenu* MenuManager::getGameMenu()
 void MenuManager::method_1(GameMenu* gm, bool var2)
 {
     micro->gameCanvas->removeCommand(commandBack);
+
     if (gm != gameMenuMain && gm != gameMenuFinished && gm != nullptr) {
         micro->gameCanvas->addCommand(commandBack);
     }
@@ -607,6 +612,7 @@ void MenuManager::method_1(GameMenu* gm, bool var2)
     }
 
     currentGameMenu = gm;
+
     if (currentGameMenu != nullptr && !var2) {
         currentGameMenu->method_70();
     }
@@ -620,25 +626,22 @@ void MenuManager::method_207(int var1)
     recordManager->loadRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
     gameMenuHighscore->addMenuElement(new TextRender(micro->levelLoader->getName(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos()), micro));
     gameMenuHighscore->addMenuElement(new TextRender("LEAGUE: " + settingsStringLeague->getOptionsList()[var1], micro));
-    std::vector<std::string> var2 = recordManager->getRecordDescription(var1);
+    const std::array<std::string_view, RECORD_NO_MAX> recordDescription = recordManager->getRecordDescription(var1);
 
-    for (std::size_t var3 = 0; var3 < var2.size(); ++var3) {
-        if (var2[var3] != "") {
-            TextRender* var4 = new TextRender(std::to_string(var3 + 1) + "." + var2[var3], micro);
-            var4->setDx(GameCanvas::spriteSizeX[5] + 1);
-            if (var3 == 0) {
-                var4->setDrawSprite(true, 5);
-            } else if (var3 == 1) {
-                var4->setDrawSprite(true, 6);
-            } else if (var3 == 2) {
-                var4->setDrawSprite(true, 7);
-            }
-
-            gameMenuHighscore->addMenuElement(var4);
+    for (uint8_t i = 0; i < recordDescription.size(); ++i) {
+        if (recordDescription[i].empty()) {
+            continue;
         }
+
+        std::stringstream ss;
+        ss << (i + 1) << '.' << recordDescription[i];
+        TextRender* var4 = new TextRender(ss.str(), micro);
+        var4->setDx(GameCanvas::spriteSizeX[5] + 1);
+        var4->setDrawSprite(true, 5 + i);
+        gameMenuHighscore->addMenuElement(var4);
     }
 
-    if (var2[0] == "") {
+    if (recordDescription[0].empty()) {
         gameMenuHighscore->addMenuElement(new TextRender("No Highscores", micro));
     }
 
@@ -700,7 +703,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
             micro->gamePhysics->disableGenerateInputAI();
             micro->levelLoader->loadTrack(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
             micro->gamePhysics->setMotoLeague(settingsStringLeague->getCurrentOptionPos());
-            field_357 = true;
+            restartNeeded = true;
             micro->menuToGame();
         } else {
             showAlert("GDTR", "Complete more tracks to unlock this track/league combo.", nullptr);
@@ -783,7 +786,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                     settingsStringTrack->setAvailableOptions(settings.availableTracks[field_354]);
                     settingsStringTrack->setCurentOptionPos(field_355);
                     micro->gamePhysics->setMotoLeague(settingsStringLeague->getCurrentOptionPos());
-                    field_357 = true;
+                    restartNeeded = true;
                     micro->menuToGame();
                     return;
                 }
@@ -796,7 +799,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                     micro->levelLoader->loadTrack(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
                     micro->gamePhysics->setMotoLeague(settingsStringLeague->getCurrentOptionPos());
                     method_208();
-                    field_357 = true;
+                    restartNeeded = true;
                     micro->menuToGame();
                     return;
                 }
@@ -859,6 +862,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
 int MenuManager::method_210()
 {
     int var1 = 0;
+
     if (driverSpriteSetting->getCurrentOptionPos() == 0) {
         var1 |= 2;
     }
@@ -874,6 +878,7 @@ void MenuManager::method_211(int var1)
 {
     bikeSpriteSetting->setCurentOptionPos(1);
     driverSpriteSetting->setCurentOptionPos(1);
+
     if ((var1 & 1) > 0) {
         bikeSpriteSetting->setCurentOptionPos(0);
     }
@@ -883,9 +888,9 @@ void MenuManager::method_211(int var1)
     }
 }
 
-void MenuManager::method_215(int64_t var1)
+void MenuManager::setGameTimeMs(const uint64_t timeMs)
 {
-    trackTimeMs = var1;
+    trackTimeMs = timeMs;
 }
 
 void MenuManager::exit()

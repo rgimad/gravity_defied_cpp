@@ -2,12 +2,21 @@
 
 void SettingsManager::initSettings()
 {
-    if (!std::filesystem::exists(GlobalSetting::SavesPath)) {
-        Log::write(Log::LogLevel::Info, "Creating directory %s\n", GlobalSetting::SavesPath.c_str());
-        std::filesystem::create_directory(GlobalSetting::SavesPath);
+    std::filesystem::path saveFileName = GlobalSetting::SavesPath;
+
+    if (!std::filesystem::exists(saveFileName)) {
+        Log::write(Log::LogLevel::Info, "Creating directory %s\n", saveFileName.c_str());
+        std::filesystem::create_directory(saveFileName);
     }
 
-    const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix / GlobalSetting::GlobalSaveFileName;
+    saveFileName = saveFileName / GlobalSetting::SavesPrefix;
+
+    if (!std::filesystem::exists(saveFileName)) {
+        Log::write(Log::LogLevel::Info, "Creating directory %s\n", saveFileName.c_str());
+        std::filesystem::create_directory(saveFileName);
+    }
+
+    saveFileName = saveFileName / GlobalSetting::GlobalSaveFileName;
 
     if (!std::filesystem::exists(saveFileName)) {
         Log::write(Log::LogLevel::Info, "Creating global settings file %s\n", saveFileName.c_str());

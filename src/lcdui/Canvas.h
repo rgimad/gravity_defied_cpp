@@ -26,7 +26,6 @@ private:
 
 public:
     Canvas();
-    ~Canvas();
     bool isShown() override;
     int getWidth() override;
     int getHeight() override;

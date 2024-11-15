@@ -21,57 +21,9 @@ LevelLoader::LevelLoader(const std::filesystem::path& path)
     }
 
     this->mrgFilePath = path;
-    // if (!mrgFilePath.string().empty()) {
-    //     FileStream* fileStream = new FileStream(mrgFilePath, std::ios::in | std::ios::binary);
-
-    //     if (!fileStream->isOpen()) {
-    //         throw std::system_error(errno, std::system_category(), "Failed to open " + mrgFilePath.string());
-    //     }
-
-    //     levelFileStream = fileStream;
-    // } else {
-    //     EmbedFileStream* embedFileStream = new EmbedFileStream("levels.mrg");
-    //     levelFileStream = static_cast<FileStream*>(embedFileStream);
-    // }
-
-    // loadLevels();
     trackHeaders = MRGLoader::loadLevels(this->mrgFilePath);
     loadNextTrack();
 }
-
-// LevelLoader::~LevelLoader()
-// {
-//     delete levelFileStream;
-// }
-
-// void LevelLoader::loadLevels()
-// {
-//     std::vector<int8_t> var3(40);
-//     std::vector<int> var4(3);
-
-//     for (int league = 0; league < 3; ++league) {
-//         levelFileStream->readVariable(&var4[league], true);
-//         levelOffsetInFile[league] = std::vector<int>(var4[league]);
-//         levelNames[league] = std::vector<std::string>(var4[league]);
-
-//         for (int levelNp = 0; levelNp < var4[league]; ++levelNp) {
-//             int var7;
-//             levelFileStream->readVariable(&var7, true);
-//             levelOffsetInFile[league][levelNp] = var7;
-
-//             for (int var8 = 0; var8 < 40; ++var8) {
-//                 levelFileStream->readVariable(&var3[var8], true);
-
-//                 if (var3[var8] == 0) {
-//                     std::string s = std::string(reinterpret_cast<char*>(var3.data()), var8);
-//                     std::replace(s.begin(), s.end(), '_', ' ');
-//                     levelNames[league][levelNp] = s;
-//                     break;
-//                 }
-//             }
-//         }
-//     }
-// }
 
 std::string LevelLoader::getName(const int level, const int track) const
 {
