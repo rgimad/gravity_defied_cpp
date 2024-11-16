@@ -15,11 +15,12 @@
 class RecordManager {
 public:
     void loadRecordInfo(const uint8_t level, const uint8_t track);
-    std::array<std::string_view, RECORD_NO_MAX> getRecordDescription(const uint8_t league) const;
+    std::array<std::string, RECORD_NO_MAX> getRecordDescription(const uint8_t league) const;
     uint8_t getPosOfNewRecord(const uint8_t league, const uint64_t timeMs) const;
     void writeRecordInfo(const uint8_t level, const uint8_t track);
     void addNewRecord(const uint8_t league, const char* playerName, const uint64_t timeMs);
     void deleteRecordStores() const;
+    static uint32_t getNumberOfRecordsForLevel(const uint8_t level);
 
 private:
     struct Record {

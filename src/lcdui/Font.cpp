@@ -1,7 +1,5 @@
 #include "Font.h"
 
-#include <stdexcept>
-
 CMRC_DECLARE(assets);
 
 Font::Font(FontStyle style, FontSize pointSize)
@@ -66,11 +64,11 @@ int Font::getRealFontSize(FontSize size)
 {
     switch (size) {
     case SIZE_LARGE:
-        return 32;
+        return 8 * GlobalSetting::FontMultiplier;
     case SIZE_MEDIUM:
-        return 16;
+        return 4 * GlobalSetting::FontMultiplier;
     case SIZE_SMALL:
-        return 12;
+        return 3 * GlobalSetting::FontMultiplier;
     default:
         throw std::runtime_error("unknown font size: " + std::to_string(size));
     }

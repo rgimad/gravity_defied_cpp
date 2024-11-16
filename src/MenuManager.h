@@ -96,7 +96,6 @@ private:
     void method_197();
     void fillCanvasWithImage(Graphics* graphics);
     void exit();
-    int getCountOfRecordStoresWithPrefix(int prefixNumber);
 
 public:
     GameMenu* currentGameMenu;

@@ -272,7 +272,7 @@ void MenuManager::method_197()
     currentLevelFinished = false;
     gameMenuFinished->clearVector();
     gameMenuFinished->addMenuElement(new TextRender("Time: " + trackTimeFormatted, micro));
-    const std::array<std::string_view, RECORD_NO_MAX> recordDescriptions = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
+    const std::array<std::string, RECORD_NO_MAX> recordDescriptions = recordManager->getRecordDescription(settingsStringLeague->getCurrentOptionPos());
 
     for (uint8_t i = 0; i < recordDescriptions.size(); ++i) {
         if (recordDescriptions[i].empty()) {
@@ -309,8 +309,8 @@ void MenuManager::method_197()
         }
     }
 
-    int var3 = getCountOfRecordStoresWithPrefix(settingStringLevel->getCurrentOptionPos());
-    addTextRender(gameMenuFinished, var3 + " of " + std::to_string(micro->levelLoader->getTracksCount(settingStringLevel->getCurrentOptionPos())) + " tracks in " + levelLabels[settingStringLevel->getCurrentOptionPos()] + " completed.");
+    const uint32_t numberOfRecords = RecordManager::getNumberOfRecordsForLevel(settingStringLevel->getCurrentOptionPos());
+    addTextRender(gameMenuFinished, std::to_string(numberOfRecords) + " of " + std::to_string(micro->levelLoader->getTracksCount(settingStringLevel->getCurrentOptionPos())) + " tracks in " + levelLabels[settingStringLevel->getCurrentOptionPos()] + " completed.");
 
     if (!currentLevelFinished) {
         field_333->setText("Restart: " + micro->levelLoader->getName(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos()));
@@ -626,7 +626,7 @@ void MenuManager::method_207(int var1)
     recordManager->loadRecordInfo(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos());
     gameMenuHighscore->addMenuElement(new TextRender(micro->levelLoader->getName(settingStringLevel->getCurrentOptionPos(), settingsStringTrack->getCurrentOptionPos()), micro));
     gameMenuHighscore->addMenuElement(new TextRender("LEAGUE: " + settingsStringLeague->getOptionsList()[var1], micro));
-    const std::array<std::string_view, RECORD_NO_MAX> recordDescription = recordManager->getRecordDescription(var1);
+    const std::array<std::string, RECORD_NO_MAX> recordDescription = recordManager->getRecordDescription(var1);
 
     for (uint8_t i = 0; i < recordDescription.size(); ++i) {
         if (recordDescription[i].empty()) {
@@ -930,25 +930,4 @@ void MenuManager::addOkAndBackCommands()
     }
 
     micro->gameCanvas->addCommand(commandOk);
-}
-
-int MenuManager::getCountOfRecordStoresWithPrefix(int prefixNumber)
-{
-    (void)prefixNumber;
-    // TODO:
-    // std::vector<std::string> storeNames = RecordStore::listRecordStores();
-    // if (recordManager != nullptr && !storeNames.empty()) {
-    //     int count = 0;
-
-    //     for (std::size_t i = 0; i < storeNames.size(); ++i) {
-    //         if (storeNames[i].find(std::to_string(prefixNumber), 0) == 0) {
-    //             ++count;
-    //         }
-    //     }
-
-    //     return count;
-    // } else {
-    //     return 0;
-    // }
-    return 0;
 }

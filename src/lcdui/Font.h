@@ -3,8 +3,10 @@
 #include <string>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <stdexcept>
 
 #include <cmrc/cmrc.hpp>
+#include "../config.h"
 
 class Font {
 public:

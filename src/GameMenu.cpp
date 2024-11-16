@@ -29,7 +29,7 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
 
     TextRender::setDefaultFont(font3);
     TextRender::setMaxArea(canvasWidth, canvasHeight);
-    field_101 = 1;
+    menuOffsetY = 1;
 
     if (canvasWidth <= 100) {
         xPos = 6;
@@ -41,23 +41,23 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
         name = "";
     }
 
-    field_104 = xPos + 7;
-    field_103 = 2;
-    field_110 = 0;
+    menuOffsetX = xPos + 7;
+    menuSpacing = 2;
+    selectedMenuItemTickSpriteNo = 0;
 
     if (name != "") {
-        field_107 = (canvasHeight - (field_101 << 1) - 10 - font->getBaselinePosition()) / (font2->getBaselinePosition() + field_103);
+        field_107 = (canvasHeight - (menuOffsetY << 1) - 10 - font->getBaselinePosition()) / (font2->getBaselinePosition() + menuSpacing);
     } else {
-        field_107 = (canvasHeight - (field_101 << 1) - 10) / (font2->getBaselinePosition() + field_103);
+        field_107 = (canvasHeight - (menuOffsetY << 1) - 10) / (font2->getBaselinePosition() + menuSpacing);
     }
 
     if (inputString) {
-        field_111 = true;
+        isTextInput = true;
         nameCursorPos = 0;
         xPos = 8;
         strArr = inputString;
     } else {
-        field_111 = false;
+        isTextInput = false;
     }
 
     if (field_107 > 13) {
@@ -65,19 +65,9 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
     }
 }
 
-// void GameMenu::method_68(int var1)
-// {
-//     field_103 = var1;
-// }
-
-// void GameMenu::method_69(std::string var1)
-// {
-//     name = var1;
-// }
-
 void GameMenu::method_70()
 {
-    if (field_111) {
+    if (isTextInput) {
         nameCursorPos = 0;
     } else {
         if (!vector.empty()) {
@@ -126,7 +116,7 @@ void GameMenu::method_71()
 
 void GameMenu::addMenuElement(IGameMenuElement* var1)
 {
-    int var2 = field_101;
+    int var2 = menuOffsetY;
     field_107 = 1;
     vector.push_back(var1);
 
@@ -142,12 +132,12 @@ void GameMenu::addMenuElement(IGameMenuElement* var1)
 
     for (int var3 = 0; var3 < static_cast<int>(vector.size()) - 1; ++var3) {
         if (vector[var3]->isNotTextRender()) {
-            var2 += font2->getBaselinePosition() + field_103;
+            var2 += font2->getBaselinePosition() + menuSpacing;
         } else {
-            var2 += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + field_103;
+            var2 += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + menuSpacing;
         }
 
-        if (var2 > canvasHeight - (field_101 << 1) - 10) {
+        if (var2 > canvasHeight - (menuOffsetY << 1) - 10) {
             break;
         }
 
@@ -163,7 +153,7 @@ void GameMenu::addMenuElement(IGameMenuElement* var1)
 
 void GameMenu::processGameActionDown()
 {
-    if (field_111) {
+    if (isTextInput) {
         if (strArr[nameCursorPos] == 32) {
             strArr[nameCursorPos] = 90;
             return;
@@ -225,7 +215,7 @@ void GameMenu::processGameActionDown()
 
 void GameMenu::processGameActionUp()
 {
-    if (field_111) {
+    if (isTextInput) {
         if (strArr[nameCursorPos] == 32) {
             strArr[nameCursorPos] = 65;
             return;
@@ -289,7 +279,7 @@ void GameMenu::processGameActionUp()
 
 void GameMenu::processGameActionUpd(int var1)
 {
-    if (field_111) {
+    if (isTextInput) {
         switch (var1) {
         case 1:
             if (nameCursorPos == 2) {
@@ -335,12 +325,12 @@ void GameMenu::render_76(Graphics* graphics)
     int var2;
     int i;
 
-    if (field_111) {
+    if (isTextInput) {
         graphics->setColor(0, 0, 20);
         graphics->setFont(font);
         int8_t var7 = 1;
         graphics->drawString("Enter Name", xPos, var7, 20);
-        var2 = var7 + font->getHeight() + (field_103 << 2);
+        var2 = var7 + font->getHeight() + (menuSpacing << 2);
         graphics->setFont(font2);
 
         for (i = 0; i < 3; ++i) {
@@ -353,7 +343,7 @@ void GameMenu::render_76(Graphics* graphics)
 
     } else {
         graphics->setColor(0, 0, 0);
-        var2 = field_101;
+        var2 = menuOffsetY;
 
         if (name != "") {
             graphics->setFont(font);
@@ -376,25 +366,25 @@ void GameMenu::render_76(Graphics* graphics)
         for (i = field_105; i < field_106 + 1; ++i) {
             IGameMenuElement* var4 = vector[i];
             graphics->setColor(0, 0, 0);
-            var4->render(graphics, var2, field_104);
+            var4->render(graphics, var2, menuOffsetX);
 
             if (i == field_95 && var4->isNotTextRender()) {
                 int var5 = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
                 int var6 = var2 + font2->getBaselinePosition() / 2 - micro->gameCanvas->helmetSpriteHeight / 2;
                 graphics->setClip(var5, var6, micro->gameCanvas->helmetSpriteWidth, micro->gameCanvas->helmetSpriteHeight);
-                graphics->drawImage(micro->gameCanvas->helmetImage.get(), var5 - micro->gameCanvas->helmetSpriteWidth * (field_110 % 6), var6 - micro->gameCanvas->helmetSpriteHeight * (field_110 / 6), 20);
+                graphics->drawImage(micro->gameCanvas->helmetImage.get(), var5 - micro->gameCanvas->helmetSpriteWidth * (selectedMenuItemTickSpriteNo % 6), var6 - micro->gameCanvas->helmetSpriteHeight * (selectedMenuItemTickSpriteNo / 6), 20);
                 graphics->setClip(0, 0, canvasWidth, canvasHeight);
-                ++field_110;
+                ++selectedMenuItemTickSpriteNo;
 
-                if (field_110 > 30) {
-                    field_110 = 0;
+                if (selectedMenuItemTickSpriteNo > 30) {
+                    selectedMenuItemTickSpriteNo = 0;
                 }
             }
 
             if (var4->isNotTextRender()) {
-                var2 += font2->getBaselinePosition() + field_103;
+                var2 += font2->getBaselinePosition() + menuSpacing;
             } else {
-                var2 += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + field_103;
+                var2 += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + menuSpacing;
             }
         }
 

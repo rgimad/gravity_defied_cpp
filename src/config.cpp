@@ -3,6 +3,7 @@
 bool GlobalSetting::WindowFullscreen = false;
 uint8_t GlobalSetting::LogoMultiplier = 3;
 uint8_t GlobalSetting::SplashMultiplier = 3;
+uint8_t GlobalSetting::FontMultiplier = 4;
 uint8_t GlobalSetting::TimerFpsTextOffset = 14;
 uint8_t GlobalSetting::LoadingBarPadding = 2;
 uint8_t GlobalSetting::BarScreenOffset = 2;

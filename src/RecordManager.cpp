@@ -12,9 +12,9 @@ void RecordManager::loadRecordInfo(const uint8_t level, const uint8_t track)
     levelFileStream.readVariable(&recordsSaveDataConverter.bytes, false, sizeof(RecordsSaveData));
 }
 
-std::array<std::string_view, RECORD_NO_MAX> RecordManager::getRecordDescription(const uint8_t league) const
+std::array<std::string, RECORD_NO_MAX> RecordManager::getRecordDescription(const uint8_t league) const
 {
-    std::array<std::string_view, RECORD_NO_MAX> recordsDescription;
+    std::array<std::string, RECORD_NO_MAX> recordsDescription;
 
     for (uint8_t i = 0; i < RECORD_NO_MAX; ++i) {
         const Record record = recordsSaveDataConverter.recordsSaveData.leagueRecords[league].records[i];
@@ -84,16 +84,45 @@ void RecordManager::addNewRecord(const uint8_t league, const char* playerName, c
 
 void RecordManager::deleteRecordStores() const
 {
-    // TODO:
-    // std::vector<std::string> names = RecordStore::listRecordStores();
+    Log::write(Log::LogLevel::Info, "deleteRecordStores\n");
+    const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix;
 
-    // for (std::size_t i = 0; i < names.size(); ++i) {
-    //     if (names[i] != GlobalSetting::GlobalSaveFileName) {
-    //         try {
-    //             RecordStore::deleteRecordStore(names[i]);
-    //         } catch (RecordStoreException& var3) {
-    //             return;
-    //         }
-    //     }
-    // }
+    for (const auto& file : std::filesystem::directory_iterator(saveFileName)) {
+        const std::string filename = file.path().filename().string();
+        Log::write(Log::LogLevel::Debug, "Found record %s\n", filename.c_str());
+
+        if (GlobalSetting::GlobalSaveFileName == filename) {
+            Log::write(Log::LogLevel::Debug, "Skipped deletion for %s\n", file.path().c_str());
+            continue;
+        }
+
+        std::filesystem::remove(file);
+    }
+}
+
+uint32_t RecordManager::getNumberOfRecordsForLevel(const uint8_t level)
+{
+    Log::write(Log::LogLevel::Info, "getNumberOfRecordsForLevel %d\n", level);
+
+    const std::string prefix = std::to_string(level);
+    const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix;
+
+    uint32_t count = 0;
+
+    for (const auto& file : std::filesystem::directory_iterator(saveFileName)) {
+        const std::string filename = file.path().filename().string();
+        Log::write(Log::LogLevel::Debug, "Found record %s\n", filename.c_str());
+
+        if (!file.is_regular_file()) {
+            Log::write(Log::LogLevel::Debug, "Skipped record %s\n", file.path().c_str());
+            continue;
+        }
+
+        if (filename.rfind(prefix, 0) == 0) {
+            Log::write(Log::LogLevel::Debug, "Included record %s\n", file.path().c_str());
+            ++count;
+        }
+    }
+
+    return count;
 }
