@@ -65,5 +65,9 @@ void TimerOrMotoPartOrMenuElem::setGameMenu(GameMenu* gameMenu)
 
 void TimerOrMotoPartOrMenuElem::render(Graphics* graphics, int y, int x)
 {
-    graphics->drawString(text, x, y, 20);
+    graphics->drawString(
+        text,
+        x,
+        y,
+        Graphics::TOP | Graphics::LEFT);
 }

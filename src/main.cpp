@@ -10,12 +10,17 @@
 
 void showHelp(const char* progName)
 {
-    Log::write(Log::LogLevel::None, "Usage %s [options]\n", progName);
-    Log::write(Log::LogLevel::None, "      -f, --fullscreen         Enable fullscreen\n", progName);
-    Log::write(Log::LogLevel::None, "      -w, --width INT          Set screen width in px\n", progName);
-    Log::write(Log::LogLevel::None, "      -h, --height INT         Set screen height in px\n", progName);
-    Log::write(Log::LogLevel::None, "      -?, --help               Show this help screen\n", progName);
-    Log::write(Log::LogLevel::None, "      -v, --verbose INT        Set log level (0-6)\n", progName);
+    Log::write(Log::LogLevel::None, R"usage(
+Usage %s [options]
+      -f, --fullscreen         Enable fullscreen
+      --fps                    Show FPS
+      --width INT              Set screen width in px (default: 640)
+      --height INT             Set screen height in px (default: 480)
+      -h, --help               Show this help screen
+      -v, --verbose INT        Set log level [0-6] (default: 2)
+      --font-mult              Set font multiplier (default: 4)
+      --logo-mult              Set logo multiplier (default: 1)
+)usage", progName);
 }
 
 bool parseArguments(int argc, char** argv)
@@ -23,34 +28,55 @@ bool parseArguments(int argc, char** argv)
     int opt;
     static struct option long_options[] = {
         { "fullscreen", no_argument, nullptr, 'f' },
-        { "width", optional_argument, nullptr, 'w' },
-        { "height", optional_argument, nullptr, 'h' },
         { "verbose", optional_argument, nullptr, 'v' },
-        { "help", no_argument, nullptr, '?' },
+        { "help", no_argument, nullptr, 'h' },
+        { "width", required_argument, nullptr, 0 },
+        { "height", required_argument, nullptr, 0 },
+        { "fps", no_argument, nullptr, 0 },
+        { "font-mult", required_argument, nullptr, 0 },
+        { "logo-mult", required_argument, nullptr, 0 },
         { nullptr, 0, nullptr, 0 }
     };
 
-    Log::logLevel = Log::LogLevel::All;
+    int option_index = 0;
+    Log::logLevel = Log::LogLevel::Info;
 
-    while ((opt = getopt_long(argc, argv, "fhw:v:?", long_options, nullptr)) != -1) {
+    while ((opt = getopt_long(argc, argv, "fhv:", long_options, &option_index)) != -1) {
         switch (opt) {
+        case 0: {
+            if (long_options[option_index].flag != 0)
+                break;
+
+            Log::write(Log::LogLevel::Debug, "Got parameter %d %s %s\n", option_index, long_options[option_index].name, optarg);
+
+            if (strncmp(long_options[option_index].name, "fps", 3) == 0) {
+                GlobalSetting::ShowFPS = true;
+                Log::write(Log::LogLevel::None, "Showing FPS\n");
+            } else if (strncmp(long_options[option_index].name, "width", 5) == 0) {
+                GlobalSetting::DefaultScreenWidth = atoi(optarg);
+                Log::write(Log::LogLevel::None, "Setting width %d\n", GlobalSetting::DefaultScreenWidth);
+            } else if (strncmp(long_options[option_index].name, "height", 6) == 0) {
+                GlobalSetting::DefaultScreenHeight = atoi(optarg);
+                Log::write(Log::LogLevel::None, "Setting height %d\n", GlobalSetting::DefaultScreenHeight);
+            } else if (strncmp(long_options[option_index].name, "font-mult", 9) == 0) {
+                GlobalSetting::FontMultiplier = atoi(optarg);
+                Log::write(Log::LogLevel::None, "Setting font multiplier to %d\n", GlobalSetting::FontMultiplier);
+            } else if (strncmp(long_options[option_index].name, "logo-mult", 9) == 0) {
+                const int value = atoi(optarg);
+                GlobalSetting::LogoMultiplier = value;
+                GlobalSetting::SplashMultiplier = value;
+                Log::write(Log::LogLevel::None, "Setting logo multiplier to %d\n", GlobalSetting::LogoMultiplier);
+            }
+
+            break;
+        }
         case 'f': {
             Log::write(Log::LogLevel::None, "Setting fullscreen\n");
             GlobalSetting::WindowFullscreen = true;
             break;
         }
-        case 'w': {
-            GlobalSetting::DefaultScreenWidth = atoi(optarg);
-            Log::write(Log::LogLevel::None, "Setting width %d\n", GlobalSetting::DefaultScreenWidth);
-            break;
-        }
-        case 'h': {
-            GlobalSetting::DefaultScreenHeight = atoi(optarg);
-            Log::write(Log::LogLevel::None, "Setting height %d\n", GlobalSetting::DefaultScreenHeight);
-            break;
-        }
         case 'v': {
-            uint logLevelFromArg = 6 - atoi(optarg);
+            const uint logLevelFromArg = 6 - atoi(optarg);
 
             if (logLevelFromArg > static_cast<uint>(Log::LogLevel::None)) {
                 Log::logLevel = Log::LogLevel::All;
@@ -61,7 +87,7 @@ bool parseArguments(int argc, char** argv)
             Log::write(Log::LogLevel::None, "Setting logs verbosity to %u\n", Log::logLevel);
             break;
         }
-        case '?':
+        case 'h':
         default: {
             showHelp(argv[0]);
             return false;

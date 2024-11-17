@@ -22,10 +22,10 @@ static MRGLoader::LevelTracks loadLevel(FileStream& levelFileStream, const uint8
         levelTracks.tracks.push_back(track);
     }
 
-    Log::write(Log::LogLevel::Info, "Level %d, Tracks %d\n", level, levelTracks.tracksCount);
+    Log::write(Log::LogLevel::Debug, "Level %d, Tracks %d\n", level, levelTracks.tracksCount);
 
     for (auto& i : levelTracks.tracks) {
-        Log::write(Log::LogLevel::Info, "%d %s\n", i.offset, i.trackName.c_str());
+        Log::write(Log::LogLevel::Debug, "%d %s\n", i.offset, i.trackName.c_str());
     }
 
     return levelTracks;

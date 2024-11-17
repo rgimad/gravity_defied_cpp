@@ -45,7 +45,7 @@ void SettingsManager::initSettings()
 SettingsManager::Settings SettingsManager::loadSettings()
 {
     const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix / GlobalSetting::GlobalSaveFileName;
-    Log::write(Log::LogLevel::Info, "loadSettings %s\n", saveFileName.c_str());
+    Log::write(Log::LogLevel::Debug, "loadSettings %s\n", saveFileName.c_str());
 
     FileStream levelFileStream(saveFileName, std::ios::in | std::ios::binary);
 
@@ -58,7 +58,7 @@ SettingsManager::Settings SettingsManager::loadSettings()
 void SettingsManager::saveSettings(SettingsManager::Settings settings)
 {
     const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix / GlobalSetting::GlobalSaveFileName;
-    Log::write(Log::LogLevel::Info, "saveSettings %s\n", saveFileName.c_str());
+    Log::write(Log::LogLevel::Debug, "saveSettings %s\n", saveFileName.c_str());
 
     SettingsManager::SettingsConverter settingsConverter = { .settings = settings };
 

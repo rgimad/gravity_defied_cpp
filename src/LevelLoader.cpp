@@ -62,7 +62,7 @@ void LevelLoader::loadNextTrack()
 
 int LevelLoader::loadTrack(const int level, const int track)
 {
-    Log::write(Log::LogLevel::Info, "loadTrack %d %d\n", level, track);
+    Log::write(Log::LogLevel::Debug, "loadTrack %d %d\n", level, track);
     loadedLevel = level;
     loadedTrack = track;
 

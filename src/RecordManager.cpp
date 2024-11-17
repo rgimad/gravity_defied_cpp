@@ -6,7 +6,7 @@ void RecordManager::loadRecordInfo(const uint8_t level, const uint8_t track)
 
     const std::string trackSaveName = std::to_string(level) + std::to_string(track) + ".dat";
     const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix / trackSaveName;
-    Log::write(Log::LogLevel::Info, "loadRecordInfo %s\n", saveFileName.c_str());
+    Log::write(Log::LogLevel::Debug, "loadRecordInfo %s\n", saveFileName.c_str());
 
     FileStream levelFileStream(saveFileName, std::ios::in | std::ios::binary);
     levelFileStream.readVariable(&recordsSaveDataConverter.bytes, false, sizeof(RecordsSaveData));
@@ -37,7 +37,7 @@ void RecordManager::writeRecordInfo(const uint8_t level, const uint8_t track)
 {
     const std::string trackSaveName = std::to_string(level) + std::to_string(track) + ".dat";
     const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix / trackSaveName;
-    Log::write(Log::LogLevel::Info, "writeRecordInfo %s\n", saveFileName.c_str());
+    Log::write(Log::LogLevel::Debug, "writeRecordInfo %s\n", saveFileName.c_str());
 
     FileStream levelFileStream(saveFileName, std::ios::out | std::ios::binary);
     levelFileStream.writeVariable(&recordsSaveDataConverter.bytes, sizeof(RecordsSaveData));
@@ -58,9 +58,9 @@ uint8_t RecordManager::getPosOfNewRecord(const uint8_t league, const uint64_t ti
 
 void RecordManager::addNewRecord(const uint8_t league, const char* playerName, const uint64_t timeMs)
 {
-    Log::write(Log::LogLevel::Info, "addNewRecord %d %s %d\n", (int)league, playerName, timeMs);
+    Log::write(Log::LogLevel::Debug, "addNewRecord %d %s %d\n", (int)league, playerName, timeMs);
     const uint8_t newRecordPos = getPosOfNewRecord(league, timeMs);
-    Log::write(Log::LogLevel::Info, "Record pos %d\n", (int)newRecordPos);
+    Log::write(Log::LogLevel::Debug, "Record pos %d\n", (int)newRecordPos);
 
     if (newRecordPos >= 3) {
         // out of scope, we save only first 3 records
@@ -84,7 +84,7 @@ void RecordManager::addNewRecord(const uint8_t league, const char* playerName, c
 
 void RecordManager::deleteRecordStores() const
 {
-    Log::write(Log::LogLevel::Info, "deleteRecordStores\n");
+    Log::write(Log::LogLevel::Debug, "deleteRecordStores\n");
     const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix;
 
     for (const auto& file : std::filesystem::directory_iterator(saveFileName)) {
@@ -102,7 +102,7 @@ void RecordManager::deleteRecordStores() const
 
 uint32_t RecordManager::getNumberOfRecordsForLevel(const uint8_t level)
 {
-    Log::write(Log::LogLevel::Info, "getNumberOfRecordsForLevel %d\n", level);
+    Log::write(Log::LogLevel::Debug, "getNumberOfRecordsForLevel %d\n", level);
 
     const std::string prefix = std::to_string(level);
     const std::filesystem::path saveFileName = GlobalSetting::SavesPath / GlobalSetting::SavesPrefix;

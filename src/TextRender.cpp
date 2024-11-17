@@ -58,7 +58,12 @@ void TextRender::render(Graphics* graphics, int y, int x)
         graphics->setFont(font);
     }
 
-    graphics->drawString(text, x + dx, y, 20);
+    graphics->drawString(
+        text,
+        x + dx,
+        y,
+        Graphics::TOP | Graphics::LEFT);
+
     if (isDrawSprite) {
         micro->gameCanvas->drawSprite(graphics, spriteNo, x, y);
     }

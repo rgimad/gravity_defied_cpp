@@ -13,6 +13,3 @@ void Log::write(const Log::LogLevel level, const char* szFormat, ...)
     vprintf(szFormat, args);
     va_end(args);
 }
-
-
-

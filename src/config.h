@@ -64,6 +64,7 @@ const char defaultName[] = "AAA";
 
 struct GlobalSetting {
     static bool WindowFullscreen;
+    static bool ShowFPS;
     static uint8_t LogoMultiplier;
     static uint8_t SplashMultiplier;
     static uint8_t FontMultiplier;

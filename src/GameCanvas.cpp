@@ -29,7 +29,11 @@ void GameCanvas::drawSprite(Graphics* g, int spriteNo, int x, int y)
 {
     if (spritesImage) {
         g->setClip(x, y, spriteSizeX[spriteNo], spriteSizeY[spriteNo]);
-        g->drawImage(spritesImage.get(), x - spriteOffsetX[spriteNo], y - spriteOffsetY[spriteNo], 20);
+        g->drawImage(
+            spritesImage.get(),
+            x - spriteOffsetX[spriteNo],
+            y - spriteOffsetY[spriteNo],
+            Graphics::TOP | Graphics::LEFT);
         g->setClip(0, 0, getWidth(), getHeight());
     }
 }
@@ -162,7 +166,11 @@ void GameCanvas::renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int 
         x -= bodyPartsSpriteWidth[bodyPartNo] / 2;
         y -= bodyPartsSpriteHeight[bodyPartNo] / 2;
         graphics->setClip(x, y, bodyPartsSpriteWidth[bodyPartNo], bodyPartsSpriteHeight[bodyPartNo]);
-        graphics->drawImage(bodyPartsImages[bodyPartNo].get(), x - bodyPartsSpriteWidth[bodyPartNo] * (spriteNo % 6), y - bodyPartsSpriteHeight[bodyPartNo] * (spriteNo / 6), 20);
+        graphics->drawImage(
+            bodyPartsImages[bodyPartNo].get(),
+            x - bodyPartsSpriteWidth[bodyPartNo] * (spriteNo % 6),
+            y - bodyPartsSpriteHeight[bodyPartNo] * (spriteNo / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -209,7 +217,11 @@ void GameCanvas::drawHelmet(int x, int y, int angleF16)
         int var5 = addDx(x) - helmetSpriteWidth / 2;
         int var6 = addDy(y) - helmetSpriteHeight / 2;
         graphics->setClip(var5, var6, helmetSpriteWidth, helmetSpriteHeight);
-        graphics->drawImage(helmetImage.get(), var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
+        graphics->drawImage(
+            helmetImage.get(),
+            var5 - helmetSpriteWidth * (var4 % 6),
+            var6 - helmetSpriteHeight * (var4 / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -218,7 +230,11 @@ void GameCanvas::drawTime(uint64_t time10Ms)
 {
     const std::string timeStr = Time::timeToString(time10Ms);
     setColor(0, 0, 0);
-    graphics->drawString(timeStr, width - defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 40);
+    graphics->drawString(
+        timeStr,
+        width - defaultFontWidth00,
+        height2 - GlobalSetting::TimerFpsTextOffset,
+        Graphics::BOTTOM | Graphics::RIGHT);
 }
 
 void GameCanvas::method_150(int var1)
@@ -297,7 +313,11 @@ void GameCanvas::renderEngine(int x, int y, int angleF16)
     int centerY = addDy(y) - engineSpriteHeight / 2;
     if (engineImage != nullptr) {
         graphics->setClip(centerX, centerY, engineSpriteWidth, engineSpriteHeight);
-        graphics->drawImage(engineImage.get(), centerX - engineSpriteWidth * (spriteNo % 6), centerY - engineSpriteHeight * (spriteNo / 6), 20);
+        graphics->drawImage(
+            engineImage.get(),
+            centerX - engineSpriteWidth * (spriteNo % 6),
+            centerY - engineSpriteHeight * (spriteNo / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -309,7 +329,11 @@ void GameCanvas::renderFender(int x, int y, int angleF16)
         int centerX = addDx(x) - fenderSpriteWidth / 2;
         int centerY = addDy(y) - fenderSpriteHeight / 2;
         graphics->setClip(centerX, centerY, fenderSpriteWidth, fenderSpriteHeight);
-        graphics->drawImage(fenderImage.get(), centerX - fenderSpriteWidth * (spriteNo % 6), centerY - fenderSpriteHeight * (spriteNo / 6), 20);
+        graphics->drawImage(
+            fenderImage.get(),
+            centerX - fenderSpriteWidth * (spriteNo % 6),
+            centerY - fenderSpriteHeight * (spriteNo / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -360,7 +384,7 @@ void GameCanvas::drawGame(Graphics* g)
                         getHeight() / 2,
                         logoImage->getWidth() * GlobalSetting::LogoMultiplier,
                         logoImage->getHeight() * GlobalSetting::LogoMultiplier,
-                        3);
+                        Graphics::HCENTER | Graphics::VCENTER);
                     drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5, getHeight() - spriteSizeY[16] - 7);
                     drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
                 }
@@ -375,7 +399,7 @@ void GameCanvas::drawGame(Graphics* g)
                         getHeight() / 2,
                         splashImage->getWidth() * GlobalSetting::SplashMultiplier,
                         splashImage->getHeight() * GlobalSetting::SplashMultiplier,
-                        3);
+                        Graphics::HCENTER | Graphics::VCENTER);
                 }
             }
 
@@ -397,9 +421,17 @@ void GameCanvas::drawGame(Graphics* g)
                 setColor(0, 0, 0);
                 graphics->setFont(font);
                 if (height2 <= 128) {
-                    graphics->drawString(timerMessage, width / 2, 1, 17);
+                    graphics->drawString(
+                        timerMessage,
+                        width / 2,
+                        1,
+                        Graphics::TOP | Graphics::HCENTER);
                 } else {
-                    graphics->drawString(timerMessage, width / 2, height2 / 4, 33);
+                    graphics->drawString(
+                        timerMessage,
+                        width / 2,
+                        height2 / 4,
+                        Graphics::BOTTOM | Graphics::HCENTER);
                 }
 
                 if (timerTriggered) {
@@ -408,10 +440,15 @@ void GameCanvas::drawGame(Graphics* g)
                 }
             }
 
-            // print fps to screen
-            setColor(0, 0, 0);
-            graphics->setFont(font);
-            graphics->drawString("FPS: " + std::to_string(fps), defaultFontWidth00, height2 - GlobalSetting::TimerFpsTextOffset, 36);
+            if (GlobalSetting::ShowFPS) {
+                setColor(0, 0, 0);
+                graphics->setFont(font);
+                graphics->drawString(
+                    "FPS: " + std::to_string(fps),
+                    defaultFontWidth00,
+                    height2 - GlobalSetting::TimerFpsTextOffset,
+                    Graphics::BOTTOM | Graphics::LEFT);
+            }
 
             var3 = gamePhysics->method_52();
             drawProgressBar(var3, false);
@@ -449,13 +486,16 @@ void GameCanvas::drawProgressBar(int var1, bool mode)
 void GameCanvas::paint(Graphics* graphics)
 {
     static int64_t time = 0;
-    int64_t now = Time::currentTimeMillis();
-    int64_t delta = now - time;
-    time = now;
-    if (delta != 0) {
-        fps = 1000 / delta;
-        // std::cout << "FPS: " << fps <<  std::endl;
-        // setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
+
+    if (GlobalSetting::ShowFPS) {
+        const int64_t now = Time::currentTimeMillis();
+        const int64_t delta = now - time;
+        time = now;
+
+        if (delta != 0) {
+            fps = 1000 / delta;
+            // setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
+        }
     }
 
     processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
@@ -478,24 +518,8 @@ void GameCanvas::resetActions()
 
 void GameCanvas::handleUpdatedInput()
 {
-    int verticalMovement = 0; // var1
-    int horizontalMovement = 0; // var2
-    // int var3 = field_232;
-
-    // int var4;
-    // for (var4 = 0; var4 < 10; ++var4) {
-    //     if (activeKeys[var4]) {
-    //         var1 += field_231[var3][var4][0];
-    //         var2 += field_231[var3][var4][1];
-    //     }
-    // }
-
-    // for (var4 = 0; var4 < 7; ++var4) {
-    //     if (activeActions[var4]) {
-    //         var1 += field_230[var4][0];
-    //         var2 += field_230[var4][1];
-    //     }
-    // }
+    int verticalMovement = 0;
+    int horizontalMovement = 0;
 
     for (const auto& [action, isActive] : activeActions) {
         if (!isActive) {

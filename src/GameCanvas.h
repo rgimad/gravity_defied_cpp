@@ -68,14 +68,10 @@ private:
     inline static int field_226 = 0;
     const int startFlagAnimationTimeToSpriteNo[4] = { 12, 10, 11, 10 };
     const int finishFlagAnumationTimeToSpriteNo[4] = { 14, 13, 15, 13 };
-    // int field_230[7][2] = { { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 0 }, { 0, 0 }, { 0, 1 }, { -1, 0 } };
-    // int field_231[3][10][2] = { { { 0, 0 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, -1 }, { -1, 0 }, { 0, 1 }, { -1, -1 }, { -1, 0 }, { -1, 1 } }, { { 0, 0 }, { 1, 0 }, { 0, 0 }, { 0, 0 }, { -1, 0 }, { 0, -1 }, { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }, { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
-    // int field_232 = 2;
-    // std::vector<bool> activeActions = std::vector<bool>(7);
     std::vector<bool> activeKeys = std::vector<bool>(10);
     std::map<Keys, bool> activeActions = std::map<Keys, bool>();
 
-    int fps;
+    uint16_t fps;
 
 public:
     GameCanvas(Micro* micro);

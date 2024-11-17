@@ -22,6 +22,8 @@ private:
     SDL_Color currentColor;
     // void _ellipse(int cx, int cy, int xradius, int yradius);
     void _putpixel(int x, int y);
+    static int getAnchorX(int x, int size, int anchor);
+    static int getAnchorY(int y, int size, int anchor);
 
 public:
     enum Anchors {
@@ -46,6 +48,4 @@ public:
     void drawLine(int x1, int y1, int x2, int y2);
     void drawImage(Image* const image, int x, int y, int anchor);
     void drawImage(Image* const image, int x, int y, int w, int h, int anchor);
-    static int getAnchorX(int x, int size, int anchor);
-    static int getAnchorY(int y, int size, int anchor);
 };

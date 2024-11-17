@@ -10,7 +10,7 @@ void MenuManager::initPart(int var1)
 {
     switch (var1) {
     case 1: {
-        recordManager = new RecordManager();
+        recordManager = std::make_unique<RecordManager>();
         trackTimeMs = 0;
         trackTimeFormatted.clear();
 
@@ -500,7 +500,11 @@ void MenuManager::fillCanvasWithImage(Graphics* graphics)
 {
     for (int y = 0; y < getCanvasHeight(); y += rasterImage->getHeight()) {
         for (int x = 0; x < getCanvasWidth(); x += rasterImage->getWidth()) {
-            graphics->drawImage(rasterImage.get(), x, y, 20);
+            graphics->drawImage(
+                rasterImage.get(), 
+                x, 
+                y, 
+                Graphics::TOP | Graphics::LEFT);
         }
     }
 }
@@ -666,7 +670,7 @@ void MenuManager::method_208()
     // settings.availableEasyTracks =  (int8_t)availableTracks[0];
     // settings.availableMediumTracks =  (int8_t)availableTracks[1];
     // settings.availableHardTracks =  (int8_t)availableTracks[2];
-    settings.selectedLevel = (int8_t)settingStringLevel->getMaxAvailableOptionPos();
+    settings.selectedLevel = (int8_t)settingStringLevel->getCurrentOptionPos();
     settings.selectedTrack = (int8_t)settingsStringTrack->getCurrentOptionPos();
     settings.selectedLeague = (int8_t)settingsStringLeague->getCurrentOptionPos();
     settings.unknown2 = -127;

@@ -329,15 +329,27 @@ void GameMenu::render_76(Graphics* graphics)
         graphics->setColor(0, 0, 20);
         graphics->setFont(font);
         int8_t var7 = 1;
-        graphics->drawString("Enter Name", xPos, var7, 20);
+        graphics->drawString(
+            "Enter Name",
+            xPos,
+            var7,
+            Graphics::TOP | Graphics::LEFT);
         var2 = var7 + font->getHeight() + (menuSpacing << 2);
         graphics->setFont(font2);
 
         for (i = 0; i < 3; ++i) {
-            graphics->drawChar((char)strArr[i], xPos + i * font2->charWidth('W') + 1, var2, 17);
+            graphics->drawChar(
+                (char)strArr[i],
+                xPos + i * font2->charWidth('W') + 1,
+                var2,
+                Graphics::TOP | Graphics::HCENTER);
 
             if (i == nameCursorPos) {
-                graphics->drawChar('^', xPos + i * font2->charWidth('W') + 1, var2 + font2->getHeight(), 17);
+                graphics->drawChar(
+                    '^',
+                    xPos + i * font2->charWidth('W') + 1,
+                    var2 + font2->getHeight(),
+                    Graphics::TOP | Graphics::HCENTER);
             }
         }
 
@@ -347,7 +359,11 @@ void GameMenu::render_76(Graphics* graphics)
 
         if (name != "") {
             graphics->setFont(font);
-            graphics->drawString(name, xPos, var2, 20);
+            graphics->drawString(
+                name,
+                xPos,
+                var2,
+                Graphics::TOP | Graphics::LEFT);
             var2 += font->getBaselinePosition() + 2;
         }
 
@@ -368,11 +384,20 @@ void GameMenu::render_76(Graphics* graphics)
             graphics->setColor(0, 0, 0);
             var4->render(graphics, var2, menuOffsetX);
 
+            // TODO: field_95 - selected menu items idx ??
             if (i == field_95 && var4->isNotTextRender()) {
-                int var5 = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
-                int var6 = var2 + font2->getBaselinePosition() / 2 - micro->gameCanvas->helmetSpriteHeight / 2;
-                graphics->setClip(var5, var6, micro->gameCanvas->helmetSpriteWidth, micro->gameCanvas->helmetSpriteHeight);
-                graphics->drawImage(micro->gameCanvas->helmetImage.get(), var5 - micro->gameCanvas->helmetSpriteWidth * (selectedMenuItemTickSpriteNo % 6), var6 - micro->gameCanvas->helmetSpriteHeight * (selectedMenuItemTickSpriteNo / 6), 20);
+                const int selectedMenuItemTickX = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
+                const int selectedMenuItemTickY = var2 + font2->getBaselinePosition() / 2; // - micro->gameCanvas->helmetSpriteHeight / 2;
+                graphics->setClip(
+                    selectedMenuItemTickX,
+                    selectedMenuItemTickY,
+                    micro->gameCanvas->helmetSpriteWidth,
+                    micro->gameCanvas->helmetSpriteHeight);
+                graphics->drawImage(
+                    micro->gameCanvas->helmetImage.get(),
+                    selectedMenuItemTickX - micro->gameCanvas->helmetSpriteWidth * (selectedMenuItemTickSpriteNo % 6),
+                    selectedMenuItemTickY - micro->gameCanvas->helmetSpriteHeight * (selectedMenuItemTickSpriteNo / 6),
+                    Graphics::TOP | Graphics::LEFT);
                 graphics->setClip(0, 0, canvasWidth, canvasHeight);
                 ++selectedMenuItemTickSpriteNo;
 
@@ -408,11 +433,6 @@ GameMenu* GameMenu::getGameMenu()
 {
     return gameMenu;
 }
-
-// int GameMenu::method_79()
-// {
-//     return field_95;
-// }
 
 void GameMenu::clearVector()
 {

@@ -1,8 +1,9 @@
 #include "config.h"
 
 bool GlobalSetting::WindowFullscreen = false;
-uint8_t GlobalSetting::LogoMultiplier = 3;
-uint8_t GlobalSetting::SplashMultiplier = 3;
+bool GlobalSetting::ShowFPS = false;
+uint8_t GlobalSetting::LogoMultiplier = 1;
+uint8_t GlobalSetting::SplashMultiplier = 1;
 uint8_t GlobalSetting::FontMultiplier = 4;
 uint8_t GlobalSetting::TimerFpsTextOffset = 14;
 uint8_t GlobalSetting::LoadingBarPadding = 2;

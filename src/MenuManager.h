@@ -21,7 +21,7 @@ private:
     SettingsManager::Settings settings;
 
     Micro* micro;
-    RecordManager* recordManager;
+    std::unique_ptr<RecordManager> recordManager;
     Command* commandOk;
     Command* commandBack;
     GameMenu* gameMenuMain;
