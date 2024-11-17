@@ -114,4 +114,4 @@ else()
 endif()
 
 # Copy assets to the build directory
-# file(COPY assets/levels.mrg DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY assets/levels.mrg DESTINATION ${CMAKE_BINARY_DIR})
