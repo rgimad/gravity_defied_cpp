@@ -618,7 +618,7 @@ void MenuManager::method_1(GameMenu* gm, bool var2)
     currentGameMenu = gm;
 
     if (currentGameMenu != nullptr && !var2) {
-        currentGameMenu->method_70();
+        currentGameMenu->rolloverMenuToBottom();
     }
 
     field_377 = false;
@@ -815,7 +815,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                 }
 
                 if (menuElement == field_336) {
-                    gameMenuEnterName->method_70();
+                    gameMenuEnterName->rolloverMenuToBottom();
                     method_1(gameMenuEnterName, false);
                     return;
                 }
@@ -831,7 +831,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                         settingsStringTrack->init();
                         field_299 = settingsStringTrack->getGameMenu();
                         method_1(field_299, false);
-                        field_299->method_83(settingsStringTrack->getCurrentOptionPos());
+                        field_299->startAtPosition(settingsStringTrack->getCurrentOptionPos());
                     }
 
                     field_345[settingStringLevel->getCurrentOptionPos()] = settingsStringTrack->getCurrentOptionPos();
@@ -842,7 +842,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                     if (settingStringLevel->method_114()) {
                         gameMenuStringLevel = settingStringLevel->getGameMenu();
                         method_1(gameMenuStringLevel, false);
-                        gameMenuStringLevel->method_83(settingStringLevel->getCurrentOptionPos());
+                        gameMenuStringLevel->startAtPosition(settingStringLevel->getCurrentOptionPos());
                     }
 
                     settingsStringTrack->setOptionsList(micro->levelLoader->GetTrackNames(settingStringLevel->getCurrentOptionPos()));
@@ -856,7 +856,7 @@ void MenuManager::processMenu(IGameMenuElement* menuElement)
                     gameMenuLeague = settingsStringLeague->getGameMenu();
                     settingsStringLeague->setParentGameMenu(currentGameMenu);
                     method_1(gameMenuLeague, false);
-                    gameMenuLeague->method_83(settingsStringLeague->getCurrentOptionPos());
+                    gameMenuLeague->startAtPosition(settingsStringLeague->getCurrentOptionPos());
                 }
             }
         }

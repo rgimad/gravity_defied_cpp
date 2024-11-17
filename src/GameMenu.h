@@ -14,8 +14,10 @@ class GameMenu {
 private:
     GameMenu* gameMenu;
     std::string name;
-    int field_95;
-    std::vector<IGameMenuElement*> vector;
+    int selectedItemIdx;
+    int viewItemIdx;
+
+    std::vector<IGameMenuElement*> menuItems;
     Micro* micro;
     std::shared_ptr<Font> font;
     std::shared_ptr<Font> font2;
@@ -23,9 +25,9 @@ private:
     int menuOffsetY;
     int menuSpacing;
     int menuOffsetX;
-    int field_105;
-    int field_106;
-    int field_107;
+    // int itemsToShowWindowStart;
+    // int itemsToShowWindowEnd;
+    int numberOfItemsToFit;
     int canvasWidth;
     int canvasHeight;
     int selectedMenuItemTickSpriteNo;
@@ -33,12 +35,15 @@ private:
     int nameCursorPos;
     char* strArr;
 
+    int getNumberOfItemToFitOnScreen() const;
+    void calculateMenuWindowBoundaries(int* itemsToShowWindowStart, int* itemsToShowWindowEnd);
+
 public:
     int xPos;
 
     GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputString = nullptr);
-    void method_70();
-    void method_71();
+    void rolloverMenuToBottom();
+    void rolloverMenuToTop();
     void addMenuElement(IGameMenuElement* var1);
     void processGameActionDown();
     void processGameActionUp();
@@ -47,7 +52,7 @@ public:
     void setGameMenu(GameMenu* gameMenu);
     GameMenu* getGameMenu();
     void clearVector();
-    std::string makeString();
+    // std::string makeString();
     char* getStrArr() const;
-    void method_83(int var1);
+    void startAtPosition(const int pos);
 };

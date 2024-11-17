@@ -11,8 +11,8 @@
 
 GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputString)
 {
+    clearVector();
     name = var1;
-    field_95 = -1;
     this->micro = micro;
     gameMenu = var3;
     canvasWidth = micro->gameCanvas->getWidth();
@@ -31,25 +31,12 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
     TextRender::setMaxArea(canvasWidth, canvasHeight);
     menuOffsetY = 1;
 
-    if (canvasWidth <= 100) {
-        xPos = 6;
-    } else {
-        xPos = 9;
-    }
-
-    if (canvasHeight <= 100) {
-        name = "";
-    }
-
+    xPos = 9;
     menuOffsetX = xPos + 7;
     menuSpacing = 2;
     selectedMenuItemTickSpriteNo = 0;
 
-    if (name != "") {
-        field_107 = (canvasHeight - (menuOffsetY << 1) - 10 - font->getBaselinePosition()) / (font2->getBaselinePosition() + menuSpacing);
-    } else {
-        field_107 = (canvasHeight - (menuOffsetY << 1) - 10) / (font2->getBaselinePosition() + menuSpacing);
-    }
+    numberOfItemsToFit = getNumberOfItemToFitOnScreen();
 
     if (inputString) {
         isTextInput = true;
@@ -59,96 +46,55 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
     } else {
         isTextInput = false;
     }
-
-    if (field_107 > 13) {
-        field_107 = 13;
-    }
 }
 
-void GameMenu::method_70()
+void GameMenu::rolloverMenuToBottom()
 {
     if (isTextInput) {
         nameCursorPos = 0;
     } else {
-        if (!vector.empty()) {
-            field_95 = 0;
+        if (menuItems.empty()) {
+            return;
+        }
 
-            for (int var1 = 0; var1 < static_cast<int>(vector.size()) && var1 < field_107; ++var1) {
-                if (vector[var1]->isNotTextRender()) {
-                    field_95 = var1;
-                    break;
-                }
-            }
+        viewItemIdx = 0;
 
-            field_105 = 0;
-            field_106 = vector.size() - 1;
+        int itemsToShowWindowStart = 0;
+        int itemsToShowWindowEnd = 0;
+        calculateMenuWindowBoundaries(&itemsToShowWindowStart, &itemsToShowWindowEnd);
 
-            if (field_106 > field_107 - 1) {
-                field_106 = field_107 - 1;
+        for (int i = itemsToShowWindowStart; i <= itemsToShowWindowEnd; ++i) {
+            if (menuItems[i]->isNotTextRender()) {
+                selectedItemIdx = i;
+                viewItemIdx = i;
+                return;
             }
         }
     }
 }
 
-void GameMenu::method_71()
+void GameMenu::rolloverMenuToTop()
 {
-    field_95 = vector.size() - 1;
+    viewItemIdx = menuItems.size() - 1;
 
-    for (int var1 = vector.size() - 1; var1 > 0; --var1) {
-        if (vector[var1]->isNotTextRender()) {
-            field_95 = var1;
-            break;
+    int itemsToShowWindowStart = 0;
+    int itemsToShowWindowEnd = 0;
+    calculateMenuWindowBoundaries(&itemsToShowWindowStart, &itemsToShowWindowEnd);
+
+    for (int i = itemsToShowWindowEnd; i >= itemsToShowWindowStart; --i) {
+        if (menuItems[i]->isNotTextRender()) {
+            selectedItemIdx = i;
+            viewItemIdx = i;
+            return;
         }
-    }
-
-    field_105 = vector.size() - field_107;
-
-    if (field_105 < 0) {
-        field_105 = 0;
-    }
-
-    field_106 = vector.size() - 1;
-
-    if (field_106 > field_95 + field_107) {
-        field_106 = field_95 + field_107;
     }
 }
 
 void GameMenu::addMenuElement(IGameMenuElement* var1)
 {
-    int var2 = menuOffsetY;
-    field_107 = 1;
-    vector.push_back(var1);
-
-    if (name != "") {
-        var2 = font->getBaselinePosition() + 2;
-    }
-
-    if (canvasHeight < 100) {
-        ++var2;
-    } else {
-        var2 += 4;
-    }
-
-    for (int var3 = 0; var3 < static_cast<int>(vector.size()) - 1; ++var3) {
-        if (vector[var3]->isNotTextRender()) {
-            var2 += font2->getBaselinePosition() + menuSpacing;
-        } else {
-            var2 += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + menuSpacing;
-        }
-
-        if (var2 > canvasHeight - (menuOffsetY << 1) - 10) {
-            break;
-        }
-
-        ++field_107;
-    }
-
-    if (field_107 > 13) {
-        field_107 = 13;
-    }
-
-    method_70();
+    menuItems.push_back(var1);
+    numberOfItemsToFit = getNumberOfItemToFitOnScreen();
+    rolloverMenuToBottom();
 }
 
 void GameMenu::processGameActionDown()
@@ -165,51 +111,27 @@ void GameMenu::processGameActionDown()
             strArr[nameCursorPos] = 32;
             return;
         }
-    } else if (vector.size() != 0) {
-        if (!(vector[field_95]->isNotTextRender())) {
-            ++field_106;
-            field_95 = field_106;
-            ++field_105;
+    } else if (menuItems.size() != 0) {
+        const int lastMenuItemIdx = static_cast<int>(menuItems.size()) - 1;
+        const int itemsToShowWindowStart = std::min(viewItemIdx + 1, lastMenuItemIdx);
+        const int itemsToShowWindowEnd = std::min(viewItemIdx + numberOfItemsToFit, lastMenuItemIdx);
+        ++viewItemIdx;
+
+        if (viewItemIdx > lastMenuItemIdx) {
+            rolloverMenuToBottom();
             return;
         }
 
-        ++field_95;
-
-        if (field_95 > static_cast<int>(vector.size()) - 1) {
-            method_70();
-            return;
-        }
-
-        bool var3 = false;
-
-        int var2;
-
-        for (var2 = field_95; var2 <= field_106 + 1; ++var2) {
-            if (vector[var2]->isNotTextRender()) {
-                var3 = true;
-                break;
+        for (int i = itemsToShowWindowStart; i <= itemsToShowWindowEnd; ++i) {
+            if (menuItems[i]->isNotTextRender()) {
+                selectedItemIdx = i;
+                viewItemIdx = i;
+                return;
             }
         }
 
-        if (var3) {
-            field_95 = var2;
-        } else if (field_106 < static_cast<int>(vector.size()) - 1) {
-            ++field_106;
-            ++field_105;
-        } else {
-            --field_95;
-        }
-
-        if (field_95 > field_106) {
-            ++field_105;
-            ++field_106;
-
-            if (field_106 > static_cast<int>(vector.size()) - 1) {
-                field_106 = vector.size() - 1;
-            }
-
-            field_95 = field_106;
-        }
+        selectedItemIdx = itemsToShowWindowEnd;
+        viewItemIdx = itemsToShowWindowEnd;
     }
 }
 
@@ -227,53 +149,26 @@ void GameMenu::processGameActionUp()
             strArr[nameCursorPos] = 32;
             return;
         }
-    } else if (vector.size() != 0) {
-        --field_95;
+    } else if (menuItems.size() != 0) {
+        const int itemsToShowWindowStart = std::max(viewItemIdx - numberOfItemsToFit, 0);
+        const int itemsToShowWindowEnd = std::max(viewItemIdx - 1, 0);
+        --viewItemIdx;
 
-        if (field_95 < 0) {
-            method_71();
+        if (viewItemIdx < 0) {
+            rolloverMenuToTop();
             return;
         }
 
-        bool var3 = false;
-        int var2;
-
-        for (var2 = field_95; var2 >= field_105; --var2) {
-            if (vector[var2]->isNotTextRender()) {
-                var3 = true;
-                break;
+        for (int i = itemsToShowWindowEnd; i >= itemsToShowWindowStart; --i) {
+            if (menuItems[i]->isNotTextRender()) {
+                selectedItemIdx = i;
+                viewItemIdx = i;
+                return;
             }
         }
 
-        if (!var3) {
-            if (field_105 > 0) {
-                --field_105;
-
-                if (static_cast<int>(vector.size()) > field_107 - 1) {
-                    --field_106;
-                    return;
-                }
-            } else {
-                method_71();
-            }
-
-            return;
-        }
-
-        field_95 = var2;
-
-        if (field_95 < field_105) {
-            --field_105;
-
-            if (field_105 < 0) {
-                field_95 = 0;
-                field_105 = 0;
-            }
-
-            if (static_cast<int>(vector.size()) > field_107 - 1) {
-                --field_106;
-            }
-        }
+        selectedItemIdx = itemsToShowWindowStart;
+        viewItemIdx = itemsToShowWindowStart;
     }
 }
 
@@ -307,11 +202,11 @@ void GameMenu::processGameActionUpd(int var1)
         }
 
     } else {
-        if (field_95 != -1) {
-            for (int var2 = field_95; var2 < static_cast<int>(vector.size()); ++var2) {
+        if (selectedItemIdx != -1) {
+            for (int var2 = selectedItemIdx; var2 < static_cast<int>(menuItems.size()); ++var2) {
                 IGameMenuElement* var3;
 
-                if ((var3 = vector[var2]) != nullptr && var3->isNotTextRender()) {
+                if ((var3 = menuItems[var2]) != nullptr && var3->isNotTextRender()) {
                     var3->menuElemMethod(var1);
                     return;
                 }
@@ -354,10 +249,25 @@ void GameMenu::render_76(Graphics* graphics)
         }
 
     } else {
+        int itemsToShowWindowStart = 0;
+        int itemsToShowWindowEnd = 0;
+        calculateMenuWindowBoundaries(&itemsToShowWindowStart, &itemsToShowWindowEnd);
+
+        Log::write(
+            Log::LogLevel::Debug,
+            "%s, selectedItemIdx: %d, viewItemIdx: %d, window start: %d, window end: %d, number of items to fit: %d, menu items count: %d\n",
+            name.c_str(),
+            selectedItemIdx,
+            viewItemIdx,
+            itemsToShowWindowStart,
+            itemsToShowWindowEnd,
+            numberOfItemsToFit,
+            menuItems.size());
+
         graphics->setColor(0, 0, 0);
         var2 = menuOffsetY;
 
-        if (name != "") {
+        if (!name.empty()) {
             graphics->setFont(font);
             graphics->drawString(
                 name,
@@ -367,25 +277,20 @@ void GameMenu::render_76(Graphics* graphics)
             var2 += font->getBaselinePosition() + 2;
         }
 
-        if (field_105 > 0) {
+        // scrolling text: draw top range cursor
+        if (itemsToShowWindowStart > 0) {
             micro->gameCanvas->drawSprite(graphics, 2, xPos - 3, var2);
-        }
-
-        if (canvasHeight < 100) {
-            ++var2;
-        } else {
-            var2 += 4;
         }
 
         graphics->setFont(font2);
 
-        for (i = field_105; i < field_106 + 1; ++i) {
-            IGameMenuElement* var4 = vector[i];
+        for (i = itemsToShowWindowStart; i <= itemsToShowWindowEnd; ++i) {
+            IGameMenuElement* var4 = menuItems[i];
             graphics->setColor(0, 0, 0);
             var4->render(graphics, var2, menuOffsetX);
 
-            // TODO: field_95 - selected menu items idx ??
-            if (i == field_95 && var4->isNotTextRender()) {
+            // draw helmet icon near selected item
+            if (i == selectedItemIdx && var4->isNotTextRender()) {
                 const int selectedMenuItemTickX = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
                 const int selectedMenuItemTickY = var2 + font2->getBaselinePosition() / 2; // - micro->gameCanvas->helmetSpriteHeight / 2;
                 graphics->setClip(
@@ -413,7 +318,8 @@ void GameMenu::render_76(Graphics* graphics)
             }
         }
 
-        if (static_cast<int>(vector.size()) > field_106 && field_106 != static_cast<int>(vector.size()) - 1) {
+        // scrolling text: draw bottom range cursor
+        if (static_cast<int>(menuItems.size()) > itemsToShowWindowEnd && itemsToShowWindowEnd != static_cast<int>(menuItems.size()) - 1) {
             if (GameCanvas::spriteSizeY[3] + var2 > canvasHeight) {
                 micro->gameCanvas->drawSprite(graphics, 3, xPos - 3, canvasHeight - GameCanvas::spriteSizeY[3]);
                 return;
@@ -436,15 +342,9 @@ GameMenu* GameMenu::getGameMenu()
 
 void GameMenu::clearVector()
 {
-    vector.clear();
-    field_105 = 0;
-    field_106 = 0;
-    field_95 = -1;
-}
-
-std::string GameMenu::makeString()
-{
-    return std::string(strArr);
+    menuItems.clear();
+    viewItemIdx = -1;
+    selectedItemIdx = -1;
 }
 
 char* GameMenu::getStrArr() const
@@ -452,15 +352,47 @@ char* GameMenu::getStrArr() const
     return strArr;
 }
 
-void GameMenu::method_83(int var1)
+void GameMenu::startAtPosition(const int pos)
 {
-    method_70();
+    rolloverMenuToBottom();
+    viewItemIdx = pos;
+    selectedItemIdx = pos;
+}
 
-    while (field_95 < var1) {
-        ++field_95;
-        if (field_95 > field_106) {
-            ++field_105;
-            ++field_106;
+int GameMenu::getNumberOfItemToFitOnScreen() const
+{
+    int screenHeightForMenuItems = canvasHeight - (menuOffsetY << 1);
+
+    if (!name.empty()) {
+        screenHeightForMenuItems -= font->getBaselinePosition() + 10;
+    }
+
+    const int menuItemHeight = font2->getBaselinePosition() + menuSpacing;
+    return std::floor(screenHeightForMenuItems / menuItemHeight) - 1;
+}
+
+void GameMenu::calculateMenuWindowBoundaries(int* itemsToShowWindowStart, int* itemsToShowWindowEnd) {
+    if (menuItems.empty()) {
+        return;
+    }
+
+    if (static_cast<int>(menuItems.size()) <= numberOfItemsToFit) {
+        *itemsToShowWindowStart = 0;
+        *itemsToShowWindowEnd = menuItems.size() - 1;
+    } else {
+        *itemsToShowWindowStart = viewItemIdx;
+        *itemsToShowWindowEnd = *itemsToShowWindowStart + numberOfItemsToFit - 1;
+
+        if (*itemsToShowWindowEnd > static_cast<int>((menuItems.size() - 1))) {
+            *itemsToShowWindowEnd = menuItems.size() - 1;
+        }
+
+        if (*itemsToShowWindowEnd - *itemsToShowWindowStart < numberOfItemsToFit) {
+            *itemsToShowWindowStart = *itemsToShowWindowEnd - numberOfItemsToFit + 1;
         }
     }
+
+    *itemsToShowWindowStart = std::max(*itemsToShowWindowStart, 0);
+    *itemsToShowWindowEnd = std::min(*itemsToShowWindowEnd, static_cast<int>(menuItems.size() - 1));
+
 }
