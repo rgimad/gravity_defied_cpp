@@ -10,13 +10,16 @@ class Canvas;
 
 class CanvasImpl {
 private:
+    const int defaultWidth = 640;
+    const int defaultHeight = 480;
+
+    int windowWidth = -1;
+    int windowHeight = -1;
+
     Canvas* canvas;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
-
-    const int width = 640;
-    const int height = 480;
 
     static int convertKeyCharToKeyCode(SDL_Keycode keyCode);
 
