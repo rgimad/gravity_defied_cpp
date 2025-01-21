@@ -9,11 +9,6 @@ class_10::class_10()
     reset();
 }
 
-class_10::~class_10()
-{
-    //
-}
-
 void class_10::reset()
 {
     field_257 = field_259 = field_260 = 0;
