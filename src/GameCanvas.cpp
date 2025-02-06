@@ -385,8 +385,8 @@ void GameCanvas::drawGame(Graphics* g)
                         logoImage->getWidth() * GlobalSetting::LogoMultiplier,
                         logoImage->getHeight() * GlobalSetting::LogoMultiplier,
                         Graphics::HCENTER | Graphics::VCENTER);
-                    drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5, getHeight() - spriteSizeY[16] - 7);
-                    drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
+                    drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5 - GlobalSetting::BarScreenOffset, getHeight() - spriteSizeY[16] - 7 - GlobalSetting::BarH);
+                    drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4 - GlobalSetting::BarScreenOffset, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9 - GlobalSetting::BarH);
                 }
             } else {
                 graphics->setColor(255, 255, 255);
@@ -403,7 +403,7 @@ void GameCanvas::drawGame(Graphics* g)
                 }
             }
 
-            var3 = (int)(((int64_t)(Micro::gameLoadingStateStage << 16) << 32) / 655360L >> 16);
+            var3 = (((int64_t)Micro::gameLoadingStateStage << 48) / (11L << 16)) >> 16;
             drawProgressBar(var3, true);
         } else {
             if (height != getHeight()) {
@@ -465,6 +465,8 @@ void GameCanvas::drawProgressBar(int var1, bool mode)
     const int h = mode ? height : height2;
     const int barX = 1;
     const int barY = h - GlobalSetting::BarScreenOffset - GlobalSetting::BarH;
+
+    var1 *= (var1 >= 0);
 
     setColor(0, 0, 0);
     graphics->fillRect(barX, barY, width - (2 * barX), GlobalSetting::BarH);
