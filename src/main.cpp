@@ -16,6 +16,7 @@ Usage %s [options]
       --fps                    Show FPS
       --width INT              Set screen width in px (default: 640)
       --height INT             Set screen height in px (default: 480)
+      --zoom INT               Set render size in percents (default: 100)
       -h, --help               Show this help screen
       -v, --verbose INT        Set log level [0-6] (default: 2)
       --font-mult              Set font multiplier (default: 4)
@@ -32,6 +33,7 @@ bool parseArguments(int argc, char** argv)
         { "help", no_argument, nullptr, 'h' },
         { "width", required_argument, nullptr, 0 },
         { "height", required_argument, nullptr, 0 },
+        { "zoom", required_argument, nullptr, 0 },
         { "fps", no_argument, nullptr, 0 },
         { "font-mult", required_argument, nullptr, 0 },
         { "logo-mult", required_argument, nullptr, 0 },
@@ -58,6 +60,9 @@ bool parseArguments(int argc, char** argv)
             } else if (strncmp(long_options[option_index].name, "height", 6) == 0) {
                 GlobalSetting::DefaultScreenHeight = atoi(optarg);
                 Log::write(Log::LogLevel::None, "Setting height %d\n", GlobalSetting::DefaultScreenHeight);
+            } else if (strncmp(long_options[option_index].name, "zoom", 4) == 0) {
+                GlobalSetting::DefaultZoomLevel = atoi(optarg);
+                Log::write(Log::LogLevel::None, "Setting render size %d%%\n", GlobalSetting::DefaultZoomLevel);
             } else if (strncmp(long_options[option_index].name, "font-mult", 9) == 0) {
                 GlobalSetting::FontMultiplier = atoi(optarg);
                 Log::write(Log::LogLevel::None, "Setting font multiplier to %d\n", GlobalSetting::FontMultiplier);

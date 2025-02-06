@@ -11,6 +11,7 @@ uint8_t GlobalSetting::BarScreenOffset = 2;
 uint8_t GlobalSetting::BarH = 10;
 uint16_t GlobalSetting::DefaultScreenWidth = 640;
 uint16_t GlobalSetting::DefaultScreenHeight = 480;
+uint16_t GlobalSetting::DefaultZoomLevel = 100;
 std::string GlobalSetting::SavesPrefix = "";
 std::filesystem::path GlobalSetting::SavesPath = "./saves";
 std::filesystem::path GlobalSetting::GlobalSaveFileName = "GDTRStates.dat";

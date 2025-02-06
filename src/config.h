@@ -74,6 +74,7 @@ struct GlobalSetting {
     static uint8_t BarH;
     static uint16_t DefaultScreenWidth;
     static uint16_t DefaultScreenHeight;
+    static uint16_t DefaultZoomLevel;
     static std::string SavesPrefix;
     static std::filesystem::path GlobalSaveFileName;
     static std::filesystem::path SavesPath;

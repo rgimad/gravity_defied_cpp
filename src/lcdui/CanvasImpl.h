@@ -17,8 +17,10 @@ class CanvasImpl {
 private:
     int windowWidth = -1;
     int windowHeight = -1;
+    int zoomLevel = -1;
 
     Canvas* canvas;
+    SDL_Texture *texTarget;
 
     SDL_Window* window;
     SDL_Renderer* renderer;
@@ -30,6 +32,7 @@ public:
     ~CanvasImpl();
 
     void repaint();
+    int getZoom();
     int getWidth();
     int getHeight();
 
