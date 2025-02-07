@@ -180,9 +180,18 @@ void SettingsStringRender::render(Graphics* graphics, int y, int x)
 {
     if (useColon) {
         if (!hasSprite) {
-            graphics->drawString(text, x, y, 20);
+            graphics->drawString(
+                text,
+                x,
+                y,
+                Graphics::TOP | Graphics::LEFT);
         } else {
-            graphics->drawString(text, x + GameCanvas::spriteSizeX[8] + 3, y, 20);
+            graphics->drawString(
+                text,
+                x + GameCanvas::spriteSizeX[8] + 3,
+                y,
+                Graphics::TOP | Graphics::LEFT);
+
             if (isDrawSprite8) {
                 micro->gameCanvas->drawSprite(graphics, 8, x, y - GameCanvas::spriteSizeY[8] / 2 + graphics->getFont()->getHeight() / 2);
             } else {
@@ -190,15 +199,24 @@ void SettingsStringRender::render(Graphics* graphics, int y, int x)
             }
         }
     } else {
-        graphics->drawString(text, x, y, 20);
+        graphics->drawString(
+            text,
+            x,
+            y,
+            Graphics::TOP | Graphics::LEFT);
         int shiftedX = x + graphics->getFont()->stringWidth(text);
+
         if (currentOptionPos > maxAvailableOption && !field_146) {
             micro->gameCanvas->drawSprite(graphics, 8, shiftedX + 1, y - GameCanvas::spriteSizeY[8] / 2 + graphics->getFont()->getHeight() / 2);
             shiftedX += GameCanvas::spriteSizeX[9] + 1;
         }
 
         shiftedX += 2;
-        graphics->drawString(selectedOptionName, shiftedX, y, 20);
+        graphics->drawString(
+            selectedOptionName,
+            shiftedX,
+            y,
+            Graphics::TOP | Graphics::LEFT);
     }
 }
 

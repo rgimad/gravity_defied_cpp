@@ -6,16 +6,12 @@
 #include "LevelLoader.h"
 #include "utils/Time.h"
 #include "lcdui/CanvasImpl.h"
-#include "rms/RecordStore.h"
+#include "config.h"
 
-bool Micro::field_249 = false;
+bool Micro::gameStarted = false;
 int Micro::gameLoadingStateStage = 0;
 
 Micro::Micro()
-{
-}
-
-Micro::~Micro()
 {
 }
 
@@ -45,7 +41,7 @@ int64_t Micro::goLoadingStep()
     int64_t startTimeMillis = Time::currentTimeMillis();
     switch (gameLoadingStateStage) {
     case 1:
-        levelLoader = new LevelLoader(mrgFilePath);
+        levelLoader = new LevelLoader(GlobalSetting::MrgFilePath);
         break;
     case 2:
         gamePhysics = new GamePhysics(levelLoader);
@@ -138,27 +134,15 @@ void Micro::restart(bool var1)
 void Micro::destroyApp(bool var1)
 {
     (void)var1;
-    field_249 = false;
-    field_242 = true;
+    gameStarted = false;
+    gameDestroyed = true;
     menuManager->saveSmthToRecordStoreAndCloseIt();
 }
 
-void Micro::startApp(int argc, char** argv)
+void Micro::startApp()
 {
-    if (argc > 1) {
-        std::string argv1(argv[1]);
-
-        if (argv1 == "-h" || argv1 == "--help") {
-            showHelp(argv[0]);
-            return;
-        }
-
-        this->mrgFilePath = argv1;
-    }
-
-    RecordStore::setRecordStoreDir(argv[0]);
-
-    field_249 = true;
+    SettingsManager::initSettings();
+    gameStarted = true;
     // if (thread == null) {
     //     thread = new Thread(this);
     //     thread.start();
@@ -176,14 +160,16 @@ void Micro::run()
     gameCanvas->setCommandListener(gameCanvas);
     restart(false);
     menuManager->method_201(0);
-    if (menuManager->method_196()) {
+
+    if (menuManager->isRestartNeeded()) {
         restart(true);
     }
 
     int64_t var3 = 0L;
 
-    while (field_249) {
+    while (gameStarted) {
         int var5;
+
         if (gamePhysics->method_21() != menuManager->method_210()) {
             var5 = gameCanvas->loadSprites(menuManager->method_210());
             gamePhysics->method_22(var5);
@@ -194,7 +180,8 @@ void Micro::run()
         try {
             if (isInGameMenu) {
                 menuManager->method_201(1);
-                if (menuManager->method_196()) {
+
+                if (menuManager->isRestartNeeded()) {
                     restart(true);
                 }
             }
@@ -236,6 +223,7 @@ void Micro::run()
                     // } catch (InterruptedException var12) {
                     // }
                     int64_t var7 = 1000L;
+
                     if (field_246 > 0L) {
                         var7 = std::min(field_246 - Time::currentTimeMillis(), static_cast<int64_t>(1000));
                     }
@@ -254,13 +242,14 @@ void Micro::run()
                     }
 
                     goalLoop();
-                    menuManager->method_215(gameTimeMs / 10L);
+                    menuManager->setGameTimeMs(gameTimeMs / 10L);
                     menuManager->method_201(2);
-                    if (menuManager->method_196()) {
+
+                    if (menuManager->isRestartNeeded()) {
                         restart(true);
                     }
 
-                    if (!field_249) {
+                    if (!gameStarted) {
                         break;
                     }
                 }
@@ -268,7 +257,7 @@ void Micro::run()
                 field_248 = var5 != 4;
             }
 
-            var10000 = field_249;
+            var10000 = gameStarted;
         } catch (std::exception& var15) {
             continue;
         }
@@ -280,6 +269,7 @@ void Micro::run()
         try {
             gamePhysics->method_53();
             int64_t var1;
+
             if ((var1 = Time::currentTimeMillis()) - var3 < 30L) {
                 // try {
                 //     synchronized (this) {
@@ -305,6 +295,7 @@ void Micro::run()
 void Micro::goalLoop()
 {
     int64_t var4 = 0L;
+
     if (!gamePhysics->field_69) {
         gameCanvas->scheduleGameTimerTask("Wheelie!", 1000);
     } else {
@@ -330,6 +321,7 @@ void Micro::goalLoop()
                 //     return;
                 // }
                 int64_t deltaTime;
+
                 if ((deltaTime = timeMs - Time::currentTimeMillis()) > 0L) {
                     Time::sleep(deltaTime);
                 }
@@ -340,6 +332,7 @@ void Micro::goalLoop()
 
         gamePhysics->method_53();
         int64_t var2;
+
         if ((var2 = Time::currentTimeMillis()) - var4 < 30L) {
             // try {
             //     synchronized (this) {
@@ -359,13 +352,4 @@ void Micro::goalLoop()
 void Micro::setMode(int mode)
 {
     gamePhysics->setMode(mode);
-}
-
-void Micro::showHelp(const char* progName)
-{
-    std::cout << "Usage: " << progName << " <FILE>" << std::endl
-              << "Example:" << std::endl
-              << "  " << progName << " levels.mrg  # A path to a custom levels file could be specified" << std::endl
-              << "  " << progName << "             # When no path is specified, the built-in levels file will be used" << std::endl
-              << std::endl;
 }

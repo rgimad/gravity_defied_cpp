@@ -4,26 +4,24 @@
 #include <string>
 #include <memory>
 
+#include "lcdui/FontStorage.h"
+#include "TextRender.h"
+#include "RecordManager.h"
+#include "Micro.h"
+#include "LevelLoader.h"
+#include "GameMenu.h"
+#include "SettingsStringRender.h"
+#include "utils/Time.h"
+#include "config.h"
 #include "IMenuManager.h"
-
-class Micro;
-class RecordManager;
-class Command;
-class GameMenu;
-class TimerOrMotoPartOrMenuElem;
-class SettingsStringRender;
-class RecordStore;
-class Image;
-class TextRender;
-class Graphics;
-class Displayable;
-class IGameMenuElement;
+#include "SettingsManager.h"
 
 class MenuManager : public IMenuManager {
 private:
-    std::vector<int8_t> field_278;
+    SettingsManager::Settings settings;
+
     Micro* micro;
-    RecordManager* recordManager;
+    std::unique_ptr<RecordManager> recordManager;
     Command* commandOk;
     Command* commandBack;
     GameMenu* gameMenuMain;
@@ -51,7 +49,7 @@ private:
     SettingsStringRender* shadowsSetting;
     SettingsStringRender* driverSpriteSetting;
     SettingsStringRender* bikeSpriteSetting;
-    SettingsStringRender* inputSetting;
+    // SettingsStringRender* inputSetting;
     SettingsStringRender* lookAheadSetting;
     TimerOrMotoPartOrMenuElem* clearHighscoreSetting;
     TimerOrMotoPartOrMenuElem* field_313;
@@ -78,57 +76,26 @@ private:
     SettingsStringRender* field_334;
     SettingsStringRender* field_335;
     SettingsStringRender* field_336;
-    int64_t field_337;
-    int field_338;
-    int field_339;
-    std::string field_340;
-    char* field_341;
-    char field_342[4];
-    char defaultInputString[4] = "AAA";
-    int8_t availableLeagues = 0;
-    int8_t field_344 = 0;
+    uint64_t trackTimeMs;
+    std::string trackTimeFormatted;
     std::vector<int> field_345 = { 0, 0, 0 };
-    std::vector<std::vector<std::string>> levelNames;
     std::vector<std::string> leagueNames = std::vector<std::string>(3);
     std::vector<std::string> leagueNamesAll4;
-    RecordStore* recordStore;
-    int recorcStoreRecordId = -1;
-    bool isRecordStoreOpened;
     std::unique_ptr<Image> rasterImage;
     TextRender* textRenderCodeBrewLink;
     int field_354 = 0;
     int field_355 = 0;
-    bool field_356 = false;
-    bool field_357 = false;
-    std::vector<std::string> field_361 = { "Easy", "Medium", "Pro" };
-    int64_t field_362 = 0L;
-    int8_t isDisablePerspective = 0;
-    int8_t isDisabledShadows = 0;
-    int8_t isDisabledDriverSprite = 0;
-    int8_t isDisabledBikeSprite = 0;
-    int8_t field_367 = 0;
-    int8_t isDisableLookAhead = 0;
-    int8_t field_369 = 0;
-    int8_t field_370 = 0;
-    int8_t field_371 = 0;
+    bool currentLevelFinished = false;
+    bool restartNeeded = false;
     int8_t field_372 = 0;
-    int8_t field_373 = 0;
-    std::vector<std::string> field_374;
-    std::vector<std::string> field_375;
     std::unique_ptr<TextRender> field_376;
+
     // Alert alert = nullptr; // TODO
 
     void addTextRender(GameMenu* gameMenu, std::string text);
     void method_197();
     void fillCanvasWithImage(Graphics* graphics);
-    void processNonFireKeyCode(int keyCode);
-    std::vector<int8_t> method_216(int var1, int8_t var2);
-    int8_t method_217(int var1, int8_t var2);
-    void copyThreeBytesFromArr(int var1, char* var2);
-    std::string timeToString(int64_t time);
-    void setValue(int pos, int8_t value);
     void exit();
-    int getCountOfRecordStoresWithPrefix(int prefixNumber);
 
 public:
     GameMenu* currentGameMenu;
@@ -139,7 +106,7 @@ public:
     void initPart(int var1);
     int getCurrentLevel();
     int getCurrentTrack();
-    bool method_196();
+    bool isRestartNeeded();
     void repaint();
     int getCanvasHeight();
     int getCanvasWidth();
@@ -155,12 +122,9 @@ public:
     void processMenu(IGameMenuElement* menuElement);
     int method_210();
     void method_211(int var1);
-    int method_212();
-    int method_213();
-    int method_214();
-    void method_215(int64_t var1);
+    void setGameTimeMs(const uint64_t var1);
     void removeOkAndBackCommands();
     void addOkAndBackCommands();
     /* synchronized */ void method_202(Graphics* var1);
-    void processKeyCode(int keyCode);
+    void processKeyCode(const Keys keyCode);
 };

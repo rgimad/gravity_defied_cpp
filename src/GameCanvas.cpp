@@ -1,12 +1,4 @@
 #include "GameCanvas.h"
-#include "MathF16.h"
-#include "GamePhysics.h"
-#include "MenuManager.h"
-#include "lcdui/Image.h"
-#include "lcdui/FontStorage.h"
-
-#include <memory>
-#include <vector>
 
 GameCanvas::GameCanvas(Micro* micro)
 {
@@ -29,7 +21,7 @@ GameCanvas::GameCanvas(Micro* micro)
     dx = 0;
     dy = height2;
 
-    commandMenu = new Command("Menu", 1, 1);
+    commandMenu = new Command("Menu", Command::Type::SCREEN, 1);
     defaultFontWidth00 = defaultFont->stringWidth("00") + 3;
 }
 
@@ -37,7 +29,11 @@ void GameCanvas::drawSprite(Graphics* g, int spriteNo, int x, int y)
 {
     if (spritesImage) {
         g->setClip(x, y, spriteSizeX[spriteNo], spriteSizeY[spriteNo]);
-        g->drawImage(spritesImage.get(), x - spriteOffsetX[spriteNo], y - spriteOffsetY[spriteNo], 20);
+        g->drawImage(
+            spritesImage.get(),
+            x - spriteOffsetX[spriteNo],
+            y - spriteOffsetY[spriteNo],
+            Graphics::TOP | Graphics::LEFT);
         g->setClip(0, 0, getWidth(), getHeight());
     }
 }
@@ -85,7 +81,7 @@ int GameCanvas::loadSprites(int flags)
         fenderImage = nullptr;
         engineImage = nullptr;
     }
-    
+
     if (flags & 2) {
         if (!bodyPartsImages[1]) {
             bodyPartsImages[1] = std::make_unique<Image>("blueleg.png");
@@ -114,7 +110,7 @@ int GameCanvas::loadSprites(int flags)
 
 void GameCanvas::method_129()
 {
-    method_164();
+    resetActions();
 }
 
 void GameCanvas::setViewPosition(int dx, int dy)
@@ -170,7 +166,11 @@ void GameCanvas::renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int 
         x -= bodyPartsSpriteWidth[bodyPartNo] / 2;
         y -= bodyPartsSpriteHeight[bodyPartNo] / 2;
         graphics->setClip(x, y, bodyPartsSpriteWidth[bodyPartNo], bodyPartsSpriteHeight[bodyPartNo]);
-        graphics->drawImage(bodyPartsImages[bodyPartNo].get(), x - bodyPartsSpriteWidth[bodyPartNo] * (spriteNo % 6), y - bodyPartsSpriteHeight[bodyPartNo] * (spriteNo / 6), 20);
+        graphics->drawImage(
+            bodyPartsImages[bodyPartNo].get(),
+            x - bodyPartsSpriteWidth[bodyPartNo] * (spriteNo % 6),
+            y - bodyPartsSpriteHeight[bodyPartNo] * (spriteNo / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -217,47 +217,24 @@ void GameCanvas::drawHelmet(int x, int y, int angleF16)
         int var5 = addDx(x) - helmetSpriteWidth / 2;
         int var6 = addDy(y) - helmetSpriteHeight / 2;
         graphics->setClip(var5, var6, helmetSpriteWidth, helmetSpriteHeight);
-        graphics->drawImage(helmetImage.get(), var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
+        graphics->drawImage(
+            helmetImage.get(),
+            var5 - helmetSpriteWidth * (var4 % 6),
+            var6 - helmetSpriteHeight * (var4 / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
 
-void GameCanvas::drawTime(int64_t time10Ms)
+void GameCanvas::drawTime(uint64_t time10Ms)
 {
-    int seconds = (int)(time10Ms / 100L);
-    int time10MsPart = (int)(time10Ms % 100L);
-    if (timeInSeconds != seconds || stringWithTime.empty()) {
-        std::string zeroPadding;
-        if (seconds % 60 >= 10) {
-            zeroPadding = "";
-        } else {
-            zeroPadding = "0";
-        }
-
-        stringWithTime = std::to_string(seconds / 60) + ":" + zeroPadding + std::to_string(seconds % 60) + ".";
-        timeInSeconds = seconds;
-    }
-
-    if (time10MsToStringCache[time10MsPart].empty()) {
-        std::string zeroPadding;
-        if (time10MsPart >= 10) {
-            zeroPadding = "";
-        } else {
-            zeroPadding = "0";
-        }
-
-        time10MsToStringCache[time10MsPart] = zeroPadding + std::to_string(time10Ms % 100L);
-    }
-
-    if (time10Ms > 3600000L) {
-        setColor(0, 0, 0);
-        graphics->drawString("0:00.", width - defaultFontWidth00, height2 - 5, 40);
-        graphics->drawString("00", width - defaultFontWidth00, height2 - 5, 36);
-    } else {
-        setColor(0, 0, 0);
-        graphics->drawString(stringWithTime, width - defaultFontWidth00, height2 - 5, 40);
-        graphics->drawString(time10MsToStringCache[time10MsPart], width - defaultFontWidth00, height2 - 5, 36);
-    }
+    const std::string timeStr = Time::timeToString(time10Ms);
+    setColor(0, 0, 0);
+    graphics->drawString(
+        timeStr,
+        width - defaultFontWidth00,
+        height2 - GlobalSetting::TimerFpsTextOffset,
+        Graphics::BOTTOM | Graphics::RIGHT);
 }
 
 void GameCanvas::method_150(int var1)
@@ -336,7 +313,11 @@ void GameCanvas::renderEngine(int x, int y, int angleF16)
     int centerY = addDy(y) - engineSpriteHeight / 2;
     if (engineImage != nullptr) {
         graphics->setClip(centerX, centerY, engineSpriteWidth, engineSpriteHeight);
-        graphics->drawImage(engineImage.get(), centerX - engineSpriteWidth * (spriteNo % 6), centerY - engineSpriteHeight * (spriteNo / 6), 20);
+        graphics->drawImage(
+            engineImage.get(),
+            centerX - engineSpriteWidth * (spriteNo % 6),
+            centerY - engineSpriteHeight * (spriteNo / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -348,7 +329,11 @@ void GameCanvas::renderFender(int x, int y, int angleF16)
         int centerX = addDx(x) - fenderSpriteWidth / 2;
         int centerY = addDy(y) - fenderSpriteHeight / 2;
         graphics->setClip(centerX, centerY, fenderSpriteWidth, fenderSpriteHeight);
-        graphics->drawImage(fenderImage.get(), centerX - fenderSpriteWidth * (spriteNo % 6), centerY - fenderSpriteHeight * (spriteNo / 6), 20);
+        graphics->drawImage(
+            fenderImage.get(),
+            centerX - fenderSpriteWidth * (spriteNo % 6),
+            centerY - fenderSpriteHeight * (spriteNo / 6),
+            Graphics::TOP | Graphics::LEFT);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -384,7 +369,7 @@ void GameCanvas::setColor(int red, int green, int blue)
 void GameCanvas::drawGame(Graphics* g)
 {
     // synchronized (objectForSyncronization) {
-    if (Micro::field_249 && !micro->field_242) {
+    if (micro->gameStarted && !micro->gameDestroyed) {
         graphics = g;
 
         int var3;
@@ -393,20 +378,33 @@ void GameCanvas::drawGame(Graphics* g)
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
                 if (logoImage != nullptr) {
-                    graphics->drawImage(logoImage.get(), getWidth() / 2, getHeight() / 2, 3);
-                    drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5, getHeight() - spriteSizeY[16] - 7);
-                    drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
+                    graphics->drawImage(
+                        logoImage.get(),
+                        getWidth() / 2,
+                        getHeight() / 2,
+                        logoImage->getWidth() * GlobalSetting::LogoMultiplier,
+                        logoImage->getHeight() * GlobalSetting::LogoMultiplier,
+                        Graphics::HCENTER | Graphics::VCENTER);
+                    drawSprite(graphics, 16, getWidth() - spriteSizeX[16] - 5 - GlobalSetting::BarScreenOffset, getHeight() - spriteSizeY[16] - 7 - GlobalSetting::BarH);
+                    drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4 - GlobalSetting::BarScreenOffset, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9 - GlobalSetting::BarH);
                 }
             } else {
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
+
                 if (splashImage != nullptr) {
-                    graphics->drawImage(splashImage.get(), getWidth() / 2, getHeight() / 2, 3);
+                    graphics->drawImage(
+                        splashImage.get(),
+                        getWidth() / 2,
+                        getHeight() / 2,
+                        splashImage->getWidth() * GlobalSetting::SplashMultiplier,
+                        splashImage->getHeight() * GlobalSetting::SplashMultiplier,
+                        Graphics::HCENTER | Graphics::VCENTER);
                 }
             }
 
-            var3 = (int)(((int64_t)(Micro::gameLoadingStateStage << 16) << 32) / 655360L >> 16);
-            method_161(var3, true);
+            var3 = (((int64_t)Micro::gameLoadingStateStage << 48) / (11L << 16)) >> 16;
+            drawProgressBar(var3, true);
         } else {
             if (height != getHeight()) {
                 updateSizeAndRepaint();
@@ -423,9 +421,17 @@ void GameCanvas::drawGame(Graphics* g)
                 setColor(0, 0, 0);
                 graphics->setFont(font);
                 if (height2 <= 128) {
-                    graphics->drawString(timerMessage, width / 2, 1, 17);
+                    graphics->drawString(
+                        timerMessage,
+                        width / 2,
+                        1,
+                        Graphics::TOP | Graphics::HCENTER);
                 } else {
-                    graphics->drawString(timerMessage, width / 2, height2 / 4, 33);
+                    graphics->drawString(
+                        timerMessage,
+                        width / 2,
+                        height2 / 4,
+                        Graphics::BOTTOM | Graphics::HCENTER);
                 }
 
                 if (timerTriggered) {
@@ -434,13 +440,18 @@ void GameCanvas::drawGame(Graphics* g)
                 }
             }
 
-            // print fps to screen
-            // setColor(0, 0, 0);
-            // graphics->setFont(font);
-            // graphics->drawString("FPS: " + std::to_string(fps), defaultFontWidth00, height2 - 5, 36);
+            if (GlobalSetting::ShowFPS) {
+                setColor(0, 0, 0);
+                graphics->setFont(font);
+                graphics->drawString(
+                    "FPS: " + std::to_string(fps),
+                    defaultFontWidth00,
+                    height2 - GlobalSetting::TimerFpsTextOffset,
+                    Graphics::BOTTOM | Graphics::LEFT);
+            }
 
             var3 = gamePhysics->method_52();
-            method_161(var3, false);
+            drawProgressBar(var3, false);
         }
 
         graphics = nullptr;
@@ -448,31 +459,46 @@ void GameCanvas::drawGame(Graphics* g)
     // }
 }
 
-void GameCanvas::method_161(int var1, bool mode)
+// draw progressbar
+void GameCanvas::drawProgressBar(int var1, bool mode)
 {
-    int h = mode ? height : height2;
+    const int h = mode ? height : height2;
+    const int barX = 1;
+    const int barY = h - GlobalSetting::BarScreenOffset - GlobalSetting::BarH;
+
+    var1 *= (var1 >= 0);
+
     setColor(0, 0, 0);
-    graphics->fillRect(1, h - 4, width - 2, 3);
+    graphics->fillRect(barX, barY, width - (2 * barX), GlobalSetting::BarH);
+
     setColor(255, 255, 255);
-    graphics->fillRect(2, h - 3, (int)((int64_t)((width - 4) << 16) * (int64_t)var1 >> 16) >> 16, 1);
+    const int loadingBarX = barX + GlobalSetting::LoadingBarPadding;
+    graphics->fillRect(
+        loadingBarX,
+        barY + GlobalSetting::LoadingBarPadding,
+        (int)((int64_t)((width - 2 * loadingBarX) << 16) * (int64_t)var1 >> 16) >> 16,
+        GlobalSetting::BarH - (2 * GlobalSetting::LoadingBarPadding));
 }
 
-void GameCanvas::method_163(int var1)
-{
-    field_232 = var1;
-}
+// void GameCanvas::method_163(int var1)
+// {
+//     field_232 = var1;
+// }
 
 void GameCanvas::paint(Graphics* graphics)
 {
-    // static int64_t time = 0;
-    // int64_t now = Time::currentTimeMillis();
-    // int64_t delta = now - time;
-    // time = now;
-    // if (delta != 0) {
-    //     fps = 1000 / delta;
-    //     // std::cout << "FPS: " << fps <<  std::endl;
-    //     //setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
-    // }
+    static int64_t time = 0;
+
+    if (GlobalSetting::ShowFPS) {
+        const int64_t now = Time::currentTimeMillis();
+        const int64_t delta = now - time;
+        time = now;
+
+        if (delta != 0) {
+            fps = 1000 / delta;
+            // setWindowTitle(std::string("Gravity Defied. FPS: ") + std::to_string(fps));
+        }
+    }
 
     processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
     if (Micro::isInGameMenu && menuManager != nullptr) {
@@ -482,40 +508,31 @@ void GameCanvas::paint(Graphics* graphics)
     }
 }
 
-void GameCanvas::method_164()
+void GameCanvas::resetActions()
 {
-    int var1;
-    for (var1 = 0; var1 < 10; ++var1) {
-        activeKeys[var1] = false;
-    }
-
-    for (var1 = 0; var1 < 7; ++var1) {
-        activeActions[var1] = false;
-    }
+    activeActions[Keys::UP] = false;
+    activeActions[Keys::DOWN] = false;
+    activeActions[Keys::LEFT] = false;
+    activeActions[Keys::RIGHT] = false;
+    activeActions[Keys::FIRE] = false;
+    activeActions[Keys::BACK] = false;
 }
 
 void GameCanvas::handleUpdatedInput()
 {
-    int var1 = 0;
-    int var2 = 0;
-    int var3 = field_232;
+    int verticalMovement = 0;
+    int horizontalMovement = 0;
 
-    int var4;
-    for (var4 = 0; var4 < 10; ++var4) {
-        if (activeKeys[var4]) {
-            var1 += field_231[var3][var4][0];
-            var2 += field_231[var3][var4][1];
+    for (const auto& [action, isActive] : activeActions) {
+        if (!isActive) {
+            continue;
         }
+
+        verticalMovement += availableActions[action][0];
+        horizontalMovement += availableActions[action][1];
     }
 
-    for (var4 = 0; var4 < 7; ++var4) {
-        if (activeActions[var4]) {
-            var1 += field_230[var4][0];
-            var2 += field_230[var4][1];
-        }
-    }
-
-    gamePhysics->method_30(var1, var2);
+    gamePhysics->method_30(verticalMovement, horizontalMovement);
 }
 
 void GameCanvas::processTimers()
@@ -530,30 +547,15 @@ void GameCanvas::processTimers()
     }
 }
 
-void GameCanvas::processKeyPressed(int keyCode)
+void GameCanvas::processKeyPressed(const Keys keyCode)
 {
-    int action = getGameAction(keyCode);
-    int numKey;
-    // KEY_NUM0 - KEY_NUM10 is 48-58
-    if ((numKey = keyCode - 48) >= 0 && numKey < 10) {
-        activeKeys[numKey] = true;
-    } else if (action >= 0 && action < 7) {
-        activeActions[action] = true;
-    }
-
+    activeActions[keyCode] = true;
     handleUpdatedInput();
 }
 
-void GameCanvas::processKeyReleased(int keyCode)
+void GameCanvas::processKeyReleased(const Keys keyCode)
 {
-    int action = getGameAction(keyCode);
-    int numKey;
-    if ((numKey = keyCode - 48) >= 0 && numKey < 10) {
-        activeKeys[numKey] = false;
-    } else if (action >= 0 && action < 7) {
-        activeActions[action] = false;
-    }
-
+    activeActions[keyCode] = false;
     handleUpdatedInput();
 }
 
@@ -585,17 +587,22 @@ void GameCanvas::method_168(Command* var1, Displayable* var2)
     }
 }
 
-void GameCanvas::keyPressed(int var1)
+void GameCanvas::keyPressed(const Keys var1)
 {
     if (Micro::isInGameMenu && menuManager != nullptr) {
         menuManager->processKeyCode(var1);
+        return;
     }
 
     processKeyPressed(var1);
 }
 
-void GameCanvas::keyReleased(int var1)
+void GameCanvas::keyReleased(const Keys var1)
 {
+    if (var1 == Keys::BACK) {
+        pressedEsc();
+    }
+
     processKeyReleased(var1);
 }
 
