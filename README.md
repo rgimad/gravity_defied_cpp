@@ -22,3 +22,7 @@ This is the C++ & SDL2 port of Gravity Defied, which includes all the features o
 * **Per David Jacobsson** - physics programming, game graphics, levels design
 
 For more information, please visit official site of Codebrew Software: [codebrew.se](http://codebrew.se)
+
+### Contributing
+
+If you want to contribute, feel free to discuss your idea with the rest of the developers in our [Telegram group](https://t.me/+sOfxjrsbkbEwNzc6)
