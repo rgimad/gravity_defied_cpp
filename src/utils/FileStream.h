@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <filesystem>
 
-class FileStream : std::fstream {
+class FileStream : public std::fstream {
 public:
     FileStream()
         : std::fstream()
