@@ -21,7 +21,7 @@ class IGameMenuElement;
 
 class MenuManager : public IMenuManager {
 private:
-    std::vector<int8_t> field_278;
+    std::vector<int8_t> savedData;
     Micro* micro;
     RecordManager* recordManager;
     Command* commandOk;
@@ -82,11 +82,11 @@ private:
     int field_338;
     int field_339;
     std::string field_340;
-    char* field_341;
-    char field_342[4];
-    char defaultInputString[4] = "AAA";
+    char* playerName;
+    char availableTracks[4];
+    char defaultName[4] = "AAA";
     int8_t availableLeagues = 0;
-    int8_t field_344 = 0;
+    int8_t availableLevels = 0;
     std::vector<int> field_345 = { 0, 0, 0 };
     std::vector<std::vector<std::string>> levelNames;
     std::vector<std::string> leagueNames = std::vector<std::string>(3);
@@ -123,8 +123,8 @@ private:
     void fillCanvasWithImage(Graphics* graphics);
     void processNonFireKeyCode(int keyCode);
     std::vector<int8_t> method_216(int var1, int8_t var2);
-    int8_t method_217(int var1, int8_t var2);
-    void copyThreeBytesFromArr(int var1, char* var2);
+    int8_t getSettingOrDefault(int var1, int8_t var2);
+    // void copyThreeBytesFromArr(int var1, char* var2);
     std::string timeToString(int64_t time);
     void setValue(int pos, int8_t value);
     void exit();
