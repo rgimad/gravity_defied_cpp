@@ -1,3 +1,15 @@
 build
 .cache
 .vscode
+
+__cmrc_Assets
+_cmrc
+CMakeCache.txt
+CMakeFiles
+GravityDefied
+Makefile
+cmake_install.cmake
+libAssets.a
+saves
+a.out
+

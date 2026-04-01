@@ -1,5 +1,6 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.10)
 project(gravity_defied_cpp C CXX)
+set(CMAKE_VERBOSE_MAKEFILE TRUE)
 
 unset(ENV{PKG_CONFIG_PATH})
 
@@ -13,6 +14,7 @@ if(WIN32)
 endif()
 
 find_package(PkgConfig REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 pkg_search_module(SDL2 REQUIRED IMPORTED_TARGET sdl2)
 pkg_search_module(SDL2_TTF REQUIRED IMPORTED_TARGET SDL2_ttf)
@@ -20,7 +22,10 @@ pkg_search_module(SDL2_IMAGE REQUIRED IMPORTED_TARGET SDL2_image)
 
 # Create a sources variable with a link to all cpp files to compile
 set(SOURCES
+    src/config.cpp
+    src/utils/Log.cpp
     src/utils/Time.cpp
+    src/utils/Hashing.cpp
     src/utils/EmbedFileStream.cpp
     src/main.cpp
     src/MathF16.cpp
@@ -30,12 +35,14 @@ set(SOURCES
     src/class_10.cpp
     src/GameLevel.cpp
     src/LevelLoader.cpp
+    src/MRGLoader.cpp
     src/Micro.cpp
     src/TextRender.cpp
     src/GameMenu.cpp
     src/SettingsStringRender.cpp
     src/MenuManager.cpp
     src/RecordManager.cpp
+    src/SettingsManager.cpp
     src/Timer.cpp
     src/lcdui/CanvasImpl.cpp
     src/lcdui/Canvas.cpp
@@ -44,8 +51,6 @@ set(SOURCES
     src/lcdui/Font.cpp
     src/lcdui/Command.cpp
     src/lcdui/FontStorage.cpp
-    src/rms/RecordEnumerationImpl.cpp
-    src/rms/RecordStore.cpp
 )
 
 include(cmake/CMakeRC.cmake)
@@ -77,7 +82,7 @@ endif()
 add_executable(GravityDefied ${SOURCES})
 
 target_compile_features(GravityDefied PRIVATE cxx_std_17)
-target_compile_options(GravityDefied PRIVATE -Wall -Wextra)
+target_compile_options(GravityDefied PRIVATE -Wall -Wextra -fsigned-char)
 
 target_include_directories(GravityDefied PRIVATE
                            ${SDL2_INCLUDE_DIRS}
@@ -97,12 +102,14 @@ if(WIN32)
                          ${SDL2_STATIC_LIBRARIES} 
                          ${SDL2_TTF_STATIC_LIBRARIES}
                          ${SDL2_IMAGE_STATIC_LIBRARIES} 
+                         OpenSSL::SSL
                          Assets::Assets)
 else()
     target_link_libraries(GravityDefied 
                           ${SDL2_LIBRARIES}
                           ${SDL2_TTF_LIBRARIES}
                           ${SDL2_IMAGE_LIBRARIES}
+                          OpenSSL::SSL
                           Assets::Assets)
 endif()
 

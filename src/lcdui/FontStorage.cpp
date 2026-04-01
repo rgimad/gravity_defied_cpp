@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "Font.h"
 #include "FontStorage.h"
 

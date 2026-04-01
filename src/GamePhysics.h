@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include "TimerOrMotoPartOrMenuElem.h"
 
 class LevelLoader;

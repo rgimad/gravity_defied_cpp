@@ -1,8 +1,14 @@
 #pragma once
 
-#include <stdint.h>
+#include <cstdint>
+#include <cstring>
+#include <sstream>
+#include <iostream>
+#include <string>
+#include <iomanip>
 
 namespace Time {
 int64_t currentTimeMillis();
-void sleep(int64_t ms);
+std::string timeToString(const uint64_t time);
+void sleep(const uint64_t ms);
 };
