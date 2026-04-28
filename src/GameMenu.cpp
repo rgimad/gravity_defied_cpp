@@ -9,15 +9,15 @@
 #include "lcdui/FontStorage.h"
 #include "lcdui/Graphics.h"
 
-GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputString)
+GameMenu::GameMenu(std::string title, Micro* micro, GameMenu* parentMenu, char* inputString)
 {
-    field_94 = var1;
-    field_95 = -1;
+    menuTitle = title;
+    selectedItemIndex = -1;
     this->micro = micro;
-    gameMenu = var3;
+    gameMenu = parentMenu;
     canvasWidth = micro->gameCanvas->getWidth();
     canvasHeight = micro->gameCanvas->getHeight();
-    
+
     font = FontStorage::getFont(Font::STYLE_BOLD, Font::SIZE_LARGE);
     font3 = FontStorage::getFont(Font::STYLE_PLAIN, Font::SIZE_SMALL);
 
@@ -29,7 +29,7 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
 
     TextRender::setDefaultFont(font3);
     TextRender::setMaxArea(canvasWidth, canvasHeight);
-    field_101 = 1;
+    marginPadding = 1;
     if (canvasWidth <= 100) {
         xPos = 6;
     } else {
@@ -37,127 +37,127 @@ GameMenu::GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputSt
     }
 
     if (canvasHeight <= 100) {
-        field_94 = "";
+        menuTitle = "";
     }
 
-    field_104 = xPos + 7;
-    field_103 = 2;
-    field_110 = 0;
-    if (field_94 != "") {
-        field_107 = (canvasHeight - (field_101 << 1) - 10 - font->getBaselinePosition()) / (font2->getBaselinePosition() + field_103);
+    renderXOffset = xPos + 7;
+    itemSpacing = 2;
+    helmetAnimFrame = 0;
+    if (menuTitle != "") {
+        maxVisibleItems = (canvasHeight - (marginPadding << 1) - 10 - font->getBaselinePosition()) / (font2->getBaselinePosition() + itemSpacing);
     } else {
-        field_107 = (canvasHeight - (field_101 << 1) - 10) / (font2->getBaselinePosition() + field_103);
+        maxVisibleItems = (canvasHeight - (marginPadding << 1) - 10) / (font2->getBaselinePosition() + itemSpacing);
     }
 
     if (inputString) {
-        field_111 = true;
+        isInputMode = true;
         nameCursorPos = 0;
         xPos = 8;
         strArr = inputString;
     } else {
-        field_111 = false;
+        isInputMode = false;
     }
 
-    if (field_107 > 13) {
-        field_107 = 13;
+    if (maxVisibleItems > 13) {
+        maxVisibleItems = 13;
     }
 }
 
-void GameMenu::method_68(int var1)
+void GameMenu::setItemSpacing(int spacing)
 {
-    field_103 = var1;
+    itemSpacing = spacing;
 }
 
-void GameMenu::method_69(std::string var1)
+void GameMenu::setMenuTitle(std::string title)
 {
-    field_94 = var1;
+    menuTitle = title;
 }
 
-void GameMenu::method_70()
+void GameMenu::resetToFirstItem()
 {
-    if (field_111) {
+    if (isInputMode) {
         nameCursorPos = 0;
     } else {
         if (!vector.empty()) {
-            field_95 = 0;
+            selectedItemIndex = 0;
 
-            for (int var1 = 0; var1 < static_cast<int>(vector.size()) && var1 < field_107; ++var1) {
-                if (vector[var1]->isNotTextRender()) {
-                    field_95 = var1;
+            for (int i = 0; i < static_cast<int>(vector.size()) && i < maxVisibleItems; ++i) {
+                if (vector[i]->isNotTextRender()) {
+                    selectedItemIndex = i;
                     break;
                 }
             }
 
-            field_105 = 0;
-            field_106 = vector.size() - 1;
-            if (field_106 > field_107 - 1) {
-                field_106 = field_107 - 1;
+            scrollOffsetFirst = 0;
+            scrollOffsetLast = vector.size() - 1;
+            if (scrollOffsetLast > maxVisibleItems - 1) {
+                scrollOffsetLast = maxVisibleItems - 1;
             }
         }
     }
 }
 
-void GameMenu::method_71()
+void GameMenu::resetToLastItem()
 {
-    field_95 = vector.size() - 1;
+    selectedItemIndex = vector.size() - 1;
 
-    for (int var1 = vector.size() - 1; var1 > 0; --var1) {
-        if (vector[var1]->isNotTextRender()) {
-            field_95 = var1;
+    for (int i = vector.size() - 1; i > 0; --i) {
+        if (vector[i]->isNotTextRender()) {
+            selectedItemIndex = i;
             break;
         }
     }
 
-    field_105 = vector.size() - field_107;
-    if (field_105 < 0) {
-        field_105 = 0;
+    scrollOffsetFirst = vector.size() - maxVisibleItems;
+    if (scrollOffsetFirst < 0) {
+        scrollOffsetFirst = 0;
     }
 
-    field_106 = vector.size() - 1;
-    if (field_106 > field_95 + field_107) {
-        field_106 = field_95 + field_107;
+    scrollOffsetLast = vector.size() - 1;
+    if (scrollOffsetLast > selectedItemIndex + maxVisibleItems) {
+        scrollOffsetLast = selectedItemIndex + maxVisibleItems;
     }
 }
 
-void GameMenu::addMenuElement(IGameMenuElement* var1)
+void GameMenu::addMenuElement(IGameMenuElement* element)
 {
-    int var2 = field_101;
-    field_107 = 1;
-    vector.push_back(var1);
-    if (field_94 != "") {
-        var2 = font->getBaselinePosition() + 2;
+    int yPos = marginPadding;
+    maxVisibleItems = 1;
+    vector.push_back(element);
+    if (menuTitle != "") {
+        yPos = font->getBaselinePosition() + 2;
     }
 
     if (canvasHeight < 100) {
-        ++var2;
+        ++yPos;
     } else {
-        var2 += 4;
+        yPos += 4;
     }
 
-    for (int var3 = 0; var3 < static_cast<int>(vector.size()) - 1; ++var3) {
-        if (vector[var3]->isNotTextRender()) {
-            var2 += font2->getBaselinePosition() + field_103;
+    for (int i = 0; i < static_cast<int>(vector.size()) - 1; ++i) {
+        if (vector[i]->isNotTextRender()) {
+            yPos += font2->getBaselinePosition() + itemSpacing;
         } else {
-            var2 += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + field_103;
+            yPos += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + itemSpacing;
         }
 
-        if (var2 > canvasHeight - (field_101 << 1) - 10) {
+        if (yPos > canvasHeight - (marginPadding << 1) - 10) {
             break;
         }
 
-        ++field_107;
+        ++maxVisibleItems;
     }
 
-    if (field_107 > 13) {
-        field_107 = 13;
+    if (maxVisibleItems > 13) {
+        maxVisibleItems = 13;
     }
 
-    method_70();
+    resetToFirstItem();
 }
 
 void GameMenu::processGameActionDown()
 {
-    if (field_111) {
+    if (isInputMode) {
         if (strArr[nameCursorPos] == 32) {
             strArr[nameCursorPos] = 90;
             return;
@@ -169,53 +169,53 @@ void GameMenu::processGameActionDown()
             return;
         }
     } else if (vector.size() != 0) {
-        if (!(vector[field_95]->isNotTextRender())) {
-            ++field_106;
-            field_95 = field_106;
-            ++field_105;
+        if (!(vector[selectedItemIndex]->isNotTextRender())) {
+            ++scrollOffsetLast;
+            selectedItemIndex = scrollOffsetLast;
+            ++scrollOffsetFirst;
             return;
         }
 
-        ++field_95;
-        if (field_95 > static_cast<int>(vector.size()) - 1) {
-            method_70();
+        ++selectedItemIndex;
+        if (selectedItemIndex > static_cast<int>(vector.size()) - 1) {
+            resetToFirstItem();
             return;
         }
 
-        bool var3 = false;
+        bool foundNonText = false;
 
-        int var2;
-        for (var2 = field_95; var2 <= field_106 + 1; ++var2) {
-            if (vector[var2]->isNotTextRender()) {
-                var3 = true;
+        int i;
+        for (i = selectedItemIndex; i <= scrollOffsetLast + 1; ++i) {
+            if (vector[i]->isNotTextRender()) {
+                foundNonText = true;
                 break;
             }
         }
 
-        if (var3) {
-            field_95 = var2;
-        } else if (field_106 < static_cast<int>(vector.size()) - 1) {
-            ++field_106;
-            ++field_105;
+        if (foundNonText) {
+            selectedItemIndex = i;
+        } else if (scrollOffsetLast < static_cast<int>(vector.size()) - 1) {
+            ++scrollOffsetLast;
+            ++scrollOffsetFirst;
         } else {
-            --field_95;
+            --selectedItemIndex;
         }
 
-        if (field_95 > field_106) {
-            ++field_105;
-            ++field_106;
-            if (field_106 > static_cast<int>(vector.size()) - 1) {
-                field_106 = vector.size() - 1;
+        if (selectedItemIndex > scrollOffsetLast) {
+            ++scrollOffsetFirst;
+            ++scrollOffsetLast;
+            if (scrollOffsetLast > static_cast<int>(vector.size()) - 1) {
+                scrollOffsetLast = vector.size() - 1;
             }
 
-            field_95 = field_106;
+            selectedItemIndex = scrollOffsetLast;
         }
     }
 }
 
 void GameMenu::processGameActionUp()
 {
-    if (field_111) {
+    if (isInputMode) {
         if (strArr[nameCursorPos] == 32) {
             strArr[nameCursorPos] = 65;
             return;
@@ -227,58 +227,58 @@ void GameMenu::processGameActionUp()
             return;
         }
     } else if (vector.size() != 0) {
-        --field_95;
-        if (field_95 < 0) {
-            method_71();
+        --selectedItemIndex;
+        if (selectedItemIndex < 0) {
+            resetToLastItem();
             return;
         }
 
-        bool var3 = false;
+        bool foundNonText = false;
 
-        int var2;
-        for (var2 = field_95; var2 >= field_105; --var2) {
-            if (vector[var2]->isNotTextRender()) {
-                var3 = true;
+        int i;
+        for (i = selectedItemIndex; i >= scrollOffsetFirst; --i) {
+            if (vector[i]->isNotTextRender()) {
+                foundNonText = true;
                 break;
             }
         }
 
-        if (!var3) {
-            if (field_105 > 0) {
-                --field_105;
-                if (static_cast<int>(vector.size()) > field_107 - 1) {
-                    --field_106;
+        if (!foundNonText) {
+            if (scrollOffsetFirst > 0) {
+                --scrollOffsetFirst;
+                if (static_cast<int>(vector.size()) > maxVisibleItems - 1) {
+                    --scrollOffsetLast;
                     return;
                 }
             } else {
-                method_71();
+                resetToLastItem();
             }
 
             return;
         }
 
-        field_95 = var2;
-        if (field_95 < field_105) {
-            --field_105;
-            if (field_105 < 0) {
-                field_95 = 0;
-                field_105 = 0;
+        selectedItemIndex = i;
+        if (selectedItemIndex < scrollOffsetFirst) {
+            --scrollOffsetFirst;
+            if (scrollOffsetFirst < 0) {
+                selectedItemIndex = 0;
+                scrollOffsetFirst = 0;
             }
 
-            if (static_cast<int>(vector.size()) > field_107 - 1) {
-                --field_106;
+            if (static_cast<int>(vector.size()) > maxVisibleItems - 1) {
+                --scrollOffsetLast;
             }
         }
     }
 }
 
-void GameMenu::processGameActionUpd(int var1)
+void GameMenu::processGameActionUpd(int action)
 {
-    if (field_111) {
-        switch (var1) {
+    if (isInputMode) {
+        switch (action) {
         case 1:
             if (nameCursorPos == 2) {
-                micro->menuManager->method_1(gameMenu, false);
+                micro->menuManager->switchToMenu(gameMenu, false);
                 return;
             }
 
@@ -299,11 +299,11 @@ void GameMenu::processGameActionUpd(int var1)
         }
 
     } else {
-        if (field_95 != -1) {
-            for (int var2 = field_95; var2 < static_cast<int>(vector.size()); ++var2) {
-                IGameMenuElement* var3;
-                if ((var3 = vector[var2]) != nullptr && var3->isNotTextRender()) {
-                    var3->menuElemMethod(var1);
+        if (selectedItemIndex != -1) {
+            for (int i = selectedItemIndex; i < static_cast<int>(vector.size()); ++i) {
+                IGameMenuElement* element;
+                if ((element = vector[i]) != nullptr && element->isNotTextRender()) {
+                    element->menuElemMethod(action);
                     return;
                 }
             }
@@ -311,76 +311,76 @@ void GameMenu::processGameActionUpd(int var1)
     }
 }
 
-void GameMenu::render_76(Graphics* graphics)
+void GameMenu::render(Graphics* graphics)
 {
-    int var2;
+    int yPos;
     int i;
-    if (field_111) {
+    if (isInputMode) {
         graphics->setColor(0, 0, 20);
         graphics->setFont(font);
-        int8_t var7 = 1;
-        graphics->drawString("Enter Name", xPos, var7, 20);
-        var2 = var7 + font->getHeight() + (field_103 << 2);
+        int8_t yStart = 1;
+        graphics->drawString("Enter Name", xPos, yStart, 20);
+        yPos = yStart + font->getHeight() + (itemSpacing << 2);
         graphics->setFont(font2);
 
         for (i = 0; i < 3; ++i) {
-            graphics->drawChar((char)strArr[i], xPos + i * font2->charWidth('W') + 1, var2, 17);
+            graphics->drawChar((char)strArr[i], xPos + i * font2->charWidth('W') + 1, yPos, 17);
             if (i == nameCursorPos) {
-                graphics->drawChar('^', xPos + i * font2->charWidth('W') + 1, var2 + font2->getHeight(), 17);
+                graphics->drawChar('^', xPos + i * font2->charWidth('W') + 1, yPos + font2->getHeight(), 17);
             }
         }
 
     } else {
         graphics->setColor(0, 0, 0);
-        var2 = field_101;
-        if (field_94 != "") {
+        yPos = marginPadding;
+        if (menuTitle != "") {
             graphics->setFont(font);
-            graphics->drawString(field_94, xPos, var2, 20);
-            var2 += font->getBaselinePosition() + 2;
+            graphics->drawString(menuTitle, xPos, yPos, 20);
+            yPos += font->getBaselinePosition() + 2;
         }
 
-        if (field_105 > 0) {
-            micro->gameCanvas->drawSprite(graphics, 2, xPos - 3, var2);
+        if (scrollOffsetFirst > 0) {
+            micro->gameCanvas->drawSprite(graphics, 2, xPos - 3, yPos);
         }
 
         if (canvasHeight < 100) {
-            ++var2;
+            ++yPos;
         } else {
-            var2 += 4;
+            yPos += 4;
         }
 
         graphics->setFont(font2);
 
-        for (i = field_105; i < field_106 + 1; ++i) {
-            IGameMenuElement* var4 = vector[i];
+        for (i = scrollOffsetFirst; i < scrollOffsetLast + 1; ++i) {
+            IGameMenuElement* element = vector[i];
             graphics->setColor(0, 0, 0);
-            var4->render(graphics, var2, field_104);
-            if (i == field_95 && var4->isNotTextRender()) {
-                int var5 = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
-                int var6 = var2 + font2->getBaselinePosition() / 2 - micro->gameCanvas->helmetSpriteHeight / 2;
-                graphics->setClip(var5, var6, micro->gameCanvas->helmetSpriteWidth, micro->gameCanvas->helmetSpriteHeight);
-                graphics->drawImage(micro->gameCanvas->helmetImage.get(), var5 - micro->gameCanvas->helmetSpriteWidth * (field_110 % 6), var6 - micro->gameCanvas->helmetSpriteHeight * (field_110 / 6), 20);
+            element->render(graphics, yPos, renderXOffset);
+            if (i == selectedItemIndex && element->isNotTextRender()) {
+                int helmetX = xPos - micro->gameCanvas->helmetSpriteWidth / 2;
+                int helmetY = yPos + font2->getBaselinePosition() / 2 - micro->gameCanvas->helmetSpriteHeight / 2;
+                graphics->setClip(helmetX, helmetY, micro->gameCanvas->helmetSpriteWidth, micro->gameCanvas->helmetSpriteHeight);
+                graphics->drawImage(micro->gameCanvas->helmetImage.get(), helmetX - micro->gameCanvas->helmetSpriteWidth * (helmetAnimFrame % 6), helmetY - micro->gameCanvas->helmetSpriteHeight * (helmetAnimFrame / 6), 20);
                 graphics->setClip(0, 0, canvasWidth, canvasHeight);
-                ++field_110;
-                if (field_110 > 30) {
-                    field_110 = 0;
+                ++helmetAnimFrame;
+                if (helmetAnimFrame > 30) {
+                    helmetAnimFrame = 0;
                 }
             }
 
-            if (var4->isNotTextRender()) {
-                var2 += font2->getBaselinePosition() + field_103;
+            if (element->isNotTextRender()) {
+                yPos += font2->getBaselinePosition() + itemSpacing;
             } else {
-                var2 += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + field_103;
+                yPos += (TextRender::getBaselinePosition() < GameCanvas::spriteSizeY[5] ? GameCanvas::spriteSizeY[5] : TextRender::getBaselinePosition()) + itemSpacing;
             }
         }
 
-        if (static_cast<int>(vector.size()) > field_106 && field_106 != static_cast<int>(vector.size()) - 1) {
-            if (GameCanvas::spriteSizeY[3] + var2 > canvasHeight) {
+        if (static_cast<int>(vector.size()) > scrollOffsetLast && scrollOffsetLast != static_cast<int>(vector.size()) - 1) {
+            if (GameCanvas::spriteSizeY[3] + yPos > canvasHeight) {
                 micro->gameCanvas->drawSprite(graphics, 3, xPos - 3, canvasHeight - GameCanvas::spriteSizeY[3]);
                 return;
             }
 
-            micro->gameCanvas->drawSprite(graphics, 3, xPos - 3, var2 - 2);
+            micro->gameCanvas->drawSprite(graphics, 3, xPos - 3, yPos - 2);
         }
     }
 }
@@ -395,17 +395,17 @@ GameMenu* GameMenu::getGameMenu()
     return gameMenu;
 }
 
-int GameMenu::method_79()
+int GameMenu::getSelectedItemIndex()
 {
-    return field_95;
+    return selectedItemIndex;
 }
 
 void GameMenu::clearVector()
 {
     vector.clear();
-    field_105 = 0;
-    field_106 = 0;
-    field_95 = -1;
+    scrollOffsetFirst = 0;
+    scrollOffsetLast = 0;
+    selectedItemIndex = -1;
 }
 
 std::string GameMenu::makeString()
@@ -418,15 +418,15 @@ char* GameMenu::getStrArr() const
     return strArr;
 }
 
-void GameMenu::method_83(int var1)
+void GameMenu::navigateToItem(int targetIndex)
 {
-    method_70();
+    resetToFirstItem();
 
-    while (field_95 < var1) {
-        ++field_95;
-        if (field_95 > field_106) {
-            ++field_105;
-            ++field_106;
+    while (selectedItemIndex < targetIndex) {
+        ++selectedItemIndex;
+        if (selectedItemIndex > scrollOffsetLast) {
+            ++scrollOffsetFirst;
+            ++scrollOffsetLast;
         }
     }
 }

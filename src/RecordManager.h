@@ -16,11 +16,12 @@ public:
 
     inline static const int unused = 3;
 
-    void method_8(int var1, int var2);
-    std::vector<std::string> getRecordDescription(int var1);
+    // Opens record store with player/level ID
+    void openRecordStore(int playerId, int levelId);
+    std::vector<std::string> getRecordDescription(int league);
     void writeRecordInfo();
     int getPosOfNewRecord(int league, int64_t timeMs);
-    void method_17(int league, char* values, int64_t timeMs);
+    void addRecord(int league, char* playerName, int64_t timeMs);
     void deleteRecordStores();
     void closeRecordStore();
 
@@ -34,10 +35,10 @@ private:
     std::vector<int8_t> packedRecordInfo = std::vector<int8_t>(96);
     std::string str;
 
-    int64_t load5BytesAsLong(std::vector<int8_t> var1, int offset);
-    void pushLongAs5Bytes(std::vector<int8_t> var1, int var2, int64_t var3);
-    void loadRecordInfo(std::vector<int8_t> var1);
-    void getLevelInfo(std::vector<int8_t> var1);
+    int64_t load5BytesAsLong(std::vector<int8_t> buffer, int offset);
+    void pushLongAs5Bytes(std::vector<int8_t> buffer, int offset, int64_t value);
+    void loadRecordInfo(std::vector<int8_t> buffer);
+    void getLevelInfo(std::vector<int8_t> buffer);
     void resetRecordsTime();
     void addNewRecord(int gameLevel, int position);
 };

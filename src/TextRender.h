@@ -23,16 +23,16 @@ private:
     Micro* micro;
 
 public:
-    TextRender(std::string text, Micro* var2);
+    TextRender(std::string text, Micro* micro);
     static int getBaselinePosition();
     void setFont(std::shared_ptr<Font> font);
     static void setDefaultFont(std::shared_ptr<Font> font);
     static void setMaxArea(int w, int h);
     void setText(std::string text);
     bool isNotTextRender();
-    void menuElemMethod(int var1);
+    void menuElemMethod(int index);
     void render(Graphics* graphics, int y, int x);
     static std::vector<TextRender*> makeMultilineTextRenders(std::string text, Micro* micro);
-    void setDx(int var1);
+    void setDx(int dx);
     void setDrawSprite(bool isDrawSprite, int spriteNo);
 };

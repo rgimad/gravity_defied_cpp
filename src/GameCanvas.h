@@ -17,7 +17,7 @@ class MenuManager;
 
 class GameCanvas : public Canvas, public CommandListener {
 private:
-    void method_164();
+    void resetActiveKeys();
     void handleUpdatedInput();
     void processTimers();
 
@@ -30,25 +30,27 @@ private:
     int fenderSpriteHeight;
     GamePhysics* gamePhysics = nullptr;
     MenuManager* menuManager = nullptr;
-    int field_178 = 0;
-    int field_179 = 0;
+    // Additional offsets for camera view adjustment
+    int cameraOffsetX = 0;
+    int cameraOffsetY = 0;
     Micro* micro = nullptr;
     std::shared_ptr<Font> font;
     bool timerTriggered = false;
-    int field_184 = 1;
+    // 0=gameplay, 1=logo screen, 2=splash screen
+    int loadingScreenState = 1;
     std::unique_ptr<Image> splashImage;
     std::unique_ptr<Image> logoImage;
     std::unique_ptr<Image> bodyPartsImages[3];
     std::unique_ptr<Image> engineImage;
     std::unique_ptr<Image> fenderImage;
-    std::unique_ptr<Image> onePixImage;
+    std::unique_ptr<Image> onePixImage; // Unused
     std::unique_ptr<Image> spritesImage;
     int bodyPartsSpriteWidth[3] = { 0, 0, 0 };
     int bodyPartsSpriteHeight[3] = { 0, 0, 0 };
     inline static int defaultFontWidth00 = 25;
-    bool field_205 = true;
-    int field_206;
-    std::unique_ptr<Image> screenBuffer;
+    bool unknown_bool = true; // Set by setInputConfigEnabled() but never read
+    int unused_field; // Dead code - never used
+    std::unique_ptr<Image> screenBuffer; // Unused
     std::string timerMessage = "";
     int timerId = 0;
     std::vector<Timer> timers;
@@ -57,12 +59,15 @@ private:
     std::vector<std::string> time10MsToStringCache = std::vector<std::string>(100);
     int timeInSeconds = -1;
     inline static int flagAnimationTime = 0;
-    inline static int field_226 = 0;
+    // Fixed-point animation phase accumulator
+    inline static int flagAnimationPhase = 0;
     const int startFlagAnimationTimeToSpriteNo[4] = { 12, 10, 11, 10 };
     const int finishFlagAnumationTimeToSpriteNo[4] = { 14, 13, 15, 13 };
-    int field_230[7][2] = { { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 0 }, { 0, 0 }, { 0, 1 }, { -1, 0 } };
-    int field_231[3][10][2] = { { { 0, 0 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, -1 }, { -1, 0 }, { 0, 1 }, { -1, -1 }, { -1, 0 }, { -1, 1 } }, { { 0, 0 }, { 1, 0 }, { 0, 0 }, { 0, 0 }, { -1, 0 }, { 0, -1 }, { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }, { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } };
-    int field_232 = 2;
+    // Maps game actions to direction vectors
+    int actionDirectionMap[7][2] = { { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 0 }, { 0, 0 }, { 0, 1 }, { -1, 0 } };
+    // Current input configuration (0, 1, or 2)
+    int keyDirectionMap[3][10][2] = { { { 0, 0 }, { 1, -1 }, { 1, 0 }, { 1, 1 }, { 0, -1 }, { -1, 0 }, { 0, 1 }, { -1, -1 }, { -1, 0 }, { -1, 1 } }, { { 0, 0 }, { 1, 0 }, { 0, 0 }, { 0, 0 }, { -1, 0 }, { 0, -1 }, { 0, 1 }, { 0, 0 }, { 0, 0 }, { 0, 0 } }, { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 1, 0 }, { 0, -1 }, { 0, 1 }, { -1, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 } } }; // Maps numeric keys to directions per input config
+    int inputConfigIndex = 2;
     std::vector<bool> activeActions = std::vector<bool>(7);
     std::vector<bool> activeKeys = std::vector<bool>(10);
 
@@ -71,11 +76,11 @@ private:
 public:
     GameCanvas(Micro* micro);
     void drawSprite(Graphics* g, int spriteNo, int x, int y);
-    void requestRepaint(int var1);
-    void method_124(bool var1);
+    void requestRepaint(int state);
+    void setInputConfigEnabled(bool enabled); // Sets unknown_bool (never read)
     void updateSizeAndRepaint();
     int loadSprites(int flags);
-    void method_129();
+    void reset();
     void setViewPosition(int dx, int dy);
     int getDx();
     int addDx(int x);
@@ -84,35 +89,35 @@ public:
     void drawLineF16(int x, int y, int x2, int y2);
     void renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int bodyPartNo);
     void renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int bodyPartNo, int tF16);
-    void method_142(int var1, int var2, int var3, int var4);
+    void drawWheelHub(int centerX, int centerY, int radius, int angleF16);
     void drawCircle(int x, int y, int size);
     void fillRect(int x, int y, int w, int h);
-    void drawForthSpriteByCenter(int centerX, int centerY);
-    void drawHelmet(int var1, int var2, int var3);
+    void drawAttachmentPointSprite(int x, int y);
+    void drawHelmet(int x, int y, int angleF16);
     void drawTime(int64_t time10Ms);
-    void method_150(int var1);
-    static void method_151();
+    void triggerTimerIfMatching(int timerId);
+    static void flagAnimation();
     void renderStartFlag(int x, int y);
     void renderFinishFlag(int x, int y);
     void drawWheelTires(int x, int y, int wheelIsThin);
-    int calcSpriteNo(int angleF16, int var2, int var3, int var4, bool var5);
+    int calcSpriteNo(int angleF16, int angleOffset, int angleRange, int spriteCount, bool flipDirection);
     void renderEngine(int x, int y, int angleF16);
     void renderFender(int x, int y, int angleF16);
     void clearScreenWithWhite();
     void setColor(int red, int green, int blue);
     void drawGame(Graphics* g);
-    void method_161(int var1, bool mode);
-    void method_163(int var1);
+    void drawProgressBar(int progress, bool mode);
+    void setInputConfigIndex(int configIndex);
     void paint(Graphics* g);
     void init(GamePhysics* gamePhysics);
     void processKeyPressed(int keyCode);
     void processKeyReleased(int keyCode);
-    void scheduleGameTimerTask(std::string var1, int delayMs);
+    void scheduleGameTimerTask(const std::string& message, int delayMs);
     void setMenuManager(MenuManager* menuManager);
-    void method_168(Command* var1, Displayable* var2);
-    void keyPressed(int var1);
-    void keyReleased(int var1);
-    void commandAction(Command* var1, Displayable* var2);
+    void handleMenuCommand(Command* command, Displayable* displayable);
+    void keyPressed(int keyCode);
+    void keyReleased(int keyCode);
+    void commandAction(Command* command, Displayable* displayable);
     void removeMenuCommand();
     void addMenuCommand();
 

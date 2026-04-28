@@ -11,7 +11,7 @@ class LevelLoader;
 class Micro {
 private:
     int64_t goLoadingStep();
-    void destroyApp(bool var1);
+    void destroyApp(bool var1); // TODO: unused parameter
     std::filesystem::path mrgFilePath;
 
 public:
@@ -19,14 +19,14 @@ public:
     LevelLoader* levelLoader;
     GamePhysics* gamePhysics;
     MenuManager* menuManager;
-    bool field_242 = false;
+    bool isAboutToExit = false;
     int numPhysicsLoops = 2;
     int64_t timeMs = 0;
     int64_t gameTimeMs = 0;
-    int64_t field_246 = 0;
+    int64_t crashRestartTimeMs = 0;
     bool isInited = false;
-    bool field_248 = false;
-    static bool field_249;
+    bool advanceGameTime = false;
+    static bool isGameLoopRunning;
     inline static bool isInGameMenu;
     static int gameLoadingStateStage;
 
@@ -38,7 +38,7 @@ public:
     void gameToMenu();
     void menuToGame();
     void init();
-    void restart(bool var1);
+    void restart(bool scheduleTimerTask);
     void run();
     void goalLoop();
     void setNumPhysicsLoops(int value);

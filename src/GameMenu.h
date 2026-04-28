@@ -13,44 +13,52 @@ class Graphics;
 class GameMenu {
 private:
     GameMenu* gameMenu;
-    std::string field_94;
-    int field_95;
+    std::string menuTitle;
+    int selectedItemIndex;
     std::vector<IGameMenuElement*> vector;
     Micro* micro;
     std::shared_ptr<Font> font;
     std::shared_ptr<Font> font2;
     std::shared_ptr<Font> font3;
-    int field_101;
-    int field_103;
-    int field_104;
-    int field_105;
-    int field_106;
-    int field_107;
+    // Margin/padding value
+    int marginPadding;
+    // Spacing between menu items
+    int itemSpacing;
+    // X offset for rendering
+    int renderXOffset;
+    // First visible item index
+    int scrollOffsetFirst;
+    // Last visible item index
+    int scrollOffsetLast;
+    // Maximum number of visible items
+    int maxVisibleItems;
     int canvasWidth;
     int canvasHeight;
-    int field_110;
-    bool field_111;
+    // Animation frame counter for helmet sprite
+    int helmetAnimFrame;
+    // Is in name input mode
+    bool isInputMode;
     int nameCursorPos;
     char* strArr;
 
 public:
     int xPos;
 
-    GameMenu(std::string var1, Micro* micro, GameMenu* var3, char* inputString = nullptr);
-    void method_68(int var1);
-    void method_69(std::string var1);
-    void method_70();
-    void method_71();
-    void addMenuElement(IGameMenuElement* var1);
+    GameMenu(std::string title, Micro* micro, GameMenu* parentMenu, char* inputString = nullptr);
+    void setItemSpacing(int spacing);
+    void setMenuTitle(std::string title);
+    void resetToFirstItem();
+    void resetToLastItem();
+    void addMenuElement(IGameMenuElement* element);
     void processGameActionDown();
     void processGameActionUp();
-    void processGameActionUpd(int var1);
-    void render_76(Graphics* graphics);
+    void processGameActionUpd(int action);
+    void render(Graphics* graphics);
     void setGameMenu(GameMenu* gameMenu);
     GameMenu* getGameMenu();
-    int method_79();
+    int getSelectedItemIndex();
     void clearVector();
     std::string makeString();
     char* getStrArr() const;
-    void method_83(int var1);
+    void navigateToItem(int targetIndex);
 };

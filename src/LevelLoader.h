@@ -9,62 +9,70 @@
 #include "GamePhysics.h"
 #include "GameCanvas.h"
 #include "GameLevel.h"
-#include "TimerOrMotoPartOrMenuElem.h"
+#include "PhysicsElemOrMenuItem.h"
 #include "utils/FileStream.h"
 
 class LevelLoader {
 private:
-    std::vector<std::vector<int>> field_121;
-    int field_123[3];
-    int field_124[3];
-    inline static std::vector<std::vector<int>> levelOffsetInFile = std::vector<std::vector<int>>(3);
+    // Track segment normals (array of [nx, ny])
+    std::vector<std::vector<int>> trackSegmentNormals;
+    // Collision radius² outer threshold
+    int collisionRadiusSqOuter[3];
+    // Collision radius² inner threshold
+    int collisionRadiusSqInner[3];
+    inline static std::vector<std::vector<int>> trackOffsetInFile = std::vector<std::vector<int>>(3);
 
-    int field_132 = 0;
-    static int field_133;
-    static int field_134;
-    static int field_135;
-    static int field_136;
+    // Allocated capacity of trackSegmentNormals array
+    int trackNormalsCapacity = 0;
+    // Leftmost visible track point index
+    static int visibleSegmentStartIdx;
+    // Rightmost visible track point index
+    static int visibleSegmentEndIdx;
+    // Cached X position of visibleSegmentStartIdx
+    static int visibleSegmentStartX;
+    // Cached X position of visibleSegmentEndIdx
+    static int visibleSegmentEndX;
 
     FileStream* levelFileStream;
     void loadLevels();
 
 public:
-    static const int field_114;
-    static const int field_115;
-    static const int field_116;
-    static const int field_117;
-    static const int field_118;
     static bool isEnabledPerspective;
     static bool isEnabledShadows;
     GameLevel* gameLevel = nullptr;
-    int field_125 = 0;
-    int field_126 = -1;
-    std::vector<std::vector<std::string>> levelNames = std::vector<std::vector<std::string>>(3);
-    int field_129;
-    int field_130;
-    int field_131;
-    int field_137;
-    int field_138;
+    int currentLevel = 0;
+    int currentTrack = -1;
+    std::vector<std::vector<std::string>> trackNames = std::vector<std::vector<std::string>>(3);
+    // Start position X in F16 format (startPosX << 1)
+    int cachedStartPosXF16;
+    // Start position Y in F16 format (startPosY << 1)
+    int cachedStartPosYF16;
+    // Minimum X among track points (excluding first/last)
+    int trackMinX;
+    int lastCollisionNormalXF16;
+    int lastCollisionNormalYF16;
 
     LevelLoader(const std::filesystem::path& mrgFilePath);
     ~LevelLoader();
 
     std::string getName(int league, int level);
 
-    void method_87();
-    int method_88(int var1, int var2);
-    void method_89(int var1, int var2);
+    void loadCurrentTrack();
+    int loadTrack(int league, int track);
+    void seekAndLoadTrackData(int league, int track);
 
-    void method_90(int var1);
-    int method_91();
-    int method_92();
-    int method_93();
-    int method_94();
-    int method_95(int var1);
-    void method_96(GameLevel* gameLevel);
-    void setMinMaxX(int minX, int maxX);
-    void renderLevel3D(GameCanvas* gameCanvas, int xF16, int yF16);
-    void renderTrackNearestLine(GameCanvas* canvas);
-    void method_100(int var1, int var2, int var3);
-    int method_101(TimerOrMotoPartOrMenuElem* var1, int var2);
+    // Caches start position coordinates (xF16, yF16)
+    void cacheStartPosition();
+    int getFinishFlagX();
+    int getStartFlagX();
+    int getStartPosX();
+    int getStartPosY();
+    // Returns progress ratio (0-65536, F16)
+    int getTrackProgressRatio(int xF16);
+    void precomputeTrackGeometry(GameLevel* level);
+    void setLevelBounds(int minX, int maxX);
+    void renderTrack3D(GameCanvas* canvas, int cameraXF16, int cameraYF16);
+    void renderTrackCenterline(GameCanvas* canvas);
+    void updateVisibleSegmentRange(int minXF16, int maxXF16, int centerYF16);
+    int checkSegmentCollisions(PhysicsElemOrMenuItem* obj, int radiusIndex);
 };

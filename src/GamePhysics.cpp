@@ -1,19 +1,19 @@
 #include "GamePhysics.h"
 
 #include "LevelLoader.h"
-#include "class_10.h"
+#include "MotoComponent.h"
 #include "MathF16.h"
 #include <algorithm>
 
 GamePhysics::GamePhysics(LevelLoader* levelLoader)
 {
-    for (int var2 = 0; var2 < 6; ++var2) {
-        motoComponents[var2] = std::make_unique<TimerOrMotoPartOrMenuElem>();
+    for (int i = 0; i < 6; ++i) {
+        renderCache[i] = std::make_unique<PhysicsElemOrMenuItem>();
     }
 
-    field_44 = 0;
-    field_45 = 0;
-    field_46 = false;
+    physicsFrameCounter = 0;
+    renderMode = 0;
+    isRenderBodySprites = false;
     isRenderMotoWithSprites = false;
     isInputAcceleration = false;
     isInputBreak = false;
@@ -23,275 +23,279 @@ GamePhysics::GamePhysics(LevelLoader* levelLoader)
     isInputDown = false;
     isInputLeft = false;
     isInputRight = false;
-    field_68 = false;
-    field_69 = false;
+    isTrackFinishedFlag = false;
+    frontWheelContactLatch = false;
     isEnableLookAhead = true;
     camShiftX = 0;
     camShiftY = 0;
-    field_73 = 655360;
+    cameraLookAheadLimit = 655360;
 
-    field_80 = { { 45875 }, { 32768 }, { 52428 } };
+    torsoAnchorOffsets = {
+        { 45875 }, // Lean Back: Sprite center is 70% toward the shoulder
+        { 32768 }, // Neutral: Sprite center is 50% (middle)
+        { 52428 } // Lean Forward: Sprite center is 80% toward the shoulder
+    };
     this->levelLoader = levelLoader;
-    resetSmth(true);
+    resetPhysicsState(true);
     isGenerateInputAI = false;
-    method_53();
-    field_35 = false;
+    captureRenderSnapshot();
+    isBikeDestroyed = false;
 }
 
-int GamePhysics::method_21()
+int GamePhysics::getRenderModeIndex()
 {
-    if (field_46 && isRenderMotoWithSprites) {
+    if (isRenderBodySprites && isRenderMotoWithSprites) {
         return 3;
     } else if (isRenderMotoWithSprites) {
         return 1;
     } else {
-        return field_46 ? 2 : 0;
+        return isRenderBodySprites ? 2 : 0;
     }
 }
 
-void GamePhysics::method_22(int var1)
+void GamePhysics::setRenderFlags(int flags)
 {
-    field_46 = false;
+    isRenderBodySprites = false;
     isRenderMotoWithSprites = false;
-    if ((var1 & 2) != 0) {
-        field_46 = true;
+    if ((flags & 2) != 0) {
+        isRenderBodySprites = true;
     }
 
-    if ((var1 & 1) != 0) {
+    if ((flags & 1) != 0) {
         isRenderMotoWithSprites = true;
     }
 }
 
 void GamePhysics::setMode(int mode)
 {
-    field_45 = mode;
+    renderMode = mode;
     switch (mode) {
     case 1:
     default:
-        field_7 = 1310;
-        field_8 = 1638400;
+        physicsSubstepsPerFrame = 1310;
+        gravityF16 = 1638400;
         setMotoLeague(1);
-        resetSmth(true);
+        resetPhysicsState(true);
     }
 }
 
 void GamePhysics::setMotoLeague(int league)
 {
-    curentMotoLeague = league;
-    field_9 = 45875;
-    field_10 = 13107;
-    field_11 = 39321;
-    field_14 = 1310720;
-    field_16 = 262144;
-    field_19 = 6553;
+    currentLeague = league;
+    normalFrictionF16 = 45875;
+    tangentialFrictionF16 = 13107;
+    restitutionF16 = 39321;
+    globalMassScalerF16 = 1310720;
+    defaultWheelAngleF16 = 262144;
+    engineMomentumDecayF16 = 6553;
     switch (league) {
     case 0:
     default:
-        motoParam1 = 19660;
-        motoParam2 = 19660;
-        motoParam3 = 1114112;
-        motoParam4 = 52428800;
-        motoParam5 = 3276800;
-        motoParam6 = 327;
-        motoParam7 = 0;
-        motoParam8 = 32768;
-        motoParam9 = 327680;
-        motoParam10 = 19660800;
+        leanForceCoefficientXF16 = 19660;
+        leanForceCoefficientYF16 = 19660;
+        maxAngularVelocityF16 = 1114112;
+        maxEngineMomentumF16 = 52428800;
+        engineAccelerationRateF16 = 3276800;
+        brakeAngularDampingF16 = 327;
+        brakeFrictionModifierF16 = 0;
+        leanInputSensitivityF16 = 32768;
+        maxLeanRateF16 = 327680;
+        defaultXOffsetF16 = 19660800;
         break;
     case 1:
-        motoParam1 = 32768;
-        motoParam2 = 32768;
-        motoParam3 = 1114112;
-        motoParam4 = 65536000;
-        motoParam5 = 3276800;
-        motoParam6 = 6553;
-        motoParam7 = 26214;
-        motoParam8 = 26214;
-        motoParam9 = 327680;
-        motoParam10 = 19660800;
+        leanForceCoefficientXF16 = 32768;
+        leanForceCoefficientYF16 = 32768;
+        maxAngularVelocityF16 = 1114112;
+        maxEngineMomentumF16 = 65536000;
+        engineAccelerationRateF16 = 3276800;
+        brakeAngularDampingF16 = 6553;
+        brakeFrictionModifierF16 = 26214;
+        leanInputSensitivityF16 = 26214;
+        maxLeanRateF16 = 327680;
+        defaultXOffsetF16 = 19660800;
         break;
     case 2:
-        motoParam1 = 32768;
-        motoParam2 = 32768;
-        motoParam3 = 1310720;
-        motoParam4 = 75366400;
-        motoParam5 = 3473408;
-        motoParam6 = 6553;
-        motoParam7 = 26214;
-        motoParam8 = 39321;
-        motoParam9 = 327680;
-        motoParam10 = 21626880;
+        leanForceCoefficientXF16 = 32768;
+        leanForceCoefficientYF16 = 32768;
+        maxAngularVelocityF16 = 1310720;
+        maxEngineMomentumF16 = 75366400;
+        engineAccelerationRateF16 = 3473408;
+        brakeAngularDampingF16 = 6553;
+        brakeFrictionModifierF16 = 26214;
+        leanInputSensitivityF16 = 39321;
+        maxLeanRateF16 = 327680;
+        defaultXOffsetF16 = 21626880;
         break;
     case 3:
-        motoParam1 = 32768;
-        motoParam2 = 32768;
-        motoParam3 = 1441792;
-        motoParam4 = 78643200;
-        motoParam5 = 3538944;
-        motoParam6 = 6553;
-        motoParam7 = 26214;
-        motoParam8 = 65536;
-        motoParam9 = 1310720;
-        motoParam10 = 21626880;
+        leanForceCoefficientXF16 = 32768;
+        leanForceCoefficientYF16 = 32768;
+        maxAngularVelocityF16 = 1441792;
+        maxEngineMomentumF16 = 78643200;
+        engineAccelerationRateF16 = 3538944;
+        brakeAngularDampingF16 = 6553;
+        brakeFrictionModifierF16 = 26214;
+        leanInputSensitivityF16 = 65536;
+        maxLeanRateF16 = 1310720;
+        defaultXOffsetF16 = 21626880;
     }
 
-    resetSmth(true);
+    resetPhysicsState(true);
 }
 
-void GamePhysics::resetSmth(bool unused)
+void GamePhysics::resetPhysicsState(bool unused)
 {
     (void)unused;
-    field_44 = 0;
-    method_27(levelLoader->method_93(), levelLoader->method_94());
-    field_31 = 0;
-    field_39 = 0;
-    field_35 = false;
-    field_36 = false;
-    field_68 = false;
-    field_69 = false;
+    physicsFrameCounter = 0;
+    resetPhysics(levelLoader->getStartPosX(), levelLoader->getStartPosY());
+    engineMomentumF16 = 0;
+    leanRateAccumulatorF16 = 0;
+    isBikeDestroyed = false;
+    isPlayerHeadCrashed = false;
+    isTrackFinishedFlag = false;
+    frontWheelContactLatch = false;
     isGenerateInputAI = false;
-    field_41 = false;
-    field_42 = false;
-    levelLoader->gameLevel->method_183(field_29[2]->motoComponents[5]->xF16 + 98304 - const175_1_half[0], field_29[1]->motoComponents[5]->xF16 - 98304 + const175_1_half[0]);
+    isTrackStartedFlag2 = false;
+    isTrackStartedFlag = false;
+    levelLoader->gameLevel->setShadowBoundariesHalf(motoComponents[2]->stateBuffers[5]->xF16 + 98304 - wheelRadiusValuesF16[0], motoComponents[1]->stateBuffers[5]->xF16 - 98304 + wheelRadiusValuesF16[0]);
 }
 
-void GamePhysics::method_26(bool var1)
+void GamePhysics::invertYPositions(bool isInverted)
 {
-    int var2 = (var1 ? 65536 : -65536) << 1;
+    int yOffset = (isInverted ? 65536 : -65536) << 1;
 
-    for (int var3 = 0; var3 < 6; ++var3) {
-        for (int var4 = 0; var4 < 6; ++var4) {
-            field_29[var3]->motoComponents[var4]->yF16 += var2;
+    for (int i = 0; i < 6; ++i) {
+        for (int j = 0; j < 6; ++j) {
+            motoComponents[i]->stateBuffers[j]->yF16 += yOffset;
         }
     }
 }
 
-void GamePhysics::method_27(int var1, int var2)
+void GamePhysics::resetPhysics(int startX, int startY)
 {
-    if (field_29.empty()) {
-        field_29 = std::vector<std::unique_ptr<class_10>>(6);
+    if (motoComponents.empty()) {
+        motoComponents = std::vector<std::unique_ptr<MotoComponent>>(6);
     }
 
-    if (field_30.empty()) {
-        field_30 = std::vector<std::unique_ptr<TimerOrMotoPartOrMenuElem>>(10);
+    if (springConstraints.empty()) {
+        springConstraints = std::vector<std::unique_ptr<PhysicsElemOrMenuItem>>(10);
     }
 
-    int var4 = 0;
-    int8_t var5 = 0;
-    int var6 = 0;
-    int var7 = 0;
+    int massValue = 0;
+    int8_t radiusIdx = 0;
+    int xOffset = 0;
+    int yOffset = 0;
 
     int i;
     for (i = 0; i < 6; ++i) {
-        short var8 = 0;
+        short leanInf = 0;
         switch (i) {
-        case 0:
-            var5 = 1;
-            var4 = 360448;
-            var6 = 0;
-            var7 = 0;
+        case 0: // Chassis (center)
+            radiusIdx = 1;
+            massValue = 360448;
+            xOffset = 0;
+            yOffset = 0;
             break;
-        case 1:
-            var5 = 0;
-            var4 = 98304;
-            var6 = 229376;
-            var7 = 0;
+        case 1: // Front wheel
+            radiusIdx = 0;
+            massValue = 98304;
+            xOffset = 229376;
+            yOffset = 0;
             break;
-        case 2:
-            var5 = 0;
-            var4 = 360448;
-            var6 = -229376;
-            var7 = 0;
-            var8 = 21626;
+        case 2: // Back wheel
+            radiusIdx = 0;
+            massValue = 360448;
+            xOffset = -229376;
+            yOffset = 0;
+            leanInf = 21626;
             break;
-        case 3:
-            var5 = 1;
-            var4 = 229376;
-            var6 = 131072;
-            var7 = 196608;
+        case 3: // Handlebar
+            radiusIdx = 1;
+            massValue = 229376;
+            xOffset = 131072;
+            yOffset = 196608;
             break;
-        case 4:
-            var5 = 1;
-            var4 = 229376;
-            var6 = -131072;
-            var7 = 196608;
+        case 4: // Seat
+            radiusIdx = 1;
+            massValue = 229376;
+            xOffset = -131072;
+            yOffset = 196608;
             break;
-        case 5:
-            var5 = 2;
-            var4 = 294912;
-            var6 = 0;
-            var7 = 327680;
+        case 5: // Rider head
+            radiusIdx = 2;
+            massValue = 294912;
+            xOffset = 0;
+            yOffset = 327680;
         }
 
-        if (field_29[i] == nullptr) {
-            field_29[i] = std::make_unique<class_10>();
+        if (motoComponents[i] == nullptr) {
+            motoComponents[i] = std::make_unique<MotoComponent>();
         }
 
-        field_29[i]->reset();
-        field_29[i]->field_257 = const175_1_half[var5];
-        field_29[i]->field_258 = var5;
-        field_29[i]->field_259 = (int)((int64_t)((int)(281474976710656L / (int64_t)var4 >> 16)) * (int64_t)field_14 >> 16);
-        field_29[i]->motoComponents[index01]->xF16 = var1 + var6;
-        field_29[i]->motoComponents[index01]->yF16 = var2 + var7;
-        field_29[i]->motoComponents[5]->xF16 = var1 + var6;
-        field_29[i]->motoComponents[5]->yF16 = var2 + var7;
-        field_29[i]->field_260 = var8;
+        motoComponents[i]->reset();
+        motoComponents[i]->radiusF16 = wheelRadiusValuesF16[radiusIdx];
+        motoComponents[i]->radiusIndex = radiusIdx;
+        motoComponents[i]->inverseMassF16 = (int)((int64_t)((int)(281474976710656L / (int64_t)massValue >> 16)) * (int64_t)globalMassScalerF16 >> 16);
+        motoComponents[i]->stateBuffers[readBufferIndex]->xF16 = startX + xOffset;
+        motoComponents[i]->stateBuffers[readBufferIndex]->yF16 = startY + yOffset;
+        motoComponents[i]->stateBuffers[5]->xF16 = startX + xOffset;
+        motoComponents[i]->stateBuffers[5]->yF16 = startY + yOffset;
+        motoComponents[i]->leanInfluenceF16 = leanInf;
     }
 
     for (i = 0; i < 10; ++i) {
-        if (field_30[i] == nullptr) {
-            field_30[i] = std::make_unique<TimerOrMotoPartOrMenuElem>();
+        if (springConstraints[i] == nullptr) {
+            springConstraints[i] = std::make_unique<PhysicsElemOrMenuItem>();
         }
 
-        field_30[i]->setToZeros();
-        field_30[i]->xF16 = motoParam10;
-        field_30[i]->angleF16 = field_16;
+        springConstraints[i]->setToZeros();
+        springConstraints[i]->xF16 = defaultXOffsetF16;
+        springConstraints[i]->angleF16 = defaultWheelAngleF16;
     }
 
-    field_30[0]->yF16 = 229376;
-    field_30[1]->yF16 = 229376;
-    field_30[2]->yF16 = 236293;
-    field_30[3]->yF16 = 236293;
-    field_30[4]->yF16 = 262144;
-    field_30[5]->yF16 = 219814;
-    field_30[6]->yF16 = 219814;
-    field_30[7]->yF16 = 185363;
-    field_30[8]->yF16 = 185363;
-    field_30[9]->yF16 = 327680;
-    field_30[5]->angleF16 = (int)((int64_t)field_16 * 45875L >> 16);
-    field_30[6]->xF16 = (int)(6553L * (int64_t)motoParam10 >> 16);
-    field_30[5]->xF16 = (int)(6553L * (int64_t)motoParam10 >> 16);
-    field_30[9]->xF16 = (int)(72089L * (int64_t)motoParam10 >> 16);
-    field_30[8]->xF16 = (int)(72089L * (int64_t)motoParam10 >> 16);
-    field_30[7]->xF16 = (int)(72089L * (int64_t)motoParam10 >> 16);
+    springConstraints[0]->yF16 = 229376;
+    springConstraints[1]->yF16 = 229376;
+    springConstraints[2]->yF16 = 236293;
+    springConstraints[3]->yF16 = 236293;
+    springConstraints[4]->yF16 = 262144;
+    springConstraints[5]->yF16 = 219814;
+    springConstraints[6]->yF16 = 219814;
+    springConstraints[7]->yF16 = 185363;
+    springConstraints[8]->yF16 = 185363;
+    springConstraints[9]->yF16 = 327680;
+    springConstraints[5]->angleF16 = (int)((int64_t)defaultWheelAngleF16 * 45875L >> 16);
+    springConstraints[6]->xF16 = (int)(6553L * (int64_t)defaultXOffsetF16 >> 16);
+    springConstraints[5]->xF16 = (int)(6553L * (int64_t)defaultXOffsetF16 >> 16);
+    springConstraints[9]->xF16 = (int)(72089L * (int64_t)defaultXOffsetF16 >> 16);
+    springConstraints[8]->xF16 = (int)(72089L * (int64_t)defaultXOffsetF16 >> 16);
+    springConstraints[7]->xF16 = (int)(72089L * (int64_t)defaultXOffsetF16 >> 16);
 }
 
 void GamePhysics::setRenderMinMaxX(int minX, int maxX)
 {
-    levelLoader->setMinMaxX(minX, maxX);
+    levelLoader->setLevelBounds(minX, maxX);
 }
 
-void GamePhysics::processPointerReleased()
+void GamePhysics::resetInputs()
 {
     isInputUp = isInputDown = isInputRight = isInputLeft = false;
 }
 
-void GamePhysics::method_30(int var1, int var2)
+void GamePhysics::updateInputs(int upDown, int leftRight)
 {
     if (!isGenerateInputAI) {
         isInputUp = isInputDown = isInputRight = isInputLeft = false;
-        if (var1 > 0) {
+        if (upDown > 0) {
             isInputUp = true;
-        } else if (var1 < 0) {
+        } else if (upDown < 0) {
             isInputDown = true;
         }
 
-        if (var2 > 0) {
+        if (leftRight > 0) {
             isInputRight = true;
             return;
         }
 
-        if (var2 < 0) {
+        if (leftRight < 0) {
             isInputLeft = true;
         }
     }
@@ -299,7 +303,7 @@ void GamePhysics::method_30(int var1, int var2)
 
 void GamePhysics::enableGenerateInputAI()
 {
-    resetSmth(true);
+    resetPhysicsState(true);
     isGenerateInputAI = true;
 }
 
@@ -310,158 +314,163 @@ void GamePhysics::disableGenerateInputAI()
 
 void GamePhysics::setInputFromAI()
 {
-    int var1 = field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16;
-    int var2 = field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16;
-    int var3 = getSmthLikeMaxAbs(var1, var2);
-    var2 = (int)(((int64_t)var2 << 32) / (int64_t)var3 >> 16);
+    int dx = motoComponents[1]->stateBuffers[readBufferIndex]->xF16 - motoComponents[2]->stateBuffers[readBufferIndex]->xF16;
+    int dy = motoComponents[1]->stateBuffers[readBufferIndex]->yF16 - motoComponents[2]->stateBuffers[readBufferIndex]->yF16;
+    int dist = fastVectorLengthF16(dx, dy);
+    dy = (int)(((int64_t)dy << 32) / (int64_t)dist >> 16);
     isInputBreak = false;
-    if (var2 < 0) {
+    if (dy < 0) {
         isInputBack = true;
         isInputForward = false;
-    } else if (var2 > 0) {
+    } else if (dy > 0) {
         isInputForward = true;
         isInputBack = false;
     }
 
-    bool var4;
-    if ((!(var4 = (field_29[2]->motoComponents[index01]->yF16 - field_29[0]->motoComponents[index01]->yF16 > 0 ? 1 : -1) * (field_29[2]->motoComponents[index01]->field_382 - field_29[0]->motoComponents[index01]->field_382 > 0 ? 1 : -1) > 0) || !isInputForward) && (var4 || !isInputBack)) {
+    bool pitchSign; // tilt direction matches horizontal motion difference
+    if ((!(pitchSign = (motoComponents[2]->stateBuffers[readBufferIndex]->yF16 - motoComponents[0]->stateBuffers[readBufferIndex]->yF16 > 0 ? 1 : -1) * (motoComponents[2]->stateBuffers[readBufferIndex]->velocityXF16 - motoComponents[0]->stateBuffers[readBufferIndex]->velocityXF16 > 0 ? 1 : -1) > 0) || !isInputForward) && (pitchSign || !isInputBack)) {
         isInputAcceleration = false;
     } else {
         isInputAcceleration = true;
     }
 }
 
-void GamePhysics::method_35()
+void GamePhysics::processLeanInput()
 {
-    if (!field_35) {
-        int var1 = field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16;
-        int var2 = field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16;
-        int var3 = getSmthLikeMaxAbs(var1, var2);
-        var1 = (int)(((int64_t)var1 << 32) / (int64_t)var3 >> 16);
-        var2 = (int)(((int64_t)var2 << 32) / (int64_t)var3 >> 16);
-        if (isInputAcceleration && field_31 >= -motoParam4) {
-            field_31 -= motoParam5;
+    if (!isBikeDestroyed) {
+        int dx = motoComponents[1]->stateBuffers[readBufferIndex]->xF16 - motoComponents[2]->stateBuffers[readBufferIndex]->xF16;
+        int dy = motoComponents[1]->stateBuffers[readBufferIndex]->yF16 - motoComponents[2]->stateBuffers[readBufferIndex]->yF16;
+        int dist = fastVectorLengthF16(dx, dy);
+        dx = (int)(((int64_t)dx << 32) / (int64_t)dist >> 16);
+        dy = (int)(((int64_t)dy << 32) / (int64_t)dist >> 16);
+        if (isInputAcceleration && engineMomentumF16 >= -maxEngineMomentumF16) {
+            engineMomentumF16 -= engineAccelerationRateF16;
         }
 
         if (isInputBreak) {
-            field_31 = 0;
-            field_29[1]->motoComponents[index01]->field_384 = (int)((int64_t)field_29[1]->motoComponents[index01]->field_384 * (int64_t)(65536 - motoParam6) >> 16);
-            field_29[2]->motoComponents[index01]->field_384 = (int)((int64_t)field_29[2]->motoComponents[index01]->field_384 * (int64_t)(65536 - motoParam6) >> 16);
-            if (field_29[1]->motoComponents[index01]->field_384 < 6553) {
-                field_29[1]->motoComponents[index01]->field_384 = 0;
+            engineMomentumF16 = 0;
+            motoComponents[1]->stateBuffers[readBufferIndex]->angularVelocityF16 = (int)((int64_t)motoComponents[1]->stateBuffers[readBufferIndex]->angularVelocityF16 * (int64_t)(65536 - brakeAngularDampingF16) >> 16);
+            motoComponents[2]->stateBuffers[readBufferIndex]->angularVelocityF16 = (int)((int64_t)motoComponents[2]->stateBuffers[readBufferIndex]->angularVelocityF16 * (int64_t)(65536 - brakeAngularDampingF16) >> 16);
+            if (motoComponents[1]->stateBuffers[readBufferIndex]->angularVelocityF16 < 6553) {
+                motoComponents[1]->stateBuffers[readBufferIndex]->angularVelocityF16 = 0;
             }
 
-            if (field_29[2]->motoComponents[index01]->field_384 < 6553) {
-                field_29[2]->motoComponents[index01]->field_384 = 0;
+            if (motoComponents[2]->stateBuffers[readBufferIndex]->angularVelocityF16 < 6553) {
+                motoComponents[2]->stateBuffers[readBufferIndex]->angularVelocityF16 = 0;
             }
         }
 
-        field_29[0]->field_259 = (int)(11915L * (int64_t)field_14 >> 16);
-        field_29[0]->field_259 = (int)(11915L * (int64_t)field_14 >> 16);
-        field_29[4]->field_259 = (int)(18724L * (int64_t)field_14 >> 16);
-        field_29[3]->field_259 = (int)(18724L * (int64_t)field_14 >> 16);
-        field_29[1]->field_259 = (int)(43690L * (int64_t)field_14 >> 16);
-        field_29[2]->field_259 = (int)(11915L * (int64_t)field_14 >> 16);
-        field_29[5]->field_259 = (int)(14563L * (int64_t)field_14 >> 16);
+        motoComponents[0]->inverseMassF16 = (int)(11915L * (int64_t)globalMassScalerF16 >> 16);
+        motoComponents[0]->inverseMassF16 = (int)(11915L * (int64_t)globalMassScalerF16 >> 16);
+        motoComponents[4]->inverseMassF16 = (int)(18724L * (int64_t)globalMassScalerF16 >> 16);
+        motoComponents[3]->inverseMassF16 = (int)(18724L * (int64_t)globalMassScalerF16 >> 16);
+        motoComponents[1]->inverseMassF16 = (int)(43690L * (int64_t)globalMassScalerF16 >> 16);
+        motoComponents[2]->inverseMassF16 = (int)(11915L * (int64_t)globalMassScalerF16 >> 16);
+        motoComponents[5]->inverseMassF16 = (int)(14563L * (int64_t)globalMassScalerF16 >> 16);
         if (isInputBack) {
-            field_29[0]->field_259 = (int)(18724L * (int64_t)field_14 >> 16);
-            field_29[4]->field_259 = (int)(14563L * (int64_t)field_14 >> 16);
-            field_29[3]->field_259 = (int)(18724L * (int64_t)field_14 >> 16);
-            field_29[1]->field_259 = (int)(43690L * (int64_t)field_14 >> 16);
-            field_29[2]->field_259 = (int)(10082L * (int64_t)field_14 >> 16);
+            motoComponents[0]->inverseMassF16 = (int)(18724L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[4]->inverseMassF16 = (int)(14563L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[3]->inverseMassF16 = (int)(18724L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[1]->inverseMassF16 = (int)(43690L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[2]->inverseMassF16 = (int)(10082L * (int64_t)globalMassScalerF16 >> 16);
         } else if (isInputForward) {
-            field_29[0]->field_259 = (int)(18724L * (int64_t)field_14 >> 16);
-            field_29[4]->field_259 = (int)(18724L * (int64_t)field_14 >> 16);
-            field_29[3]->field_259 = (int)(14563L * (int64_t)field_14 >> 16);
-            field_29[1]->field_259 = (int)(26214L * (int64_t)field_14 >> 16);
-            field_29[2]->field_259 = (int)(11915L * (int64_t)field_14 >> 16);
+            motoComponents[0]->inverseMassF16 = (int)(18724L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[4]->inverseMassF16 = (int)(18724L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[3]->inverseMassF16 = (int)(14563L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[1]->inverseMassF16 = (int)(26214L * (int64_t)globalMassScalerF16 >> 16);
+            motoComponents[2]->inverseMassF16 = (int)(11915L * (int64_t)globalMassScalerF16 >> 16);
         }
 
         if (isInputBack || isInputForward) {
-            int var4 = -var2;
-            TimerOrMotoPartOrMenuElem* var10000;
-            int var6;
-            int var7;
-            int var8;
-            int var9;
-            int var10;
-            int var11;
-            if (isInputBack && field_39 > -motoParam9) {
-                var6 = 65536;
-                if (field_39 < 0) {
-                    var6 = (int)(((int64_t)(motoParam9 - (field_39 < 0 ? -field_39 : field_39)) << 32) / (int64_t)motoParam9 >> 16);
+            int negDy = -dy;
+            PhysicsElemOrMenuItem* elem;
+            int interpFactor;
+            int sensitivity;
+            int forceX;
+            int forceY;
+            int riderForceX;
+            int riderForceY;
+            if (isInputBack && leanRateAccumulatorF16 > -maxLeanRateF16) {
+                interpFactor = 65536;
+                if (leanRateAccumulatorF16 < 0) {
+                    interpFactor = (int)(((int64_t)(maxLeanRateF16 - (leanRateAccumulatorF16 < 0 ? -leanRateAccumulatorF16 : leanRateAccumulatorF16)) << 32) / (int64_t)maxLeanRateF16 >> 16);
                 }
 
-                var7 = (int)((int64_t)motoParam8 * (int64_t)var6 >> 16);
-                var8 = (int)((int64_t)var4 * (int64_t)var7 >> 16);
-                var9 = (int)((int64_t)var1 * (int64_t)var7 >> 16);
-                var10 = (int)((int64_t)var1 * (int64_t)var7 >> 16);
-                var11 = (int)((int64_t)var2 * (int64_t)var7 >> 16);
-                if (field_37 > 32768) {
-                    field_37 = field_37 - 1638 < 0 ? 0 : field_37 - 1638;
+                sensitivity = (int)((int64_t)leanInputSensitivityF16 * (int64_t)interpFactor >> 16);
+                forceX = (int)((int64_t)negDy * (int64_t)sensitivity >> 16);
+                forceY = (int)((int64_t)dx * (int64_t)sensitivity >> 16);
+                riderForceX = (int)((int64_t)dx * (int64_t)sensitivity >> 16);
+                riderForceY = (int)((int64_t)dy * (int64_t)sensitivity >> 16);
+                if (leanF16 > 32768) {
+                    leanF16 = leanF16 - 1638 < 0 ? 0 : leanF16 - 1638;
                 } else {
-                    field_37 = field_37 - 3276 < 0 ? 0 : field_37 - 3276;
+                    leanF16 = leanF16 - 3276 < 0 ? 0 : leanF16 - 3276;
                 }
 
-                var10000 = field_29[4]->motoComponents[index01].get();
-                var10000->field_382 -= var8;
-                var10000 = field_29[4]->motoComponents[index01].get();
-                var10000->field_383 -= var9;
-                var10000 = field_29[3]->motoComponents[index01].get();
-                var10000->field_382 += var8;
-                var10000 = field_29[3]->motoComponents[index01].get();
-                var10000->field_383 += var9;
-                var10000 = field_29[5]->motoComponents[index01].get();
-                var10000->field_382 -= var10;
-                var10000 = field_29[5]->motoComponents[index01].get();
-                var10000->field_383 -= var11;
+                // seat
+                elem = motoComponents[4]->stateBuffers[readBufferIndex].get();
+                elem->velocityXF16 -= forceX;
+                elem = motoComponents[4]->stateBuffers[readBufferIndex].get();
+                elem->velocityYF16 -= forceY;
+                // handlebar
+                elem = motoComponents[3]->stateBuffers[readBufferIndex].get();
+                elem->velocityXF16 += forceX;
+                elem = motoComponents[3]->stateBuffers[readBufferIndex].get();
+                elem->velocityYF16 += forceY;
+                // rider
+                elem = motoComponents[5]->stateBuffers[readBufferIndex].get();
+                elem->velocityXF16 -= riderForceX;
+                elem = motoComponents[5]->stateBuffers[readBufferIndex].get();
+                elem->velocityYF16 -= riderForceY;
             }
 
-            if (isInputForward && field_39 < motoParam9) {
-                var6 = 65536;
-                if (field_39 > 0) {
-                    var6 = (int)(((int64_t)(motoParam9 - field_39) << 32) / (int64_t)motoParam9 >> 16);
+            if (isInputForward && leanRateAccumulatorF16 < maxLeanRateF16) {
+                interpFactor = 65536;
+                if (leanRateAccumulatorF16 > 0) {
+                    interpFactor = (int)(((int64_t)(maxLeanRateF16 - leanRateAccumulatorF16) << 32) / (int64_t)maxLeanRateF16 >> 16);
                 }
 
-                var7 = (int)((int64_t)motoParam8 * (int64_t)var6 >> 16);
-                var8 = (int)((int64_t)var4 * (int64_t)var7 >> 16);
-                var9 = (int)((int64_t)var1 * (int64_t)var7 >> 16);
-                var10 = (int)((int64_t)var1 * (int64_t)var7 >> 16);
-                var11 = (int)((int64_t)var2 * (int64_t)var7 >> 16);
-                if (field_37 > 32768) {
-                    field_37 = field_37 + 1638 < 65536 ? field_37 + 1638 : 65536;
+                sensitivity = (int)((int64_t)leanInputSensitivityF16 * (int64_t)interpFactor >> 16);
+                forceX = (int)((int64_t)negDy * (int64_t)sensitivity >> 16);
+                forceY = (int)((int64_t)dx * (int64_t)sensitivity >> 16);
+                riderForceX = (int)((int64_t)dx * (int64_t)sensitivity >> 16);
+                riderForceY = (int)((int64_t)dy * (int64_t)sensitivity >> 16);
+                if (leanF16 > 32768) {
+                    leanF16 = leanF16 + 1638 < 65536 ? leanF16 + 1638 : 65536;
                 } else {
-                    field_37 = field_37 + 3276 < 65536 ? field_37 + 3276 : 65536;
+                    leanF16 = leanF16 + 3276 < 65536 ? leanF16 + 3276 : 65536;
                 }
 
-                var10000 = field_29[4]->motoComponents[index01].get();
-                var10000->field_382 += var8;
-                var10000 = field_29[4]->motoComponents[index01].get();
-                var10000->field_383 += var9;
-                var10000 = field_29[3]->motoComponents[index01].get();
-                var10000->field_382 -= var8;
-                var10000 = field_29[3]->motoComponents[index01].get();
-                var10000->field_383 -= var9;
-                var10000 = field_29[5]->motoComponents[index01].get();
-                var10000->field_382 += var10;
-                var10000 = field_29[5]->motoComponents[index01].get();
-                var10000->field_383 += var11;
+                // seat
+                elem = motoComponents[4]->stateBuffers[readBufferIndex].get();
+                elem->velocityXF16 += forceX;
+                elem = motoComponents[4]->stateBuffers[readBufferIndex].get();
+                elem->velocityYF16 += forceY;
+                // handlebar
+                elem = motoComponents[3]->stateBuffers[readBufferIndex].get();
+                elem->velocityXF16 -= forceX;
+                elem = motoComponents[3]->stateBuffers[readBufferIndex].get();
+                elem->velocityYF16 -= forceY;
+                // rider
+                elem = motoComponents[5]->stateBuffers[readBufferIndex].get();
+                elem->velocityXF16 += riderForceX;
+                elem = motoComponents[5]->stateBuffers[readBufferIndex].get();
+                elem->velocityYF16 += riderForceY;
             }
 
             return;
         }
 
-        if (field_37 < 26214) {
-            field_37 += 3276;
+        // Auto-center lean when no input
+        if (leanF16 < 26214) {
+            leanF16 += 3276;
             return;
         }
-
-        if (field_37 > 39321) {
-            field_37 -= 3276;
+        if (leanF16 > 39321) {
+            leanF16 -= 3276;
             return;
         }
-
-        field_37 = 32768;
+        leanF16 = 32768;
     }
 }
 
@@ -475,17 +484,17 @@ int GamePhysics::updatePhysics()
         setInputFromAI();
     }
 
-    GameCanvas::method_151();
-    method_35();
-    int var1;
-    if ((var1 = method_39(field_7)) != 5 && !field_36) {
-        if (field_35) {
+    GameCanvas::flagAnimation();
+    processLeanInput();
+    int result;
+    if ((result = physicsSubstepLoop(physicsSubstepsPerFrame)) != 5 && !isPlayerHeadCrashed) {
+        if (isBikeDestroyed) {
             return 3;
         } else if (isTrackStarted()) {
-            field_69 = false;
+            frontWheelContactLatch = false;
             return 4;
         } else {
-            return var1;
+            return result;
         }
     } else {
         return 5;
@@ -494,152 +503,167 @@ int GamePhysics::updatePhysics()
 
 bool GamePhysics::isTrackStarted()
 {
-    return field_29[1]->motoComponents[index01]->xF16 < levelLoader->method_92();
+    return motoComponents[1]->stateBuffers[readBufferIndex]->xF16 < levelLoader->getStartFlagX();
 }
 
-bool GamePhysics::method_38()
+bool GamePhysics::isTrackFinished()
 {
-    return field_29[1]->motoComponents[index10]->xF16 > levelLoader->method_91() || field_29[2]->motoComponents[index10]->xF16 > levelLoader->method_91();
+    return motoComponents[1]->stateBuffers[writeBufferIndex]->xF16 > levelLoader->getFinishFlagX() || motoComponents[2]->stateBuffers[writeBufferIndex]->xF16 > levelLoader->getFinishFlagX();
 }
 
-int GamePhysics::method_39(int var1)
+int GamePhysics::physicsSubstepLoop(int iterations)
 {
-    bool var2 = field_68;
-    int var3 = 0;
-    int var4 = var1;
+    bool isTrackFinishedPrev = isTrackFinishedFlag;
+    int low = 0;
+    int high = iterations;
 
 label77:
     do {
-        int var5;
-        while (var3 < var1) {
-            method_45(var4 - var3);
-            if (!var2 && method_38()) {
-                var5 = 3;
+        int collisionResult;
+        while (low < iterations) {
+            performPhysicsSubstep(high - low);
+            if (!isTrackFinishedPrev && isTrackFinished()) {
+                collisionResult = 3;
             } else {
-                var5 = method_46(index10);
+                collisionResult = checkTrackCollisions(writeBufferIndex);
             }
 
-            if (!var2 && field_68) {
-                if (var5 != 3) {
+            // Finish reached?
+            if (!isTrackFinishedPrev && isTrackFinishedFlag) {
+                if (collisionResult != 3) {
                     return 2;
                 }
 
                 return 1;
             }
 
-            if (var5 == 0) {
-                var4 = (var3 + var4) >> 1;
+            if (collisionResult == 0) {
+                high = (low + high) >> 1;
                 goto label77;
             }
 
-            if (var5 == 3) {
-                field_68 = true;
-                var4 = (var3 + var4) >> 1;
+            if (collisionResult == 3) {
+                isTrackFinishedFlag = true;
+                high = (low + high) >> 1;
             } else {
-                int var6;
-                if (var5 == 1) {
+                int res;
+                if (collisionResult == 1) {
                     do {
-                        method_47(index10);
-                        if ((var6 = method_46(index10)) == 0) {
+                        applyCollisionResponse(writeBufferIndex);
+                        if ((res = checkTrackCollisions(writeBufferIndex)) == 0) {
                             return 5;
                         }
-                    } while (var6 != 2);
+                    } while (res != 2);
                 }
 
-                var3 = var4;
-                var4 = var1;
-                index01 = index01 == 1 ? 0 : 1;
-                index10 = index10 == 1 ? 0 : 1;
+                low = high;
+                high = iterations;
+                readBufferIndex = readBufferIndex == 1 ? 0 : 1;
+                writeBufferIndex = writeBufferIndex == 1 ? 0 : 1;
             }
         }
 
-        if ((var5 = (int)((int64_t)(field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16) * (int64_t)(field_29[1]->motoComponents[index01]->xF16 - field_29[2]->motoComponents[index01]->xF16) >> 16) + (int)((int64_t)(field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16) * (int64_t)(field_29[1]->motoComponents[index01]->yF16 - field_29[2]->motoComponents[index01]->yF16) >> 16)) < 983040) {
-            field_35 = true;
+        // Check if bike breaks (distance between wheels too small or too large)
+        int dx = motoComponents[1]->stateBuffers[readBufferIndex]->xF16 - motoComponents[2]->stateBuffers[readBufferIndex]->xF16;
+        int dy = motoComponents[1]->stateBuffers[readBufferIndex]->yF16 - motoComponents[2]->stateBuffers[readBufferIndex]->yF16;
+        int distSq = (int)((int64_t)dx * (int64_t)dx >> 16) + (int)((int64_t)dy * (int64_t)dy >> 16);
+
+        if (distSq < 983040) {
+            isBikeDestroyed = true;
         }
 
-        if (var5 > 4587520) {
-            field_35 = true;
+        if (distSq > 4587520) {
+            isBikeDestroyed = true;
         }
 
         return 0;
-    } while (((var4 = (var3 + var4) >> 1) - var3 < 0 ? -(var4 - var3) : var4 - var3) >= 65);
+    } while (((high = (low + high) >> 1) - low < 0 ? -(high - low) : high - low) >= 65);
 
     return 5;
 }
 
-void GamePhysics::method_40(int var1)
+void GamePhysics::applyForces(int bufferIndex)
 {
-    TimerOrMotoPartOrMenuElem* var3;
-    int var4;
-    for (var4 = 0; var4 < 6; ++var4) {
-        class_10* var2 = field_29[var4].get();
-        var3 = var2->motoComponents[var1].get();
-        var3->field_385 = 0;
+    PhysicsElemOrMenuItem* elem;
+    int i;
 
-        var3->field_386 = 0;
-        var3->field_387 = 0;
-        var3->field_386 -= (int)(((int64_t)field_8 << 32) / (int64_t)var2->field_259 >> 16);
+    for (i = 0; i < 6; ++i) {
+        MotoComponent* comp = motoComponents[i].get();
+        elem = comp->stateBuffers[bufferIndex].get();
+        elem->forceAccumXF16 = 0;
+
+        elem->forceAccumYF16 = 0;
+        elem->torqueF16 = 0;
+        // Apply gravity: force = gravity / inverseMass = gravity * mass
+        elem->forceAccumYF16 -= (int)(((int64_t)gravityF16 << 32) / (int64_t)comp->inverseMassF16 >> 16);
     }
 
-    if (!field_35) {
-        method_42(field_29[0].get(), field_30[1].get(), field_29[2].get(), var1, 65536);
-        method_42(field_29[0].get(), field_30[0].get(), field_29[1].get(), var1, 65536);
-        method_42(field_29[2].get(), field_30[6].get(), field_29[4].get(), var1, 131072);
-        method_42(field_29[1].get(), field_30[5].get(), field_29[3].get(), var1, 131072);
+    // Apply spring constraints between bike components
+
+    if (!isBikeDestroyed) {
+        // Keep bike together while it's intact
+        applySpringConstraint(motoComponents[0].get(), springConstraints[1].get(), motoComponents[2].get(), bufferIndex, 65536);
+        applySpringConstraint(motoComponents[0].get(), springConstraints[0].get(), motoComponents[1].get(), bufferIndex, 65536);
+        applySpringConstraint(motoComponents[2].get(), springConstraints[6].get(), motoComponents[4].get(), bufferIndex, 131072);
+        applySpringConstraint(motoComponents[1].get(), springConstraints[5].get(), motoComponents[3].get(), bufferIndex, 131072);
     }
 
-    method_42(field_29[0].get(), field_30[2].get(), field_29[3].get(), var1, 65536);
-    method_42(field_29[0].get(), field_30[3].get(), field_29[4].get(), var1, 65536);
-    method_42(field_29[3].get(), field_30[4].get(), field_29[4].get(), var1, 65536);
-    method_42(field_29[5].get(), field_30[8].get(), field_29[3].get(), var1, 65536);
-    method_42(field_29[5].get(), field_30[7].get(), field_29[4].get(), var1, 65536);
-    method_42(field_29[5].get(), field_30[9].get(), field_29[0].get(), var1, 65536);
-    var3 = field_29[2]->motoComponents[var1].get();
-    field_31 = (int)((int64_t)field_31 * (int64_t)(65536 - field_19) >> 16);
-    var3->field_387 = field_31;
-    if (var3->field_384 > motoParam3) {
-        var3->field_384 = motoParam3;
+    applySpringConstraint(motoComponents[0].get(), springConstraints[2].get(), motoComponents[3].get(), bufferIndex, 65536);
+    applySpringConstraint(motoComponents[0].get(), springConstraints[3].get(), motoComponents[4].get(), bufferIndex, 65536);
+    applySpringConstraint(motoComponents[3].get(), springConstraints[4].get(), motoComponents[4].get(), bufferIndex, 65536);
+    applySpringConstraint(motoComponents[5].get(), springConstraints[8].get(), motoComponents[3].get(), bufferIndex, 65536);
+    applySpringConstraint(motoComponents[5].get(), springConstraints[7].get(), motoComponents[4].get(), bufferIndex, 65536);
+    applySpringConstraint(motoComponents[5].get(), springConstraints[9].get(), motoComponents[0].get(), bufferIndex, 65536);
+
+    // Apply engine torque to back wheel and decay engine momentum
+    elem = motoComponents[2]->stateBuffers[bufferIndex].get();
+    engineMomentumF16 = (int)((int64_t)engineMomentumF16 * (int64_t)(65536 - engineMomentumDecayF16) >> 16);
+    elem->torqueF16 = engineMomentumF16;
+
+    // Clamp angular velocity
+    if (elem->angularVelocityF16 > maxAngularVelocityF16) {
+        elem->angularVelocityF16 = maxAngularVelocityF16;
+    }
+    if (elem->angularVelocityF16 < -maxAngularVelocityF16) {
+        elem->angularVelocityF16 = -maxAngularVelocityF16;
     }
 
-    if (var3->field_384 < -motoParam3) {
-        var3->field_384 = -motoParam3;
+    // Calculate center of mass velocity and clamp individual component velocities
+    int totalVx = 0;
+    int totalVy = 0;
+    for (i = 0; i < 6; ++i) {
+        totalVx += motoComponents[i]->stateBuffers[bufferIndex]->velocityXF16;
+        totalVy += motoComponents[i]->stateBuffers[bufferIndex]->velocityYF16;
     }
 
-    var4 = 0;
-    int var5 = 0;
+    // Average velocity (center of mass)
+    int avgVx = (int)(((int64_t)totalVx << 32) / 393216L >> 16);
+    int avgVy = (int)(((int64_t)totalVy << 32) / 393216L >> 16);
+    int maxRelVel = 0;
 
-    int var6;
-    for (var6 = 0; var6 < 6; ++var6) {
-        var4 += field_29[var6]->motoComponents[var1]->field_382;
-        var5 += field_29[var6]->motoComponents[var1]->field_383;
-    }
-
-    var4 = (int)(((int64_t)var4 << 32) / 393216L >> 16);
-    var5 = (int)(((int64_t)var5 << 32) / 393216L >> 16);
-    int var10 = 0;
-
-    int var11;
-    for (var11 = 0; var11 < 6; ++var11) {
-        var6 = field_29[var11]->motoComponents[var1]->field_382 - var4;
-        int var7 = field_29[var11]->motoComponents[var1]->field_383 - var5;
-        if ((var10 = getSmthLikeMaxAbs(var6, var7)) > 1966080) {
-            int var8 = (int)(((int64_t)var6 << 32) / (int64_t)var10 >> 16);
-            int var9 = (int)(((int64_t)var7 << 32) / (int64_t)var10 >> 16);
-            field_29[var11]->motoComponents[var1]->field_382 -= var8;
-            field_29[var11]->motoComponents[var1]->field_383 -= var9;
+    for (i = 0; i < 6; ++i) {
+        int relVx = motoComponents[i]->stateBuffers[bufferIndex]->velocityXF16 - avgVx;
+        int relVy = motoComponents[i]->stateBuffers[bufferIndex]->velocityYF16 - avgVy;
+        if ((maxRelVel = fastVectorLengthF16(relVx, relVy)) > 1966080) {
+            // Normalize and clamp relative velocity
+            int normX = (int)(((int64_t)relVx << 32) / (int64_t)maxRelVel >> 16);
+            int normY = (int)(((int64_t)relVy << 32) / (int64_t)maxRelVel >> 16);
+            motoComponents[i]->stateBuffers[bufferIndex]->velocityXF16 -= normX;
+            motoComponents[i]->stateBuffers[bufferIndex]->velocityYF16 -= normY;
         }
     }
 
-    var11 = field_29[2]->motoComponents[var1]->yF16 - field_29[0]->motoComponents[var1]->yF16 >= 0 ? 1 : -1;
-    int var12 = field_29[2]->motoComponents[var1]->field_382 - field_29[0]->motoComponents[var1]->field_382 >= 0 ? 1 : -1;
-    if (var11 * var12 > 0) {
-        field_39 = var10;
+    // Update lean rate accumulator based on back wheel vs chassis movement
+    int backAboveCenter = motoComponents[2]->stateBuffers[bufferIndex]->yF16 - motoComponents[0]->stateBuffers[bufferIndex]->yF16 >= 0 ? 1 : -1;
+    int backVelFaster = motoComponents[2]->stateBuffers[bufferIndex]->velocityXF16 - motoComponents[0]->stateBuffers[bufferIndex]->velocityXF16 >= 0 ? 1 : -1;
+    if (backAboveCenter * backVelFaster > 0) {
+        leanRateAccumulatorF16 = maxRelVel;
     } else {
-        field_39 = -var10;
+        leanRateAccumulatorF16 = -maxRelVel;
     }
 }
 
-int GamePhysics::getSmthLikeMaxAbs(int xF16, int yF16)
+int GamePhysics::fastVectorLengthF16(int xF16, int yF16)
 {
     int absXF16 = xF16 < 0 ? -xF16 : xF16;
     int absYF16;
@@ -653,175 +677,203 @@ int GamePhysics::getSmthLikeMaxAbs(int xF16, int yF16)
         minAbs = absYF16;
     }
 
+    // fast 2D vector length approximation
     return (int)(64448L * (int64_t)maxAbs >> 16) + (int)(28224L * (int64_t)minAbs >> 16);
 }
 
-void GamePhysics::method_42(class_10* var1, TimerOrMotoPartOrMenuElem* var2, class_10* var3, int var4, int var5)
+void GamePhysics::applySpringConstraint(MotoComponent* anchor, PhysicsElemOrMenuItem* spring, MotoComponent* target, int bufferIndex, int stiffnessF16)
 {
-    TimerOrMotoPartOrMenuElem* var6 = var1->motoComponents[var4].get();
-    TimerOrMotoPartOrMenuElem* var7 = var3->motoComponents[var4].get();
-    int var8 = var6->xF16 - var7->xF16;
-    int var9 = var6->yF16 - var7->yF16;
-    int var10;
-    if (((var10 = getSmthLikeMaxAbs(var8, var9)) < 0 ? -var10 : var10) >= 3) {
-        var8 = (int)(((int64_t)var8 << 32) / (int64_t)var10 >> 16);
-        var9 = (int)(((int64_t)var9 << 32) / (int64_t)var10 >> 16);
-        int var11 = var10 - var2->yF16;
-        int var12 = (int)((int64_t)var8 * (int64_t)((int)((int64_t)var11 * (int64_t)var2->xF16 >> 16)) >> 16);
-        int var13 = (int)((int64_t)var9 * (int64_t)((int)((int64_t)var11 * (int64_t)var2->xF16 >> 16)) >> 16);
-        int var14 = var6->field_382 - var7->field_382;
-        int var15 = var6->field_383 - var7->field_383;
-        int var16 = (int)((int64_t)((int)((int64_t)var8 * (int64_t)var14 >> 16) + (int)((int64_t)var9 * (int64_t)var15 >> 16)) * (int64_t)var2->angleF16 >> 16);
-        var12 += (int)((int64_t)var8 * (int64_t)var16 >> 16);
-        var13 += (int)((int64_t)var9 * (int64_t)var16 >> 16);
-        var12 = (int)((int64_t)var12 * (int64_t)var5 >> 16);
-        var13 = (int)((int64_t)var13 * (int64_t)var5 >> 16);
-        var6->field_385 -= var12;
-        var6->field_386 -= var13;
-        var7->field_385 += var12;
-        var7->field_386 += var13;
+    PhysicsElemOrMenuItem* anchorElem = anchor->stateBuffers[bufferIndex].get();
+    PhysicsElemOrMenuItem* targetElem = target->stateBuffers[bufferIndex].get();
+    int dx = anchorElem->xF16 - targetElem->xF16;
+    int dy = anchorElem->yF16 - targetElem->yF16;
+    int dist;
+    if (((dist = fastVectorLengthF16(dx, dy)) < 0 ? -dist : dist) >= 3) {
+        dx = (int)(((int64_t)dx << 32) / (int64_t)dist >> 16);
+        dy = (int)(((int64_t)dy << 32) / (int64_t)dist >> 16);
+        int springExtension = dist - spring->yF16;
+        int forceX = (int)((int64_t)dx * (int64_t)((int)((int64_t)springExtension * (int64_t)spring->xF16 >> 16)) >> 16);
+        int forceY = (int)((int64_t)dy * (int64_t)((int)((int64_t)springExtension * (int64_t)spring->xF16 >> 16)) >> 16);
+        int relVelX = anchorElem->velocityXF16 - targetElem->velocityXF16;
+        int relVelY = anchorElem->velocityYF16 - targetElem->velocityYF16;
+        int damping = (int)((int64_t)((int)((int64_t)dx * (int64_t)relVelX >> 16) + (int)((int64_t)dy * (int64_t)relVelY >> 16)) * (int64_t)spring->angleF16 >> 16);
+        forceX += (int)((int64_t)dx * (int64_t)damping >> 16);
+        forceY += (int)((int64_t)dy * (int64_t)damping >> 16);
+        forceX = (int)((int64_t)forceX * (int64_t)stiffnessF16 >> 16);
+        forceY = (int)((int64_t)forceY * (int64_t)stiffnessF16 >> 16);
+        anchorElem->forceAccumXF16 -= forceX;
+        anchorElem->forceAccumYF16 -= forceY;
+        targetElem->forceAccumXF16 += forceX;
+        targetElem->forceAccumYF16 += forceY;
     }
 }
 
-void GamePhysics::method_43(int var1, int var2, int var3)
+void GamePhysics::integratePosition(int fromBuffer, int toBuffer, int dtF16)
 {
-    for (int var7 = 0; var7 < 6; ++var7) {
-        TimerOrMotoPartOrMenuElem* var4 = field_29[var7]->motoComponents[var1].get();
-        TimerOrMotoPartOrMenuElem* var5;
-        (var5 = field_29[var7]->motoComponents[var2].get())->xF16 = (int)((int64_t)var4->field_382 * (int64_t)var3 >> 16);
-        var5->yF16 = (int)((int64_t)var4->field_383 * (int64_t)var3 >> 16);
-        int var6 = (int)((int64_t)var3 * (int64_t)field_29[var7]->field_259 >> 16);
-        var5->field_382 = (int)((int64_t)var4->field_385 * (int64_t)var6 >> 16);
-        var5->field_383 = (int)((int64_t)var4->field_386 * (int64_t)var6 >> 16);
+    for (int i = 0; i < 6; ++i) {
+        PhysicsElemOrMenuItem* fromElem = motoComponents[i]->stateBuffers[fromBuffer].get();
+        PhysicsElemOrMenuItem* toElem;
+        (toElem = motoComponents[i]->stateBuffers[toBuffer].get())->xF16 = (int)((int64_t)fromElem->velocityXF16 * (int64_t)dtF16 >> 16);
+        toElem->yF16 = (int)((int64_t)fromElem->velocityYF16 * (int64_t)dtF16 >> 16);
+        int invMassDt = (int)((int64_t)dtF16 * (int64_t)motoComponents[i]->inverseMassF16 >> 16);
+        toElem->velocityXF16 = (int)((int64_t)fromElem->forceAccumXF16 * (int64_t)invMassDt >> 16);
+        toElem->velocityYF16 = (int)((int64_t)fromElem->forceAccumYF16 * (int64_t)invMassDt >> 16);
     }
 }
 
-void GamePhysics::method_44(int var1, int var2, int var3)
+void GamePhysics::interpolatePosition(int toBuffer, int buf1, int buf2)
 {
-    for (int var7 = 0; var7 < 6; ++var7) {
-        TimerOrMotoPartOrMenuElem* var4 = field_29[var7]->motoComponents[var1].get();
-        TimerOrMotoPartOrMenuElem* var5 = field_29[var7]->motoComponents[var2].get();
-        TimerOrMotoPartOrMenuElem* var6 = field_29[var7]->motoComponents[var3].get();
-        var4->xF16 = var5->xF16 + (var6->xF16 >> 1);
-        var4->yF16 = var5->yF16 + (var6->yF16 >> 1);
-        var4->field_382 = var5->field_382 + (var6->field_382 >> 1);
-        var4->field_383 = var5->field_383 + (var6->field_383 >> 1);
+    for (int i = 0; i < 6; ++i) {
+        PhysicsElemOrMenuItem* toElem = motoComponents[i]->stateBuffers[toBuffer].get();
+        PhysicsElemOrMenuItem* elem1 = motoComponents[i]->stateBuffers[buf1].get();
+        PhysicsElemOrMenuItem* elem2 = motoComponents[i]->stateBuffers[buf2].get();
+        toElem->xF16 = elem1->xF16 + (elem2->xF16 >> 1);
+        toElem->yF16 = elem1->yF16 + (elem2->yF16 >> 1);
+        toElem->velocityXF16 = elem1->velocityXF16 + (elem2->velocityXF16 >> 1);
+        toElem->velocityYF16 = elem1->velocityYF16 + (elem2->velocityYF16 >> 1);
     }
 }
 
-void GamePhysics::method_45(int var1)
+void GamePhysics::performPhysicsSubstep(int dtF16)
 {
-    method_40(index01);
-    method_43(index01, 2, var1);
-    method_44(4, index01, 2);
-    method_40(4);
-    method_43(4, 3, var1 >> 1);
-    method_44(4, index01, 3);
-    method_44(index10, index01, 2);
-    method_44(index10, index10, 3);
+    applyForces(readBufferIndex);
+    integratePosition(readBufferIndex, 2, dtF16);
+    interpolatePosition(4, readBufferIndex, 2);
+    applyForces(4);
+    integratePosition(4, 3, dtF16 >> 1);
+    interpolatePosition(4, readBufferIndex, 3);
+    interpolatePosition(writeBufferIndex, readBufferIndex, 2);
+    interpolatePosition(writeBufferIndex, writeBufferIndex, 3);
 
-    for (int var4 = 1; var4 <= 2; ++var4) {
-        TimerOrMotoPartOrMenuElem* var2 = field_29[var4]->motoComponents[index01].get();
-        TimerOrMotoPartOrMenuElem* var3;
-        (var3 = field_29[var4]->motoComponents[index10].get())->angleF16 = var2->angleF16 + (int)((int64_t)var1 * (int64_t)var2->field_384 >> 16);
-        var3->field_384 = var2->field_384 + (int)((int64_t)var1 * (int64_t)((int)((int64_t)field_29[var4]->field_260 * (int64_t)var2->field_387 >> 16)) >> 16);
+    for (int i = 1; i <= 2; ++i) {
+        PhysicsElemOrMenuItem* fromElem = motoComponents[i]->stateBuffers[readBufferIndex].get();
+        PhysicsElemOrMenuItem* toElem;
+        (toElem = motoComponents[i]->stateBuffers[writeBufferIndex].get())->angleF16 = fromElem->angleF16 + (int)((int64_t)dtF16 * (int64_t)fromElem->angularVelocityF16 >> 16);
+        toElem->angularVelocityF16 = fromElem->angularVelocityF16 + (int)((int64_t)dtF16 * (int64_t)((int)((int64_t)motoComponents[i]->leanInfluenceF16 * (int64_t)fromElem->torqueF16 >> 16)) >> 16);
     }
 }
 
-int GamePhysics::method_46(int var1)
+int GamePhysics::checkTrackCollisions(int bufferIndex)
 {
-    int8_t var2 = 2;
-    int var4 = std::max({ field_29[1]->motoComponents[var1]->xF16, field_29[2]->motoComponents[var1]->xF16, field_29[5]->motoComponents[var1]->xF16 });
-    int var5 = std::min({ field_29[1]->motoComponents[var1]->xF16, field_29[2]->motoComponents[var1]->xF16, field_29[5]->motoComponents[var1]->xF16 });
-    levelLoader->method_100(var5 - const175_1_half[0], var4 + const175_1_half[0], field_29[5]->motoComponents[var1]->yF16);
-    int var6 = field_29[1]->motoComponents[var1]->xF16 - field_29[2]->motoComponents[var1]->xF16;
-    int var7 = field_29[1]->motoComponents[var1]->yF16 - field_29[2]->motoComponents[var1]->yF16;
-    int var8 = getSmthLikeMaxAbs(var6, var7);
-    var6 = (int)(((int64_t)var6 << 32) / (int64_t)var8 >> 16);
-    int var9 = -((int)(((int64_t)var7 << 32) / (int64_t)var8 >> 16));
-    int var10 = var6;
+    // 2=no collision, 1=collision with response, 0=collision without response
+    int8_t collisionResult = 2;
+    int maxXF16 = std::max({ motoComponents[1]->stateBuffers[bufferIndex]->xF16,
+        motoComponents[2]->stateBuffers[bufferIndex]->xF16, motoComponents[5]->stateBuffers[bufferIndex]->xF16 });
+    int minXF16 = std::min({ motoComponents[1]->stateBuffers[bufferIndex]->xF16,
+        motoComponents[2]->stateBuffers[bufferIndex]->xF16, motoComponents[5]->stateBuffers[bufferIndex]->xF16 });
+    levelLoader->updateVisibleSegmentRange(minXF16 - wheelRadiusValuesF16[0], maxXF16 + wheelRadiusValuesF16[0], motoComponents[5]->stateBuffers[bufferIndex]->yF16);
 
-    for (int var11 = 0; var11 < 6; ++var11) {
-        if (var11 != 4 && var11 != 3) {
-            TimerOrMotoPartOrMenuElem* var3 = field_29[var11]->motoComponents[var1].get();
-            if (var11 == 0) {
-                var3->xF16 += (int)((int64_t)var9 * 65536L >> 16);
-                var3->yF16 += (int)((int64_t)var10 * 65536L >> 16);
+    // Calculate normalized bike direction vector
+    int dxF16 = motoComponents[1]->stateBuffers[bufferIndex]->xF16 - motoComponents[2]->stateBuffers[bufferIndex]->xF16;
+    int dyF16 = motoComponents[1]->stateBuffers[bufferIndex]->yF16 - motoComponents[2]->stateBuffers[bufferIndex]->yF16;
+    int dist = fastVectorLengthF16(dxF16, dyF16);
+    dxF16 = (int)(((int64_t)dxF16 << 32) / (int64_t)dist >> 16);
+    int negDyF16 = -((int)(((int64_t)dyF16 << 32) / (int64_t)dist >> 16));
+    int normalXF16 = dxF16;
+
+    for (int compIdx = 0; compIdx < 6; ++compIdx) {
+        // Skip handlebar and seat for collision
+        if (compIdx != 4 && compIdx != 3) {
+            PhysicsElemOrMenuItem* elem = motoComponents[compIdx]->stateBuffers[bufferIndex].get();
+
+            // Offset chassis position for accurate collision
+            if (compIdx == 0) {
+                elem->xF16 += (int)((int64_t)negDyF16 * 65536L >> 16);
+                elem->yF16 += (int)((int64_t)normalXF16 * 65536L >> 16);
             }
 
-            int var12 = levelLoader->method_101(var3, field_29[var11]->field_258);
-            if (var11 == 0) {
-                var3->xF16 -= (int)((int64_t)var9 * 65536L >> 16);
-                var3->yF16 -= (int)((int64_t)var10 * 65536L >> 16);
+            int isCollision = levelLoader->checkSegmentCollisions(elem, motoComponents[compIdx]->radiusIndex);
+
+            // Restore chassis position
+            if (compIdx == 0) {
+                elem->xF16 -= (int)((int64_t)negDyF16 * 65536L >> 16);
+                elem->yF16 -= (int)((int64_t)normalXF16 * 65536L >> 16);
             }
 
-            field_33 = levelLoader->field_137;
-            field_34 = levelLoader->field_138;
-            if (var11 == 5 && var12 != 2) {
-                field_36 = true;
+            // Store collision normal from LevelLoader
+            collisionNormalXF16 = levelLoader->lastCollisionNormalXF16;
+            collisionNormalYF16 = levelLoader->lastCollisionNormalYF16;
+
+            // Check for player head crash
+            if (compIdx == 5 && isCollision != 2) {
+                isPlayerHeadCrashed = true;
             }
 
-            if (var11 == 1 && var12 != 2) {
-                field_69 = true;
+            // Front wheel contact latch (never resets)
+            if (compIdx == 1 && isCollision != 2) {
+                frontWheelContactLatch = true;
             }
 
-            if (var12 == 1) {
-                field_28 = var11;
-                var2 = 1;
-            } else if (var12 == 0) {
-                field_28 = var11;
-                var2 = 0;
+            if (isCollision == 1) {
+                lastCollidedComponentIndex = compIdx;
+                collisionResult = 1;
+            } else if (isCollision == 0) {
+                lastCollidedComponentIndex = compIdx;
+                collisionResult = 0;
                 break;
             }
         }
     }
 
-    return var2;
+    return collisionResult;
 }
 
-void GamePhysics::method_47(int var1)
+void GamePhysics::applyCollisionResponse(int bufferIndex)
 {
-    class_10* var2;
-    TimerOrMotoPartOrMenuElem* var3;
-    TimerOrMotoPartOrMenuElem* var10000 = var3 = (var2 = field_29[field_28].get())->motoComponents[var1].get();
-    var10000->xF16 += (int)((int64_t)field_33 * 3276L >> 16);
-    var3->yF16 += (int)((int64_t)field_34 * 3276L >> 16);
-    int var4;
-    int var5;
-    int var6;
-    int var7;
-    int var8;
-    if (isInputBreak && (field_28 == 2 || field_28 == 1) && var3->field_384 < 6553) {
-        var4 = field_9 - motoParam7;
-        var5 = 13107;
-        var6 = 39321;
-        var7 = 26214 - motoParam7;
-        var8 = 26214 - motoParam7;
+    MotoComponent* collidedComp = motoComponents[lastCollidedComponentIndex].get();
+    PhysicsElemOrMenuItem* elem = collidedComp->stateBuffers[bufferIndex].get();
+
+    // Push element out of collision along normal
+    elem->xF16 += (int)((int64_t)collisionNormalXF16 * 3276L >> 16);
+    elem->yF16 += (int)((int64_t)collisionNormalYF16 * 3276L >> 16);
+
+    int frictionNormalF16;
+    int frictionTangentialF16;
+    int restitutionLocalF16;
+    int leanForceXF16;
+    int leanForceYF16;
+
+    // Apply brake friction modifier when braking on wheels
+    if (isInputBreak && (lastCollidedComponentIndex == 2 || lastCollidedComponentIndex == 1) && elem->angularVelocityF16 < 6553) {
+        frictionNormalF16 = normalFrictionF16 - brakeFrictionModifierF16;
+        frictionTangentialF16 = 13107;
+        restitutionLocalF16 = 39321;
+        leanForceXF16 = 26214 - brakeFrictionModifierF16;
+        leanForceYF16 = 26214 - brakeFrictionModifierF16;
     } else {
-        var4 = field_9;
-        var5 = field_10;
-        var6 = field_11;
-        var7 = motoParam1;
-        var8 = motoParam2;
+        frictionNormalF16 = normalFrictionF16;
+        frictionTangentialF16 = tangentialFrictionF16;
+        restitutionLocalF16 = restitutionF16;
+        leanForceXF16 = leanForceCoefficientXF16;
+        leanForceYF16 = leanForceCoefficientYF16;
     }
 
-    int var9 = getSmthLikeMaxAbs(field_33, field_34);
-    field_33 = (int)(((int64_t)field_33 << 32) / (int64_t)var9 >> 16);
-    field_34 = (int)(((int64_t)field_34 << 32) / (int64_t)var9 >> 16);
-    int var10 = var3->field_382;
-    int var11 = var3->field_383;
-    int var12 = -((int)((int64_t)var10 * (int64_t)field_33 >> 16) + (int)((int64_t)var11 * (int64_t)field_34 >> 16));
-    int var13 = -((int)((int64_t)var10 * (int64_t)(-field_34) >> 16) + (int)((int64_t)var11 * (int64_t)field_33 >> 16));
-    int var14 = (int)((int64_t)var4 * (int64_t)var3->field_384 >> 16) - (int)((int64_t)var5 * (int64_t)((int)(((int64_t)var13 << 32) / (int64_t)var2->field_257 >> 16)) >> 16);
-    int var15 = (int)((int64_t)var7 * (int64_t)var13 >> 16) - (int)((int64_t)var6 * (int64_t)((int)((int64_t)var3->field_384 * (int64_t)var2->field_257 >> 16)) >> 16);
-    int var16 = -((int)((int64_t)var8 * (int64_t)var12 >> 16));
-    int var17 = (int)((int64_t)(-var15) * (int64_t)(-field_34) >> 16);
-    int var18 = (int)((int64_t)(-var15) * (int64_t)field_33 >> 16);
-    int var19 = (int)((int64_t)(-var16) * (int64_t)field_33 >> 16);
-    int var20 = (int)((int64_t)(-var16) * (int64_t)field_34 >> 16);
-    var3->field_384 = var14;
-    var3->field_382 = var17 + var19;
-    var3->field_383 = var18 + var20;
+    // Normalize collision normal
+    int normalMag = fastVectorLengthF16(collisionNormalXF16, collisionNormalYF16);
+    collisionNormalXF16 = (int)(((int64_t)collisionNormalXF16 << 32) / (int64_t)normalMag >> 16);
+    collisionNormalYF16 = (int)(((int64_t)collisionNormalYF16 << 32) / (int64_t)normalMag >> 16);
+
+    int velXF16 = elem->velocityXF16;
+    int velYF16 = elem->velocityYF16;
+
+    // Calculate velocity in collision frame (normal and tangential components)
+    int velNormal = -((int)((int64_t)velXF16 * (int64_t)collisionNormalXF16 >> 16) + (int)((int64_t)velYF16 * (int64_t)collisionNormalYF16 >> 16));
+    int velTangent = -((int)((int64_t)velXF16 * (int64_t)(-collisionNormalYF16) >> 16) + (int)((int64_t)velYF16 * (int64_t)collisionNormalXF16 >> 16));
+
+    // Apply friction to angular velocity and tangential velocity
+    int newAngularVel = (int)((int64_t)frictionNormalF16 * (int64_t)elem->angularVelocityF16 >> 16) - (int)((int64_t)frictionTangentialF16 * (int64_t)((int)(((int64_t)velTangent << 32) / (int64_t)collidedComp->radiusF16 >> 16)) >> 16);
+    int newVelTangent = (int)((int64_t)leanForceXF16 * (int64_t)velTangent >> 16) - (int)((int64_t)restitutionLocalF16 * (int64_t)((int)((int64_t)elem->angularVelocityF16 * (int64_t)collidedComp->radiusF16 >> 16)) >> 16);
+    int newVelNormal = -((int)((int64_t)leanForceYF16 * (int64_t)velNormal >> 16));
+
+    // Transform back to world coordinates
+    int newVelXF16 = (int)((int64_t)(-newVelTangent) * (int64_t)(-collisionNormalYF16) >> 16);
+    int newVelYF16 = (int)((int64_t)(-newVelTangent) * (int64_t)collisionNormalXF16 >> 16);
+    int normalVelXF16 = (int)((int64_t)(-newVelNormal) * (int64_t)collisionNormalXF16 >> 16);
+    int normalVelYF16 = (int)((int64_t)(-newVelNormal) * (int64_t)collisionNormalYF16 >> 16);
+
+    elem->angularVelocityF16 = newAngularVel;
+    elem->velocityXF16 = newVelXF16 + normalVelXF16;
+    elem->velocityYF16 = newVelYF16 + normalVelYF16;
 }
 
 void GamePhysics::setEnableLookAhead(bool value)
@@ -831,85 +883,86 @@ void GamePhysics::setEnableLookAhead(bool value)
 
 void GamePhysics::setMinimalScreenWH(int minWH)
 {
-    field_73 = (int)(((int64_t)((int)(655360L * (int64_t)(minWH << 16) >> 16)) << 32) / 8388608L >> 16);
+    // Set camera look-ahead limit based on minimum screen dimension
+    cameraLookAheadLimit = (int)(((int64_t)((int)(655360L * (int64_t)(minWH << 16) >> 16)) << 32) / 8388608L >> 16);
 }
 
 int GamePhysics::getCamPosX()
 {
     if (isEnableLookAhead) {
-        camShiftX = (int)(((int64_t)motoComponents[0]->field_382 << 32) / 1572864L >> 16) + (int)((int64_t)camShiftX * 57344L >> 16);
+        camShiftX = (int)(((int64_t)renderCache[0]->velocityXF16 << 32) / 1572864L >> 16) + (int)((int64_t)camShiftX * 57344L >> 16);
     } else {
         camShiftX = 0;
     }
 
-    // camShiftX = clamp(camShiftX, -field_73, field_73);
-    camShiftX = camShiftX < field_73 ? camShiftX : field_73;
-    camShiftX = camShiftX < -field_73 ? -field_73 : camShiftX;
-    return (motoComponents[0]->xF16 + camShiftX) << 2 >> 16;
+    camShiftX = camShiftX < cameraLookAheadLimit ? camShiftX : cameraLookAheadLimit;
+    camShiftX = camShiftX < -cameraLookAheadLimit ? -cameraLookAheadLimit : camShiftX;
+    return (renderCache[0]->xF16 + camShiftX) << 2 >> 16;
 }
 
 int GamePhysics::getCamPosY()
 {
     if (isEnableLookAhead) {
-        camShiftY = (int)(((int64_t)motoComponents[0]->field_383 << 32) / 1572864L >> 16) + (int)((int64_t)camShiftY * 57344L >> 16);
+        camShiftY = (int)(((int64_t)renderCache[0]->velocityYF16 << 32) / 1572864L >> 16) + (int)((int64_t)camShiftY * 57344L >> 16);
     } else {
         camShiftY = 0;
     }
 
-    camShiftY = camShiftY < field_73 ? camShiftY : field_73;
-    camShiftY = camShiftY < -field_73 ? -field_73 : camShiftY;
-    return (motoComponents[0]->yF16 + camShiftY) << 2 >> 16;
+    camShiftY = camShiftY < cameraLookAheadLimit ? camShiftY : cameraLookAheadLimit;
+    camShiftY = camShiftY < -cameraLookAheadLimit ? -cameraLookAheadLimit : camShiftY;
+    return (renderCache[0]->yF16 + camShiftY) << 2 >> 16;
 }
 
-int GamePhysics::method_52()
+int GamePhysics::getRawXDistance()
 {
-    int var1 = motoComponents[1]->xF16 < motoComponents[2]->xF16 ? motoComponents[2]->xF16 : motoComponents[1]->xF16;
-    return field_35 ? levelLoader->method_95(motoComponents[0]->xF16) : levelLoader->method_95(var1);
+    // Return max X position of wheels, or chassis X if bike is destroyed
+    int maxWheelXF16 = renderCache[1]->xF16 < renderCache[2]->xF16 ? renderCache[2]->xF16 : renderCache[1]->xF16;
+    return isBikeDestroyed ? levelLoader->getTrackProgressRatio(renderCache[0]->xF16) : levelLoader->getTrackProgressRatio(maxWheelXF16);
 }
 
-void GamePhysics::method_53()
+void GamePhysics::captureRenderSnapshot()
 {
-    // synchronized (field_29) {
-    for (int var2 = 0; var2 < 6; ++var2) {
-        field_29[var2]->motoComponents[5]->xF16 = field_29[var2]->motoComponents[index01]->xF16;
-        field_29[var2]->motoComponents[5]->yF16 = field_29[var2]->motoComponents[index01]->yF16;
-        field_29[var2]->motoComponents[5]->angleF16 = field_29[var2]->motoComponents[index01]->angleF16;
-    }
-
-    field_29[0]->motoComponents[5]->field_382 = field_29[0]->motoComponents[index01]->field_382;
-    field_29[0]->motoComponents[5]->field_383 = field_29[0]->motoComponents[index01]->field_383;
-    field_29[2]->motoComponents[5]->field_384 = field_29[2]->motoComponents[index01]->field_384;
-    // }
-}
-
-void GamePhysics::setMotoComponents()
-{
-    // synchronized (field_29) {
+    // Synchronize buffer 5 (render buffer) with current physics buffer
     for (int i = 0; i < 6; ++i) {
-        motoComponents[i]->xF16 = field_29[i]->motoComponents[5]->xF16;
-        motoComponents[i]->yF16 = field_29[i]->motoComponents[5]->yF16;
-        motoComponents[i]->angleF16 = field_29[i]->motoComponents[5]->angleF16;
+        motoComponents[i]->stateBuffers[5]->xF16 = motoComponents[i]->stateBuffers[readBufferIndex]->xF16;
+        motoComponents[i]->stateBuffers[5]->yF16 = motoComponents[i]->stateBuffers[readBufferIndex]->yF16;
+        motoComponents[i]->stateBuffers[5]->angleF16 = motoComponents[i]->stateBuffers[readBufferIndex]->angleF16;
     }
 
-    motoComponents[0]->field_382 = field_29[0]->motoComponents[5]->field_382;
-    motoComponents[0]->field_383 = field_29[0]->motoComponents[5]->field_383;
-    motoComponents[2]->field_384 = field_29[2]->motoComponents[5]->field_384;
-    // }
+    // Copy chassis velocity and back wheel angular velocity to render buffer
+    motoComponents[0]->stateBuffers[5]->velocityXF16 = motoComponents[0]->stateBuffers[readBufferIndex]->velocityXF16;
+    motoComponents[0]->stateBuffers[5]->velocityYF16 = motoComponents[0]->stateBuffers[readBufferIndex]->velocityYF16;
+    motoComponents[2]->stateBuffers[5]->angularVelocityF16 = motoComponents[2]->stateBuffers[readBufferIndex]->angularVelocityF16;
 }
 
-void GamePhysics::renderEngine(GameCanvas* gameCanvas, int var2, int var3)
+void GamePhysics::prepareRenderCache()
 {
-    int engineAngle4F16 = MathF16::atan2F16(motoComponents[0]->xF16 - motoComponents[3]->xF16, motoComponents[0]->yF16 - motoComponents[3]->yF16);
-    int fenderAngle4F16 = MathF16::atan2F16(motoComponents[0]->xF16 - motoComponents[4]->xF16, motoComponents[0]->yF16 - motoComponents[4]->yF16);
-    int engineXF16 = (motoComponents[0]->xF16 >> 1) + (motoComponents[3]->xF16 >> 1);
-    int engineYF16 = (motoComponents[0]->yF16 >> 1) + (motoComponents[3]->yF16 >> 1);
-    int fenderXF16 = (motoComponents[0]->xF16 >> 1) + (motoComponents[4]->xF16 >> 1);
-    int fenderYF16 = (motoComponents[0]->yF16 >> 1) + (motoComponents[4]->yF16 >> 1);
-    int var10 = -var3;
-    engineXF16 += (int)((int64_t)var10 * 65536L >> 16) - (int)((int64_t)var2 * 32768L >> 16);
-    engineYF16 += (int)((int64_t)var2 * 65536L >> 16) - (int)((int64_t)var3 * 32768L >> 16);
-    fenderXF16 += (int)((int64_t)var10 * 65536L >> 16) - (int)((int64_t)var2 * 117964L >> 16);
-    fenderYF16 += (int)((int64_t)var2 * 65536L >> 16) - (int)((int64_t)var3 * 131072L >> 16);
+    // Copy render buffer (5) to stateBuffers for rendering
+    for (int i = 0; i < 6; ++i) {
+        renderCache[i]->xF16 = motoComponents[i]->stateBuffers[5]->xF16;
+        renderCache[i]->yF16 = motoComponents[i]->stateBuffers[5]->yF16;
+        renderCache[i]->angleF16 = motoComponents[i]->stateBuffers[5]->angleF16;
+    }
+
+    // Copy chassis velocity and back wheel angular velocity
+    renderCache[0]->velocityXF16 = motoComponents[0]->stateBuffers[5]->velocityXF16;
+    renderCache[0]->velocityYF16 = motoComponents[0]->stateBuffers[5]->velocityYF16;
+    renderCache[2]->angularVelocityF16 = motoComponents[2]->stateBuffers[5]->angularVelocityF16;
+}
+
+void GamePhysics::renderEngine(GameCanvas* gameCanvas, int upXF16, int upYF16)
+{
+    int engineAngle4F16 = MathF16::atan2F16(renderCache[0]->xF16 - renderCache[3]->xF16, renderCache[0]->yF16 - renderCache[3]->yF16);
+    int fenderAngle4F16 = MathF16::atan2F16(renderCache[0]->xF16 - renderCache[4]->xF16, renderCache[0]->yF16 - renderCache[4]->yF16);
+    int engineXF16 = (renderCache[0]->xF16 >> 1) + (renderCache[3]->xF16 >> 1);
+    int engineYF16 = (renderCache[0]->yF16 >> 1) + (renderCache[3]->yF16 >> 1);
+    int fenderXF16 = (renderCache[0]->xF16 >> 1) + (renderCache[4]->xF16 >> 1);
+    int fenderYF16 = (renderCache[0]->yF16 >> 1) + (renderCache[4]->yF16 >> 1);
+    int negYF16 = -upYF16;
+    engineXF16 += (int)((int64_t)negYF16 * 65536L >> 16) - (int)((int64_t)upXF16 * 32768L >> 16);
+    engineYF16 += (int)((int64_t)upXF16 * 65536L >> 16) - (int)((int64_t)upYF16 * 32768L >> 16);
+    fenderXF16 += (int)((int64_t)negYF16 * 65536L >> 16) - (int)((int64_t)upXF16 * 117964L >> 16);
+    fenderYF16 += (int)((int64_t)upXF16 * 65536L >> 16) - (int)((int64_t)upYF16 * 131072L >> 16);
     gameCanvas->renderFender(fenderXF16 << 2 >> 16, fenderYF16 << 2 >> 16, fenderAngle4F16);
     gameCanvas->renderEngine(engineXF16 << 2 >> 16, engineYF16 << 2 >> 16, engineAngle4F16);
 }
@@ -917,14 +970,14 @@ void GamePhysics::renderEngine(GameCanvas* gameCanvas, int var2, int var3)
 void GamePhysics::renderMotoFork(GameCanvas* canvas)
 {
     canvas->setColor(128, 128, 128);
-    canvas->drawLineF16(motoComponents[3]->xF16, motoComponents[3]->yF16, motoComponents[1]->xF16, motoComponents[1]->yF16);
+    canvas->drawLineF16(renderCache[3]->xF16, renderCache[3]->yF16, renderCache[1]->xF16, renderCache[1]->yF16);
 }
 
 void GamePhysics::renderWheelTires(GameCanvas* canvas)
 {
     int8_t backWheelIsThin = 1;
     int8_t forwardWheelIsThin = 1;
-    switch (curentMotoLeague) {
+    switch (currentLeague) {
     case 1:
         backWheelIsThin = 0;
         break;
@@ -935,283 +988,345 @@ void GamePhysics::renderWheelTires(GameCanvas* canvas)
     }
 
     // back wheel
-    canvas->drawWheelTires(motoComponents[2]->xF16 << 2 >> 16, motoComponents[2]->yF16 << 2 >> 16, backWheelIsThin);
+    canvas->drawWheelTires(renderCache[2]->xF16 << 2 >> 16, renderCache[2]->yF16 << 2 >> 16, backWheelIsThin);
     // forward wheel
-    canvas->drawWheelTires(motoComponents[1]->xF16 << 2 >> 16, motoComponents[1]->yF16 << 2 >> 16, forwardWheelIsThin);
+    canvas->drawWheelTires(renderCache[1]->xF16 << 2 >> 16, renderCache[1]->yF16 << 2 >> 16, forwardWheelIsThin);
 }
 
 void GamePhysics::renderWheelSpokes(GameCanvas* gameCanvas)
 {
-    int var2;
-    int xxxF16 = (int)((int64_t)(var2 = field_29[1]->field_257) * 58982L >> 16);
-    int yyyF16 = (int)((int64_t)var2 * 45875L >> 16);
+    int wheelRadiusF16;
+    int xxxF16 = (int)((int64_t)(wheelRadiusF16 = motoComponents[1]->radiusF16) * 58982L >> 16);
+    int yyyF16 = (int)((int64_t)wheelRadiusF16 * 45875L >> 16);
     gameCanvas->setColor(0, 0, 0);
     if (Micro::isInGameMenu) {
-        gameCanvas->drawCircle(motoComponents[1]->xF16 << 2 >> 16, motoComponents[1]->yF16 << 2 >> 16, (var2 + var2) << 2 >> 16);
-        gameCanvas->drawCircle(motoComponents[1]->xF16 << 2 >> 16, motoComponents[1]->yF16 << 2 >> 16, (xxxF16 + xxxF16) << 2 >> 16);
-        gameCanvas->drawCircle(motoComponents[2]->xF16 << 2 >> 16, motoComponents[2]->yF16 << 2 >> 16, (var2 + var2) << 2 >> 16);
-        gameCanvas->drawCircle(motoComponents[2]->xF16 << 2 >> 16, motoComponents[2]->yF16 << 2 >> 16, (yyyF16 + yyyF16) << 2 >> 16);
+        gameCanvas->drawCircle(renderCache[1]->xF16 << 2 >> 16, renderCache[1]->yF16 << 2 >> 16, (wheelRadiusF16 + wheelRadiusF16) << 2 >> 16);
+        gameCanvas->drawCircle(renderCache[1]->xF16 << 2 >> 16, renderCache[1]->yF16 << 2 >> 16, (xxxF16 + xxxF16) << 2 >> 16);
+        gameCanvas->drawCircle(renderCache[2]->xF16 << 2 >> 16, renderCache[2]->yF16 << 2 >> 16, (wheelRadiusF16 + wheelRadiusF16) << 2 >> 16);
+        gameCanvas->drawCircle(renderCache[2]->xF16 << 2 >> 16, renderCache[2]->yF16 << 2 >> 16, (yyyF16 + yyyF16) << 2 >> 16);
     }
 
-    int8_t var6 = 0;
+    int8_t radialOffsetYF16 = 0; // Radial Y offset for spoke calculation (0 = from center)
     int angle;
-    int cosF16 = MathF16::cosF16(angle = motoComponents[1]->angleF16);
+    int cosF16 = MathF16::cosF16(angle = renderCache[1]->angleF16);
     int sinF16 = MathF16::sinF16(angle);
-    int dxF16 = (int)((int64_t)cosF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)(-sinF16) * (int64_t)var6 >> 16);
-    int dyF16 = (int)((int64_t)sinF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)cosF16 * (int64_t)var6 >> 16);
+    int dxF16 = (int)((int64_t)cosF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)(-sinF16) * (int64_t)radialOffsetYF16 >> 16);
+    int dyF16 = (int)((int64_t)sinF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)cosF16 * (int64_t)radialOffsetYF16 >> 16);
     angle = 82354;
     cosF16 = MathF16::cosF16(82354);
     sinF16 = MathF16::sinF16(angle);
 
-    int var10;
+    int prevDxF16; // Previous DX for rotation matrix calculation
     int i;
     for (i = 0; i < 5; ++i) {
         // forward wheel spokes
-        gameCanvas->drawLineF16(motoComponents[1]->xF16, motoComponents[1]->yF16, motoComponents[1]->xF16 + dxF16, motoComponents[1]->yF16 + dyF16);
-        var10 = dxF16;
+        gameCanvas->drawLineF16(renderCache[1]->xF16, renderCache[1]->yF16, renderCache[1]->xF16 + dxF16, renderCache[1]->yF16 + dyF16);
+        prevDxF16 = dxF16;
         dxF16 = (int)((int64_t)cosF16 * (int64_t)dxF16 >> 16) + (int)((int64_t)(-sinF16) * (int64_t)dyF16 >> 16);
-        dyF16 = (int)((int64_t)sinF16 * (int64_t)var10 >> 16) + (int)((int64_t)cosF16 * (int64_t)dyF16 >> 16);
+        dyF16 = (int)((int64_t)sinF16 * (int64_t)prevDxF16 >> 16) + (int)((int64_t)cosF16 * (int64_t)dyF16 >> 16);
     }
 
-    var6 = 0;
-    cosF16 = MathF16::cosF16(angle = motoComponents[2]->angleF16);
+    radialOffsetYF16 = 0;
+    cosF16 = MathF16::cosF16(angle = renderCache[2]->angleF16);
     sinF16 = MathF16::sinF16(angle);
-    dxF16 = (int)((int64_t)cosF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)(-sinF16) * (int64_t)var6 >> 16);
-    dyF16 = (int)((int64_t)sinF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)cosF16 * (int64_t)var6 >> 16);
+    dxF16 = (int)((int64_t)cosF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)(-sinF16) * (int64_t)radialOffsetYF16 >> 16);
+    dyF16 = (int)((int64_t)sinF16 * (int64_t)xxxF16 >> 16) + (int)((int64_t)cosF16 * (int64_t)radialOffsetYF16 >> 16);
     angle = 82354;
     cosF16 = MathF16::cosF16(82354);
     sinF16 = MathF16::sinF16(angle);
 
     for (i = 0; i < 5; ++i) {
         // back wheel spokes
-        gameCanvas->drawLineF16(motoComponents[2]->xF16, motoComponents[2]->yF16, motoComponents[2]->xF16 + dxF16, motoComponents[2]->yF16 + dyF16);
-        var10 = dxF16;
+        gameCanvas->drawLineF16(renderCache[2]->xF16, renderCache[2]->yF16, renderCache[2]->xF16 + dxF16, renderCache[2]->yF16 + dyF16);
+        prevDxF16 = dxF16;
         dxF16 = (int)((int64_t)cosF16 * (int64_t)dxF16 >> 16) + (int)((int64_t)(-sinF16) * (int64_t)dyF16 >> 16);
-        dyF16 = (int)((int64_t)sinF16 * (int64_t)var10 >> 16) + (int)((int64_t)cosF16 * (int64_t)dyF16 >> 16);
+        dyF16 = (int)((int64_t)sinF16 * (int64_t)prevDxF16 >> 16) + (int)((int64_t)cosF16 * (int64_t)dyF16 >> 16);
     }
 
-    if (curentMotoLeague > 0) {
+    if (currentLeague > 0) {
         gameCanvas->setColor(255, 0, 0);
-        if (curentMotoLeague > 2) {
+        if (currentLeague > 2) {
             gameCanvas->setColor(100, 100, 255);
         }
 
-        gameCanvas->drawCircle(motoComponents[2]->xF16 << 2 >> 16, motoComponents[2]->yF16 << 2 >> 16, 4);
-        gameCanvas->drawCircle(motoComponents[1]->xF16 << 2 >> 16, motoComponents[1]->yF16 << 2 >> 16, 4);
+        gameCanvas->drawCircle(renderCache[2]->xF16 << 2 >> 16, renderCache[2]->yF16 << 2 >> 16, 4);
+        gameCanvas->drawCircle(renderCache[1]->xF16 << 2 >> 16, renderCache[1]->yF16 << 2 >> 16, 4);
     }
 }
 
-void GamePhysics::renderSmth(GameCanvas* gameCanvas, int var2, int var3, int var4, int var5)
+void GamePhysics::renderRider(GameCanvas* gameCanvas, int upXF16, int upYF16, int fwdXF16, int fwdYF16)
 {
-    int8_t var6 = 0;
-    int var7 = 65536;
-    int var8 = motoComponents[0]->xF16;
-    int var9 = motoComponents[0]->yF16;
-    int x6F16 = 0;
-    int y6F16 = 0;
-    int xF16 = 0;
-    int yF16 = 0;
-    int var14 = 0;
-    int var15 = 0;
-    int x2F16 = 0;
-    int y2F16 = 0;
-    int x3F16 = 0;
-    int y3F16 = 0;
-    int x4F16 = 0;
-    int y4F16 = 0;
-    int circleXF16 = 0;
-    int circleYF16 = 0;
-    int x5F16 = 0;
-    int y5F16 = 0;
-    std::vector<std::vector<int>> var27, var28, var29;
-    if (field_46) {
-        if (field_37 < 32768) {
-            var28 = hardcodedArr2;
-            var29 = hardcodedArr1;
-            var7 = (int)((int64_t)field_37 * 131072L >> 16);
-        } else if (field_37 > 32768) {
-            var6 = 1;
-            var28 = hardcodedArr1;
-            var29 = hardcodedArr3;
-            var7 = (int)((int64_t)(field_37 - 32768) * 131072L >> 16);
-        } else {
-            var27 = hardcodedArr1;
+    int posePhase = 0;
+    int lerpFactorF16 = 65536; // 1.0 in 16.16 fixed-point
+
+    // Rider's root anchor point is tied to the main chassis component
+    int chassisXF16 = renderCache[0]->xF16;
+    int chassisYF16 = renderCache[0]->yF16;
+
+    // Skeletal joint coordinates
+    int handlebarXF16 = 0, handlebarYF16 = 0;
+    int ankleXF16 = 0, ankleYF16 = 0;
+    int footPegXF16 = 0, footPegYF16 = 0;
+    int kneeXF16 = 0, kneeYF16 = 0;
+    int hipXF16 = 0, hipYF16 = 0;
+    int shoulderXF16 = 0, shoulderYF16 = 0;
+    int headXF16 = 0, headYF16 = 0;
+    int elbowXF16 = 0, elbowYF16 = 0;
+
+    std::vector<std::vector<int>> exactPose, startPose, endPose;
+
+    // Determine which keyframes to interpolate based on lean angle
+    if (isRenderBodySprites) {
+        // Leaning Back
+        if (leanF16 < 32768) {
+            startPose = riderPoseLeanBackSprites;
+            endPose = riderPoseCenterSprites;
+            // 131072L >> 16 is effectively multiplying by 2.0.
+            // Normalizes the 0 - 32768 range into a 0 - 65536 (0.0 to 1.0) lerp factor.
+            lerpFactorF16 = (int)((int64_t)leanF16 * 131072L >> 16);
         }
-    } else if (field_37 < 32768) {
-        var28 = hardcodedArr5;
-        var29 = hardcodedArr4;
-        var7 = (int)((int64_t)field_37 * 131072L >> 16);
-    } else if (field_37 > 32768) {
-        var6 = 1;
-        var28 = hardcodedArr4;
-        var29 = hardcodedArr6;
-        var7 = (int)((int64_t)(field_37 - 32768) * 131072L >> 16);
-    } else {
-        var27 = hardcodedArr4;
+        // Leaning Forward
+        else if (leanF16 > 32768) {
+            posePhase = 1;
+            startPose = riderPoseCenterSprites;
+            endPose = riderPoseLeanForwardSprites;
+            lerpFactorF16 = (int)((int64_t)(leanF16 - 32768) * 131072L >> 16);
+        }
+        // Perfectly Centered
+        else {
+            exactPose = riderPoseCenterSprites;
+        }
     }
 
-    for (std::size_t var30 = 0; var30 < hardcodedArr1.size(); ++var30) {
-        int var31;
-        int var32;
-        if (!var28.empty()) {
-            var32 = (int)((int64_t)var28[var30][0] * (int64_t)(65536 - var7) >> 16) + (int)((int64_t)var29[var30][0] * (int64_t)var7 >> 16);
-            var31 = (int)((int64_t)var28[var30][1] * (int64_t)(65536 - var7) >> 16) + (int)((int64_t)var29[var30][1] * (int64_t)var7 >> 16);
+    // Line drawing mode
+    else {
+        if (leanF16 < 32768) {
+            startPose = riderPoseLeanBackLine;
+            endPose = riderPoseCenterLine;
+            lerpFactorF16 = (int)((int64_t)leanF16 * 131072L >> 16);
+        } else if (leanF16 > 32768) {
+            posePhase = 1;
+            startPose = riderPoseCenterLine;
+            endPose = riderPoseLeanForwardLine;
+            lerpFactorF16 = (int)((int64_t)(leanF16 - 32768) * 131072L >> 16);
         } else {
-            var32 = var27[var30][0];
-            var31 = var27[var30][1];
+            exactPose = riderPoseCenterLine;
+        }
+    }
+
+    // Interpolate keyframes and apply 2D chassis transformation
+    for (std::size_t jointIdx = 0; jointIdx < riderPoseCenterLine.size(); ++jointIdx) {
+        int localXF16;
+        int localYF16;
+
+        if (!startPose.empty()) {
+            // Linear interpolation: startPose * (1.0 - lerp) + endPose * (lerp)
+            localXF16 = (int)((int64_t)startPose[jointIdx][0] * (int64_t)(65536 - lerpFactorF16) >> 16) + (int)((int64_t)endPose[jointIdx][0] * (int64_t)lerpFactorF16 >> 16);
+            localYF16 = (int)((int64_t)startPose[jointIdx][1] * (int64_t)(65536 - lerpFactorF16) >> 16) + (int)((int64_t)endPose[jointIdx][1] * (int64_t)lerpFactorF16 >> 16);
+        } else {
+            localXF16 = exactPose[jointIdx][0];
+            localYF16 = exactPose[jointIdx][1];
         }
 
-        int xxF16 = var8 + (int)((int64_t)var4 * (int64_t)var32 >> 16) + (int)((int64_t)var2 * (int64_t)var31 >> 16);
-        int yyF16 = var9 + (int)((int64_t)var5 * (int64_t)var32 >> 16) + (int)((int64_t)var3 * (int64_t)var31 >> 16);
-        switch (var30) {
+        // Apply 2D rotation matrix from bike chassis
+        int worldXF16 = chassisXF16 + (int)((int64_t)fwdXF16 * (int64_t)localXF16 >> 16) + (int)((int64_t)upXF16 * (int64_t)localYF16 >> 16);
+        int worldYF16 = chassisYF16 + (int)((int64_t)fwdYF16 * (int64_t)localXF16 >> 16) + (int)((int64_t)upYF16 * (int64_t)localYF16 >> 16);
+
+        // Assign to specific joints
+        switch (jointIdx) {
         case 0:
-            x2F16 = xxF16;
-            y2F16 = yyF16;
+            kneeXF16 = worldXF16;
+            kneeYF16 = worldYF16;
             break;
         case 1:
-            x3F16 = xxF16;
-            y3F16 = yyF16;
+            hipXF16 = worldXF16;
+            hipYF16 = worldYF16;
             break;
         case 2:
-            x4F16 = xxF16;
-            y4F16 = yyF16;
+            shoulderXF16 = worldXF16;
+            shoulderYF16 = worldYF16;
             break;
         case 3:
-            circleXF16 = xxF16;
-            circleYF16 = yyF16;
+            headXF16 = worldXF16;
+            headYF16 = worldYF16;
             break;
         case 4:
-            x5F16 = xxF16;
-            y5F16 = yyF16;
+            elbowXF16 = worldXF16;
+            elbowYF16 = worldYF16;
             break;
         case 5:
-            xF16 = xxF16;
-            yF16 = yyF16;
+            ankleXF16 = worldXF16;
+            ankleYF16 = worldYF16;
             break;
         case 6:
-            var14 = xxF16;
-            var15 = yyF16;
+            footPegXF16 = worldXF16;
+            footPegYF16 = worldYF16;
             break;
         case 7:
-            x6F16 = xxF16;
-            y6F16 = yyF16;
+            handlebarXF16 = worldXF16;
+            handlebarYF16 = worldYF16;
+            break;
         }
     }
 
-    int var26 = (int)((int64_t)field_80[var6][0] * (int64_t)(65536 - var7) >> 16) + (int)((int64_t)field_80[var6 + 1][0] * (int64_t)var7 >> 16);
-    if (field_46) {
-        gameCanvas->renderBodyPart(xF16 << 2, yF16 << 2, x2F16 << 2, y2F16 << 2, 1);
-        gameCanvas->renderBodyPart(x2F16 << 2, y2F16 << 2, x3F16 << 2, y3F16 << 2, 1);
-        gameCanvas->renderBodyPart(x3F16 << 2, y3F16 << 2, x4F16 << 2, y4F16 << 2, 2, var26);
-        gameCanvas->renderBodyPart(x4F16 << 2, y4F16 << 2, x5F16 << 2, y5F16 << 2, 0);
-        int var30 = MathF16::atan2F16(var2, var3);
-        if (field_37 > 32768) {
-            var30 += 20588;
+    // Interpolate the anchor point so the torso sprite "slides" along the spine as the rider leans.
+    int torsoAnchorF16 = (int)((int64_t)torsoAnchorOffsets[posePhase][0] * (int64_t)(65536 - lerpFactorF16) >> 16) + (int)((int64_t)torsoAnchorOffsets[posePhase + 1][0] * (int64_t)lerpFactorF16 >> 16);
+
+    // Render the rider
+    if (isRenderBodySprites) {
+        gameCanvas->renderBodyPart(ankleXF16 << 2, ankleYF16 << 2, kneeXF16 << 2, kneeYF16 << 2, 1);
+        gameCanvas->renderBodyPart(kneeXF16 << 2, kneeYF16 << 2, hipXF16 << 2, hipYF16 << 2, 1);
+        gameCanvas->renderBodyPart(hipXF16 << 2, hipYF16 << 2, shoulderXF16 << 2, shoulderYF16 << 2, 2, torsoAnchorF16);
+        gameCanvas->renderBodyPart(shoulderXF16 << 2, shoulderYF16 << 2, elbowXF16 << 2, elbowYF16 << 2, 0);
+
+        // Calculate helmet angle based on the chassis rotation matrix components
+        int helmetAngleF16 = MathF16::atan2F16(upXF16, upYF16);
+        if (leanF16 > 32768) {
+            helmetAngleF16 += 20588; // Offset helmet if leaning forward
         }
 
-        gameCanvas->drawHelmet(circleXF16 << 2 >> 16, circleYF16 << 2 >> 16, var30);
-    } else {
+        gameCanvas->drawHelmet(headXF16 << 2 >> 16, headYF16 << 2 >> 16, helmetAngleF16);
+    }
+
+    // Line drawing mode
+    else {
         gameCanvas->setColor(0, 0, 0);
-        gameCanvas->drawLineF16(xF16, yF16, x2F16, y2F16);
-        gameCanvas->drawLineF16(x2F16, y2F16, x3F16, y3F16);
-        gameCanvas->setColor(0, 0, 128);
-        gameCanvas->drawLineF16(x3F16, y3F16, x4F16, y4F16);
-        gameCanvas->drawLineF16(x4F16, y4F16, x5F16, y5F16);
-        gameCanvas->drawLineF16(x5F16, y5F16, x6F16, y6F16);
-        int var30 = 65536;
-        gameCanvas->setColor(156, 0, 0);
-        gameCanvas->drawCircle(circleXF16 << 2 >> 16, circleYF16 << 2 >> 16, (var30 + var30) << 2 >> 16);
+        gameCanvas->drawLineF16(ankleXF16, ankleYF16, kneeXF16, kneeYF16);
+        gameCanvas->drawLineF16(kneeXF16, kneeYF16, hipXF16, hipYF16);
+
+        gameCanvas->setColor(0, 0, 128); // Blue torso
+        gameCanvas->drawLineF16(hipXF16, hipYF16, shoulderXF16, shoulderYF16);
+        gameCanvas->drawLineF16(shoulderXF16, shoulderYF16, elbowXF16, elbowYF16);
+        gameCanvas->drawLineF16(elbowXF16, elbowYF16, handlebarXF16, handlebarYF16);
+
+        int radiusBaseF16 = 65536; // 1.0 radius factor
+        gameCanvas->setColor(156, 0, 0); // Red helmet fallback
+        gameCanvas->drawCircle(headXF16 << 2 >> 16, headYF16 << 2 >> 16, (radiusBaseF16 + radiusBaseF16) << 2 >> 16);
     }
 
+    // Attachment points (handlebar/foot peg)
     gameCanvas->setColor(0, 0, 0);
-    gameCanvas->drawForthSpriteByCenter(x6F16 << 2 >> 16, y6F16 << 2 >> 16);
-    gameCanvas->drawForthSpriteByCenter(var14 << 2 >> 16, var15 << 2 >> 16);
+    gameCanvas->drawAttachmentPointSprite(handlebarXF16 << 2 >> 16, handlebarYF16 << 2 >> 16);
+    gameCanvas->drawAttachmentPointSprite(footPegXF16 << 2 >> 16, footPegYF16 << 2 >> 16);
 }
 
-void GamePhysics::renderMotoAsLines(GameCanvas* gameCanvas, int var2, int var3, int var4, int var5)
+void GamePhysics::renderMotoAsLines(GameCanvas* gameCanvas, int upXF16, int upYF16, int fwdXF16, int fwdYF16)
 {
-    int var7 = motoComponents[2]->xF16;
-    int var8 = motoComponents[2]->yF16;
-    int var9 = var7 + (int)((int64_t)var4 * (int64_t)32768 >> 16);
-    int var10 = var8 + (int)((int64_t)var5 * (int64_t)32768 >> 16);
-    int var11 = var7 - (int)((int64_t)var4 * (int64_t)32768 >> 16);
-    int var12 = var8 - (int)((int64_t)var5 * (int64_t)32768 >> 16);
-    int var13 = motoComponents[0]->xF16 + (int)((int64_t)var2 * 32768L >> 16);
-    int var14 = motoComponents[0]->yF16 + (int)((int64_t)var3 * 32768L >> 16);
-    int var15 = var13 - (int)((int64_t)var2 * 131072L >> 16);
-    int var16 = var14 - (int)((int64_t)var3 * 131072L >> 16);
-    int var17 = var15 + (int)((int64_t)var4 * 65536L >> 16);
-    int var18 = var16 + (int)((int64_t)var5 * 65536L >> 16);
-    int var19 = var15 + (int)((int64_t)var2 * 49152L >> 16) + (int)((int64_t)var4 * 49152L >> 16);
-    int var20 = var16 + (int)((int64_t)var3 * 49152L >> 16) + (int)((int64_t)var5 * 49152L >> 16);
-    int var21 = var15 + (int)((int64_t)var4 * 32768L >> 16);
-    int var22 = var16 + (int)((int64_t)var5 * 32768L >> 16);
-    int var23 = motoComponents[1]->xF16;
-    int var24 = motoComponents[1]->yF16;
-    int var25 = motoComponents[4]->xF16 - (int)((int64_t)var2 * 49152L >> 16);
-    int var26 = motoComponents[4]->yF16 - (int)((int64_t)var3 * 49152L >> 16);
-    int var27 = var25 - (int)((int64_t)var4 * 32768L >> 16);
-    int var28 = var26 - (int)((int64_t)var5 * 32768L >> 16);
-    int var29 = var25 - (int)((int64_t)var2 * 131072L >> 16) + (int)((int64_t)var4 * 16384L >> 16);
-    int var30 = var26 - (int)((int64_t)var3 * 131072L >> 16) + (int)((int64_t)var5 * 16384L >> 16);
-    int var31 = motoComponents[3]->xF16;
-    int var32 = motoComponents[3]->yF16;
-    int var33 = var31 + (int)((int64_t)var4 * 32768L >> 16);
-    int var34 = var32 + (int)((int64_t)var5 * 32768L >> 16);
-    int var35 = var31 + (int)((int64_t)var4 * 114688L >> 16) - (int)((int64_t)var2 * 32768L >> 16);
-    int var36 = var32 + (int)((int64_t)var5 * 114688L >> 16) - (int)((int64_t)var3 * 32768L >> 16);
+    // Handlebars / Fork Top (Component 2)
+    int hbarX = renderCache[2]->xF16;
+    int hbarY = renderCache[2]->yF16;
+    int hbarLeftX = hbarX + (int)((int64_t)fwdXF16 * 32768 >> 16);
+    int hbarLeftY = hbarY + (int)((int64_t)fwdYF16 * 32768 >> 16);
+    int hbarRightX = hbarX - (int)((int64_t)fwdXF16 * 32768 >> 16);
+    int hbarRightY = hbarY - (int)((int64_t)fwdYF16 * 32768 >> 16);
+
+    // Main Chassis Frame (Component 0)
+    int frameRootX = renderCache[0]->xF16;
+    int frameRootY = renderCache[0]->yF16;
+    int seatPostTopX = frameRootX + (int)((int64_t)upXF16 * 32768 >> 16);
+    int seatPostTopY = frameRootY + (int)((int64_t)upYF16 * 32768 >> 16);
+
+    // Bottom of the frame (swung down 2 units from the seat post top)
+    int frameBottomX = seatPostTopX - (int)((int64_t)upXF16 * 131072 >> 16);
+    int frameBottomY = seatPostTopY - (int)((int64_t)upYF16 * 131072 >> 16);
+
+    // Engine Guard / Lower Frame
+    int engGuardX = frameBottomX + (int)((int64_t)fwdXF16 * 65536 >> 16);
+    int engGuardY = frameBottomY + (int)((int64_t)fwdYF16 * 65536 >> 16);
+
+    // Fuel Tank / Top Tube area
+    int tankX = frameBottomX + (int)((int64_t)upXF16 * 49152 >> 16) + (int)((int64_t)fwdXF16 * 49152 >> 16);
+    int tankY = frameBottomY + (int)((int64_t)upYF16 * 49152 >> 16) + (int)((int64_t)fwdYF16 * 49152 >> 16);
+
+    int seatX = frameBottomX + (int)((int64_t)fwdXF16 * 32768 >> 16);
+    int seatY = frameBottomY + (int)((int64_t)fwdYF16 * 32768 >> 16);
+
+    // Wheel Mount Points
+    int frontWheelX = renderCache[1]->xF16;
+    int frontWheelY = renderCache[1]->yF16;
+    int rearWheelX = renderCache[3]->xF16;
+    int rearWheelY = renderCache[3]->yF16;
+
+    // Rear Swingarm / Exhaust assembly (Component 4)
+    int exhaustStartX = renderCache[4]->xF16 - (int)((int64_t)upXF16 * 49152 >> 16);
+    int exhaustStartY = renderCache[4]->yF16 - (int)((int64_t)upYF16 * 49152 >> 16);
+    int swingarmPivotX = exhaustStartX - (int)((int64_t)fwdXF16 * 32768 >> 16);
+    int swingarmPivotY = exhaustStartY - (int)((int64_t)fwdYF16 * 32768 >> 16);
+    int exhaustEndX = exhaustStartX - (int)((int64_t)upXF16 * 131072 >> 16) + (int)((int64_t)fwdXF16 * 16384 >> 16);
+    int exhaustEndY = exhaustStartY - (int)((int64_t)upYF16 * 131072 >> 16) + (int)((int64_t)fwdYF16 * 16384 >> 16);
+
+    // Rear Axle supports
+    int rearSupportX = rearWheelX + (int)((int64_t)fwdXF16 * 32768 >> 16);
+    int rearSupportY = rearWheelY + (int)((int64_t)fwdYF16 * 32768 >> 16);
+    int sissyBarTopX = rearWheelX + (int)((int64_t)fwdXF16 * 114688 >> 16) - (int)((int64_t)upXF16 * 32768 >> 16);
+    int sissyBarTopY = rearWheelY + (int)((int64_t)fwdYF16 * 114688 >> 16) - (int)((int64_t)upYF16 * 32768 >> 16);
+
     gameCanvas->setColor(50, 50, 50);
-    gameCanvas->drawCircle(var21 << 2 >> 16, var22 << 2 >> 16, (32768 + 32768) << 2 >> 16);
-    if (!field_35) {
-        gameCanvas->drawLineF16(var9, var10, var17, var18);
-        gameCanvas->drawLineF16(var11, var12, var15, var16);
+
+    // Draw the seat/frame circle
+    gameCanvas->drawCircle(seatX << 2 >> 16, seatY << 2 >> 16, 65536 << 2 >> 16);
+
+    if (!isBikeDestroyed) {
+        gameCanvas->drawLineF16(hbarLeftX, hbarLeftY, engGuardX, engGuardY);
+        gameCanvas->drawLineF16(hbarRightX, hbarRightY, frameBottomX, frameBottomY);
     }
 
-    gameCanvas->drawLineF16(var13, var14, var15, var16);
-    gameCanvas->drawLineF16(var13, var14, var31, var32);
-    gameCanvas->drawLineF16(var19, var20, var33, var34);
-    gameCanvas->drawLineF16(var33, var34, var35, var36);
-    if (!field_35) {
-        gameCanvas->drawLineF16(var31, var32, var23, var24);
-        gameCanvas->drawLineF16(var35, var36, var23, var24);
+    // Connect the frame nodes
+    gameCanvas->drawLineF16(seatPostTopX, seatPostTopY, frameBottomX, frameBottomY);
+    gameCanvas->drawLineF16(seatPostTopX, seatPostTopY, rearWheelX, rearWheelY);
+    gameCanvas->drawLineF16(tankX, tankY, rearSupportX, rearSupportY);
+    gameCanvas->drawLineF16(rearSupportX, rearSupportY, sissyBarTopX, sissyBarTopY);
+
+    if (!isBikeDestroyed) {
+        gameCanvas->drawLineF16(rearWheelX, rearWheelY, frontWheelX, frontWheelY);
+        gameCanvas->drawLineF16(sissyBarTopX, sissyBarTopY, frontWheelX, frontWheelY);
     }
 
-    gameCanvas->drawLineF16(var17, var18, var27, var28);
-    gameCanvas->drawLineF16(var19, var20, var25, var26);
-    gameCanvas->drawLineF16(var25, var26, var29, var30);
-    gameCanvas->drawLineF16(var27, var28, var29, var30);
+    // Connect swingarm/exhaust geometry
+    gameCanvas->drawLineF16(engGuardX, engGuardY, swingarmPivotX, swingarmPivotY);
+    gameCanvas->drawLineF16(tankX, tankY, exhaustStartX, exhaustStartY);
+    gameCanvas->drawLineF16(exhaustStartX, exhaustStartY, exhaustEndX, exhaustEndY);
+    gameCanvas->drawLineF16(swingarmPivotX, swingarmPivotY, exhaustEndX, exhaustEndY);
 }
 
 void GamePhysics::renderGame(GameCanvas* gameCanvas)
 {
     gameCanvas->clearScreenWithWhite();
-    int xxF16 = motoComponents[3]->xF16 - motoComponents[4]->xF16;
-    int yyF16 = motoComponents[3]->yF16 - motoComponents[4]->yF16;
-    int maxAbs;
-    if ((maxAbs = getSmthLikeMaxAbs(xxF16, yyF16)) != 0) {
-        xxF16 = (int)(((int64_t)xxF16 << 32) / (int64_t)maxAbs >> 16);
-        yyF16 = (int)(((int64_t)yyF16 << 32) / (int64_t)maxAbs >> 16);
+
+    // Calculate the vector between front and rear wheels to determine bike tilt
+    // Component 3: Rear Wheel, Component 4: Front Wheel
+    int upXF16 = renderCache[3]->xF16 - renderCache[4]->xF16;
+    int upYF16 = renderCache[3]->yF16 - renderCache[4]->yF16;
+
+    int length = fastVectorLengthF16(upXF16, upYF16);
+    if (length != 0) {
+        // Normalize the Up Vector
+        upXF16 = (int)(((int64_t)upXF16 << 32) / (int64_t)length >> 16);
+        upYF16 = (int)(((int64_t)upYF16 << 32) / (int64_t)length >> 16);
     }
 
-    int var5 = -yyF16;
-    if (field_35) {
-        int var8 = motoComponents[4]->xF16;
-        int var7;
-        if ((var7 = motoComponents[3]->xF16) >= var8) {
-            int var9 = var7;
-            var7 = var8;
-            var8 = var9;
-        }
+    // Derive the perpendicular Forward Vector (rotate Up Vector by 90 degrees)
+    int fwdXF16 = -upYF16;
+    int fwdYF16 = upXF16;
 
-        levelLoader->gameLevel->method_183(var7, var8);
+    if (isBikeDestroyed) {
+        // Find the bounding X-range of the crash for camera/level logic
+        int frontX = renderCache[4]->xF16;
+        int rearX = renderCache[3]->xF16;
+        if (rearX >= frontX) {
+            levelLoader->gameLevel->setShadowBoundariesHalf(frontX, rearX);
+        } else {
+            levelLoader->gameLevel->setShadowBoundariesHalf(rearX, frontX);
+        }
     }
 
     if (LevelLoader::isEnabledPerspective) {
-        levelLoader->renderLevel3D(gameCanvas, motoComponents[0]->xF16, motoComponents[0]->yF16);
+        levelLoader->renderTrack3D(gameCanvas, renderCache[0]->xF16, renderCache[0]->yF16);
     }
 
+    // Render mechanical parts
     if (isRenderMotoWithSprites) {
-        renderEngine(gameCanvas, xxF16, yyF16);
+        renderEngine(gameCanvas, upXF16, upYF16);
     }
 
     if (!Micro::isInGameMenu) {
@@ -1219,21 +1334,27 @@ void GamePhysics::renderGame(GameCanvas* gameCanvas)
     }
 
     renderWheelSpokes(gameCanvas);
-    if (isRenderMotoWithSprites) {
-        gameCanvas->setColor(170, 0, 0);
-    } else {
-        gameCanvas->setColor(50, 50, 50);
-    }
 
-    gameCanvas->method_142(motoComponents[1]->xF16 << 2 >> 16, motoComponents[1]->yF16 << 2 >> 16, const175_1_half[0] << 2 >> 16, MathF16::atan2F16(xxF16, yyF16));
-    if (!field_35) {
+    gameCanvas->setColor(isRenderMotoWithSprites ? 170 : 50, 0, 0);
+
+    // Draw the front wheel hub/details
+    int frontWheelAngle = MathF16::atan2F16(upXF16, upYF16);
+    gameCanvas->drawWheelHub(
+        renderCache[1]->xF16 << 2 >> 16,
+        renderCache[1]->yF16 << 2 >> 16,
+        wheelRadiusValuesF16[0] << 2 >> 16,
+        frontWheelAngle);
+
+    if (!isBikeDestroyed) {
         renderMotoFork(gameCanvas);
     }
 
-    renderSmth(gameCanvas, xxF16, yyF16, var5, xxF16);
+    // Pass the basis vectors (Up and Forward) to the renderers
+    renderRider(gameCanvas, upXF16, upYF16, fwdXF16, fwdYF16);
+
     if (!isRenderMotoWithSprites) {
-        renderMotoAsLines(gameCanvas, xxF16, yyF16, var5, xxF16);
+        renderMotoAsLines(gameCanvas, upXF16, upYF16, fwdXF16, fwdYF16);
     }
 
-    levelLoader->renderTrackNearestLine(gameCanvas);
+    levelLoader->renderTrackCenterline(gameCanvas);
 }

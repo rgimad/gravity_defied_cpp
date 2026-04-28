@@ -18,12 +18,12 @@ void GameLevel::init()
     field_274 = 0;
 }
 
-void GameLevel::method_174(int var1, int var2, int var3, int var4)
+void GameLevel::setStartFinishPositions(int startX, int startY, int finishX, int finishY)
 {
-    startPosX = var1 << 16 >> 3;
-    startPosY = var2 << 16 >> 3;
-    finishPosX = var3 << 16 >> 3;
-    finishPosY = var4 << 16 >> 3;
+    startPosX = startX << 16 >> 3;
+    startPosY = startY << 16 >> 3;
+    finishPosX = finishX << 16 >> 3;
+    finishPosY = finishY << 16 >> 3;
 }
 
 int GameLevel::getStartPosX()
@@ -56,11 +56,11 @@ int GameLevel::getPointY(int pointNo)
     return pointPositions[pointNo][1] << 3 >> 16;
 }
 
-int GameLevel::method_181(int var1)
+int GameLevel::calculateProgressPercent(int currentX)
 {
-    int var2 = var1 - pointPositions[startFlagPoint][0];
-    int var3;
-    return ((var3 = pointPositions[finishFlagPoint][0] - pointPositions[startFlagPoint][0]) < 0 ? -var3 : var3) >= 3 && var2 <= var3 ? (int)(((int64_t)var2 << 32) / (int64_t)var3 >> 16) : 65536;
+    int distanceFromStart = currentX - pointPositions[startFlagPoint][0];
+    int totalDistance;
+    return ((totalDistance = pointPositions[finishFlagPoint][0] - pointPositions[startFlagPoint][0]) < 0 ? -totalDistance : totalDistance) >= 3 && distanceFromStart <= totalDistance ? (int)(((int64_t)distanceFromStart << 32) / (int64_t)totalDistance >> 16) : 65536;
 }
 
 void GameLevel::setMinMaxX(int minX, int maxX)
@@ -69,99 +69,99 @@ void GameLevel::setMinMaxX(int minX, int maxX)
     this->maxX = maxX << 16 >> 3;
 }
 
-void GameLevel::method_183(int var1, int var2)
+void GameLevel::setShadowBoundariesHalf(int startX, int endX)
 {
-    field_264 = var1 >> 1;
-    field_265 = var2 >> 1;
+    shadowStartX = startX >> 1;
+    shadowEndX = endX >> 1;
 }
 
-void GameLevel::method_184(int var1, int var2, int var3)
+void GameLevel::setShadowBoundaries(int startX, int endX, int heightThreshold)
 {
-    field_264 = var1;
-    field_265 = var2;
-    field_266 = var3;
+    shadowStartX = startX;
+    shadowEndX = endX;
+    shadowHeightThreshold = heightThreshold;
 }
 
-void GameLevel::renderShadow(GameCanvas* gameCanvas, int var2, int var3)
+void GameLevel::renderShadow(GameCanvas* gameCanvas, int startLineIdx, int endLineIdx)
 {
-    if (var3 <= pointsCount - 1) {
-        int var4 = field_266 - ((pointPositions[var2][1] + pointPositions[var3 + 1][1]) >> 1) < 0 ? 0 : field_266 - ((pointPositions[var2][1] + pointPositions[var3 + 1][1]) >> 1);
-        if (field_266 <= pointPositions[var2][1] || field_266 <= pointPositions[var3 + 1][1]) {
-            var4 = var4 < 327680 ? var4 : 327680;
+    if (endLineIdx <= pointsCount - 1) {
+        int shadowHeight = shadowHeightThreshold - ((pointPositions[startLineIdx][1] + pointPositions[endLineIdx + 1][1]) >> 1) < 0 ? 0 : shadowHeightThreshold - ((pointPositions[startLineIdx][1] + pointPositions[endLineIdx + 1][1]) >> 1);
+        if (shadowHeightThreshold <= pointPositions[startLineIdx][1] || shadowHeightThreshold <= pointPositions[endLineIdx + 1][1]) {
+            shadowHeight = shadowHeight < 327680 ? shadowHeight : 327680;
         }
 
-        field_277 = (int)((int64_t)field_277 * 49152L >> 16) + (int)((int64_t)var4 * 16384L >> 16);
-        if (field_277 <= 557056) {
-            int var5 = (int)(1638400L * (int64_t)field_277 >> 16) >> 16;
-            gameCanvas->setColor(var5, var5, var5);
-            int var6 = pointPositions[var2][0] - pointPositions[var2 + 1][0];
-            int var8 = (int)(((int64_t)(pointPositions[var2][1] - pointPositions[var2 + 1][1]) << 32) / (int64_t)var6 >> 16);
-            int var9 = pointPositions[var2][1] - (int)((int64_t)pointPositions[var2][0] * (int64_t)var8 >> 16);
-            int var10 = (int)((int64_t)field_264 * (int64_t)var8 >> 16) + var9;
-            var6 = pointPositions[var3][0] - pointPositions[var3 + 1][0];
-            var8 = (int)(((int64_t)(pointPositions[var3][1] - pointPositions[var3 + 1][1]) << 32) / (int64_t)var6 >> 16);
-            var9 = pointPositions[var3][1] - (int)((int64_t)pointPositions[var3][0] * (int64_t)var8 >> 16);
-            int var11 = (int)((int64_t)field_265 * (int64_t)var8 >> 16) + var9;
-            if (var2 == var3) {
-                gameCanvas->drawLine(field_264 << 3 >> 16, (var10 + 65536) << 3 >> 16, field_265 << 3 >> 16, (var11 + 65536) << 3 >> 16);
+        shadowIntensity = (int)((int64_t)shadowIntensity * 49152L >> 16) + (int)((int64_t)shadowHeight * 16384L >> 16);
+        if (shadowIntensity <= 557056) {
+            int shadowColor = (int)(1638400L * (int64_t)shadowIntensity >> 16) >> 16;
+            gameCanvas->setColor(shadowColor, shadowColor, shadowColor);
+            int lineDx = pointPositions[startLineIdx][0] - pointPositions[startLineIdx + 1][0];
+            int lineSlope = (int)(((int64_t)(pointPositions[startLineIdx][1] - pointPositions[startLineIdx + 1][1]) << 32) / (int64_t)lineDx >> 16);
+            int lineIntercept = pointPositions[startLineIdx][1] - (int)((int64_t)pointPositions[startLineIdx][0] * (int64_t)lineSlope >> 16);
+            int startYProjected = (int)((int64_t)shadowStartX * (int64_t)lineSlope >> 16) + lineIntercept;
+            lineDx = pointPositions[endLineIdx][0] - pointPositions[endLineIdx + 1][0];
+            lineSlope = (int)(((int64_t)(pointPositions[endLineIdx][1] - pointPositions[endLineIdx + 1][1]) << 32) / (int64_t)lineDx >> 16);
+            lineIntercept = pointPositions[endLineIdx][1] - (int)((int64_t)pointPositions[endLineIdx][0] * (int64_t)lineSlope >> 16);
+            int endYProjected = (int)((int64_t)shadowEndX * (int64_t)lineSlope >> 16) + lineIntercept;
+            if (startLineIdx == endLineIdx) {
+                gameCanvas->drawLine(shadowStartX << 3 >> 16, (startYProjected + 65536) << 3 >> 16, shadowEndX << 3 >> 16, (endYProjected + 65536) << 3 >> 16);
                 return;
             }
 
-            gameCanvas->drawLine(field_264 << 3 >> 16, (var10 + 65536) << 3 >> 16, pointPositions[var2 + 1][0] << 3 >> 16, (pointPositions[var2 + 1][1] + 65536) << 3 >> 16);
+            gameCanvas->drawLine(shadowStartX << 3 >> 16, (startYProjected + 65536) << 3 >> 16, pointPositions[startLineIdx + 1][0] << 3 >> 16, (pointPositions[startLineIdx + 1][1] + 65536) << 3 >> 16);
 
-            for (int i = var2 + 1; i < var3; ++i) {
+            for (int i = startLineIdx + 1; i < endLineIdx; ++i) {
                 gameCanvas->drawLine(pointPositions[i][0] << 3 >> 16, (pointPositions[i][1] + 65536) << 3 >> 16, pointPositions[i + 1][0] << 3 >> 16, (pointPositions[i + 1][1] + 65536) << 3 >> 16);
             }
 
-            gameCanvas->drawLine(pointPositions[var3][0] << 3 >> 16, (pointPositions[var3][1] + 65536) << 3 >> 16, field_265 << 3 >> 16, (var11 + 65536) << 3 >> 16);
+            gameCanvas->drawLine(pointPositions[endLineIdx][0] << 3 >> 16, (pointPositions[endLineIdx][1] + 65536) << 3 >> 16, shadowEndX << 3 >> 16, (endYProjected + 65536) << 3 >> 16);
         }
     }
 }
 
 void GameLevel::renderLevel3D(GameCanvas* gameCanvas, int xF16, int yF16)
 {
-    int var7 = 0, var8 = 0;
+    int shadowStartLineIdx = 0, shadowEndLineIdx = 0;
     int lineNo;
     for (lineNo = 0; lineNo < pointsCount - 1 && pointPositions[lineNo][0] <= minX; ++lineNo) {
     }
     if (lineNo > 0) {
         --lineNo;
     }
-    int var9 = xF16 - pointPositions[lineNo][0];
-    int var10 = yF16 + 3276800 - pointPositions[lineNo][1];
-    int var11 = GamePhysics::getSmthLikeMaxAbs(var9, var10);
-    var9 = (int)(((int64_t)var9 << 32) / (int64_t)(var11 >> 1 >> 1) >> 16);
-    var10 = (int)(((int64_t)var10 << 32) / (int64_t)(var11 >> 1 >> 1) >> 16);
+    int deltaX = xF16 - pointPositions[lineNo][0];
+    int deltaY = yF16 + 3276800 - pointPositions[lineNo][1];
+    int vectorLength = GamePhysics::fastVectorLengthF16(deltaX, deltaY);
+    deltaX = (int)(((int64_t)deltaX << 32) / (int64_t)(vectorLength >> 1 >> 1) >> 16);
+    deltaY = (int)(((int64_t)deltaY << 32) / (int64_t)(vectorLength >> 1 >> 1) >> 16);
     gameCanvas->setColor(0, 170, 0);
 
     while (lineNo < pointsCount - 1) {
-        int var4 = var9;
-        int var5 = var10;
-        var9 = xF16 - pointPositions[lineNo + 1][0];
-        var10 = yF16 + 3276800 - pointPositions[lineNo + 1][1];
-        var11 = GamePhysics::getSmthLikeMaxAbs(var9, var10);
-        var9 = (int)(((int64_t)var9 << 32) / (int64_t)(var11 >> 1 >> 1) >> 16);
-        var10 = (int)(((int64_t)var10 << 32) / (int64_t)(var11 >> 1 >> 1) >> 16);
+        int prevDeltaX = deltaX;
+        int prevDeltaY = deltaY;
+        deltaX = xF16 - pointPositions[lineNo + 1][0];
+        deltaY = yF16 + 3276800 - pointPositions[lineNo + 1][1];
+        vectorLength = GamePhysics::fastVectorLengthF16(deltaX, deltaY);
+        deltaX = (int)(((int64_t)deltaX << 32) / (int64_t)(vectorLength >> 1 >> 1) >> 16);
+        deltaY = (int)(((int64_t)deltaY << 32) / (int64_t)(vectorLength >> 1 >> 1) >> 16);
         // far line
-        gameCanvas->drawLine((pointPositions[lineNo][0] + var4) << 3 >> 16, (pointPositions[lineNo][1] + var5) << 3 >> 16, (pointPositions[lineNo + 1][0] + var9) << 3 >> 16, (pointPositions[lineNo + 1][1] + var10) << 3 >> 16);
+        gameCanvas->drawLine((pointPositions[lineNo][0] + prevDeltaX) << 3 >> 16, (pointPositions[lineNo][1] + prevDeltaY) << 3 >> 16, (pointPositions[lineNo + 1][0] + deltaX) << 3 >> 16, (pointPositions[lineNo + 1][1] + deltaY) << 3 >> 16);
         // from far to near
-        gameCanvas->drawLine(pointPositions[lineNo][0] << 3 >> 16, pointPositions[lineNo][1] << 3 >> 16, (pointPositions[lineNo][0] + var4) << 3 >> 16, (pointPositions[lineNo][1] + var5) << 3 >> 16);
+        gameCanvas->drawLine(pointPositions[lineNo][0] << 3 >> 16, pointPositions[lineNo][1] << 3 >> 16, (pointPositions[lineNo][0] + prevDeltaX) << 3 >> 16, (pointPositions[lineNo][1] + prevDeltaY) << 3 >> 16);
         if (lineNo > 1) {
-            if (pointPositions[lineNo][0] > field_264 && var7 == 0) {
-                var7 = lineNo - 1;
+            if (pointPositions[lineNo][0] > shadowStartX && shadowStartLineIdx == 0) {
+                shadowStartLineIdx = lineNo - 1;
             }
-            if (pointPositions[lineNo][0] > field_265 && var8 == 0) {
-                var8 = lineNo - 1;
+            if (pointPositions[lineNo][0] > shadowEndX && shadowEndLineIdx == 0) {
+                shadowEndLineIdx = lineNo - 1;
             }
         }
         if (startFlagPoint == lineNo) {
             // render far start flag
-            gameCanvas->renderStartFlag((pointPositions[startFlagPoint][0] + var4) << 3 >> 16, (pointPositions[startFlagPoint][1] + var5) << 3 >> 16);
+            gameCanvas->renderStartFlag((pointPositions[startFlagPoint][0] + prevDeltaX) << 3 >> 16, (pointPositions[startFlagPoint][1] + prevDeltaY) << 3 >> 16);
             gameCanvas->setColor(0, 170, 0);
         }
         if (finishFlagPoint == lineNo) {
             // render far finish flag
-            gameCanvas->renderFinishFlag((pointPositions[finishFlagPoint][0] + var4) << 3 >> 16, (pointPositions[finishFlagPoint][1] + var5) << 3 >> 16);
+            gameCanvas->renderFinishFlag((pointPositions[finishFlagPoint][0] + prevDeltaX) << 3 >> 16, (pointPositions[finishFlagPoint][1] + prevDeltaY) << 3 >> 16);
             gameCanvas->setColor(0, 170, 0);
         }
         if (pointPositions[lineNo][0] > maxX) {
@@ -169,9 +169,9 @@ void GameLevel::renderLevel3D(GameCanvas* gameCanvas, int xF16, int yF16)
         }
         ++lineNo;
     }
-    gameCanvas->drawLine(pointPositions[pointsCount - 1][0] << 3 >> 16, pointPositions[pointsCount - 1][1] << 3 >> 16, (pointPositions[pointsCount - 1][0] + var9) << 3 >> 16, (pointPositions[pointsCount - 1][1] + var10) << 3 >> 16);
+    gameCanvas->drawLine(pointPositions[pointsCount - 1][0] << 3 >> 16, pointPositions[pointsCount - 1][1] << 3 >> 16, (pointPositions[pointsCount - 1][0] + deltaX) << 3 >> 16, (pointPositions[pointsCount - 1][1] + deltaY) << 3 >> 16);
     if (LevelLoader::isEnabledShadows) {
-        renderShadow(gameCanvas, var7, var8);
+        renderShadow(gameCanvas, shadowStartLineIdx, shadowEndLineIdx);
     }
 }
 
@@ -206,8 +206,9 @@ void GameLevel::load(FileStream* inStream)
     int8_t c;
     inStream->readVariable(&c, true);
     if (c == 50) {
-        char var3[20];
-        inStream->readVariable(var3, false, 20);
+        // DEAD CODE: version header buffer, read but never used
+        char versionHeader[20];
+        inStream->readVariable(versionHeader, false, 20);
     }
 
     finishFlagPoint = 0;
@@ -246,19 +247,19 @@ void GameLevel::load(FileStream* inStream)
     }
 }
 
-void GameLevel::addPointSimple(int var1, int var2)
+void GameLevel::addPointSimple(int x, int y)
 {
-    addPoint(var1 << 16 >> 3, var2 << 16 >> 3);
+    addPoint(x << 16 >> 3, y << 16 >> 3);
 }
 
 void GameLevel::addPoint(int x, int y)
 {
     if (pointPositions.empty() || static_cast<int>(pointPositions.size()) <= pointsCount) {
-        int var3 = 100;
+        int newCapacity = 100;
         if (!pointPositions.empty()) {
-            var3 = var3 < static_cast<int>(pointPositions.size()) + 30 ? pointPositions.size() + 30 : var3;
+            newCapacity = newCapacity < static_cast<int>(pointPositions.size()) + 30 ? pointPositions.size() + 30 : newCapacity;
         }
-        pointPositions.resize(var3, std::vector<int>(2)); // ABOBA
+        pointPositions.resize(newCapacity, std::vector<int>(2));
     }
 
     if (pointsCount == 0 || pointPositions[pointsCount - 1][0] < x) {

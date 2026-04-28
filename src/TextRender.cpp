@@ -5,10 +5,10 @@
 #include "lcdui/Font.h"
 #include "lcdui/Graphics.h"
 
-TextRender::TextRender(std::string text, Micro* var2)
+TextRender::TextRender(std::string text, Micro* micro)
 {
     this->text = text;
-    micro = var2;
+    this->micro = micro;
     isDrawSprite = false;
     spriteNo = 0;
     font = nullptr;
@@ -45,9 +45,9 @@ bool TextRender::isNotTextRender()
     return false;
 }
 
-void TextRender::menuElemMethod(int var1)
+void TextRender::menuElemMethod(int index)
 {
-    (void)var1;
+    (void)index; // UNUSED: parameter not used in implementation
 }
 
 void TextRender::render(Graphics* graphics, int y, int x)
@@ -70,19 +70,19 @@ std::vector<TextRender*> TextRender::makeMultilineTextRenders(std::string text, 
 {
     std::size_t startPos = 0;
     std::size_t endPos = 0;
-    int8_t var4 = 25;
+    int8_t padding = 25;
 
     std::vector<TextRender*> vector;
     for (; endPos < text.length(); startPos = ++endPos - 1) {
-        std::size_t var6;
-        if ((var6 = text.find(" ", startPos)) == std::string::npos) {
-            endPos = var6 = text.length();
+        std::size_t spacePos;
+        if ((spacePos = text.find(" ", startPos)) == std::string::npos) {
+            endPos = spacePos = text.length();
         }
 
-        while (endPos < text.length() && defaultFont->substringWidth(text, startPos, var6 - startPos) < fieldMaxWidth - var4) {
-            endPos = var6 + 1;
-            if ((var6 = text.find(" ", var6 + 1)) == std::string::npos) {
-                if (defaultFont->substringWidth(text, startPos, text.length() - 1 - startPos) <= fieldMaxWidth - var4) {
+        while (endPos < text.length() && defaultFont->substringWidth(text, startPos, spacePos - startPos) < fieldMaxWidth - padding) {
+            endPos = spacePos + 1;
+            if ((spacePos = text.find(" ", spacePos + 1)) == std::string::npos) {
+                if (defaultFont->substringWidth(text, startPos, text.length() - 1 - startPos) <= fieldMaxWidth - padding) {
                     endPos = text.length();
                 }
                 break;
@@ -95,9 +95,9 @@ std::vector<TextRender*> TextRender::makeMultilineTextRenders(std::string text, 
     return vector;
 }
 
-void TextRender::setDx(int var1)
+void TextRender::setDx(int dx)
 {
-    dx = var1;
+    this->dx = dx;
 }
 
 void TextRender::setDrawSprite(bool isDrawSprite, int spriteNo)

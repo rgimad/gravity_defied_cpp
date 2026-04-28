@@ -19,8 +19,10 @@ private:
     IMenuManager* menuManager;
     GameMenu* currentGameMenu = nullptr;
     GameMenu* parentGameMenu = nullptr;
-    bool field_146;
-    bool field_147 = false;
+    // Is On/Off toggle mode (vs multi-option)
+    bool isToggleMode;
+    // Selection confirmed flag
+    bool isSelectionConfirmed = false;
     std::string selectedOptionName;
     Micro* micro = nullptr;
     std::vector<SettingsStringRender*> settingsStringRenders;
@@ -31,14 +33,14 @@ private:
     void selectCurrentOptionName();
 
 public:
-    SettingsStringRender(std::string text, int isDisabled, IMenuManager* menuManager, std::vector<std::string> optionsList, bool var5, Micro* micro, GameMenu* gameMenu, bool useColon);
+    SettingsStringRender(std::string text, int isDisabled, IMenuManager* menuManager, std::vector<std::string> optionsList, bool isToggle, Micro* micro, GameMenu* gameMenu, bool useColon);
     void setFlags(bool hasSprite, bool isDrawSprite8);
-    void setOptionsList(std::vector<std::string> var1);
+    void setOptionsList(std::vector<std::string> options);
     void init();
     void setParentGameMenu(GameMenu* parentGameMenu);
     void setText(std::string text);
     bool isNotTextRender();
-    void menuElemMethod(int var1);
+    void menuElemMethod(int action);
     void render(Graphics* graphics, int y, int x);
     void setAvailableOptions(int maxAvailableOption);
     int getMaxAvailableOptionPos();
@@ -46,10 +48,12 @@ public:
     std::vector<std::string> getOptionsList();
     void setCurentOptionPos(int pos);
     int getCurrentOptionPos();
-    GameMenu* getGameMenu();
-    void method_1(GameMenu* var1, bool var2);
-    void saveSmthToRecordStoreAndCloseIt();
-    void processMenu(IGameMenuElement* var1);
+    GameMenu* getCurrentMenu();
+    GameMenu* getParentGameMenu();
+    void switchToMenu(GameMenu* menu, bool skipSelectionReset);
+    void saveStateAndCloseRecordStore();
+    void handleMenuSelection(IGameMenuElement* element);
     std::vector<SettingsStringRender*> getSettingsStringRenders();
-    bool method_114();
+    // Returns true if selection was confirmed, then clears flag
+    bool checkAndClearSelectionFlag();
 };

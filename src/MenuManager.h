@@ -10,7 +10,7 @@ class Micro;
 class RecordManager;
 class Command;
 class GameMenu;
-class TimerOrMotoPartOrMenuElem;
+class PhysicsElemOrMenuItem;
 class SettingsStringRender;
 class RecordStore;
 class Image;
@@ -21,146 +21,177 @@ class IGameMenuElement;
 
 class MenuManager : public IMenuManager {
 private:
-    std::vector<int8_t> field_278;
+    // Saved state buffer (19 bytes) - see initPart case 2 for layout
+    std::vector<int8_t> savedStateBuffer;
     Micro* micro;
     RecordManager* recordManager;
-    Command* commandOk;
-    Command* commandBack;
-    GameMenu* gameMenuMain;
-    GameMenu* gameMenuPlay;
-    GameMenu* gameMenuOptions;
-    GameMenu* gameMenuAbout;
-    GameMenu* gameMenuHelp;
-    GameMenu* gameMenuConfirmClear;
-    GameMenu* gameMenuConfirmReset;
-    GameMenu* gameMenuFinished;
-    GameMenu* gameMenuIngame;
-    TimerOrMotoPartOrMenuElem* taskPlayMenu;
-    TimerOrMotoPartOrMenuElem* taskOptions;
-    TimerOrMotoPartOrMenuElem* taskHelp;
-    SettingsStringRender* settingStringLevel;
-    GameMenu* gameMenuStringLevel;
-    SettingsStringRender* settingsStringTrack;
-    GameMenu* field_299;
-    SettingsStringRender* settingsStringLeague;
-    GameMenu* gameMenuLeague;
-    GameMenu* gameMenuHighscore;
-    TimerOrMotoPartOrMenuElem* gameTimerTaskHighscore;
-    SettingsStringRender* taskStart;
+    Command* okCommand;
+    Command* backCommand;
+    // Main menu screens
+    GameMenu* mainMenu;
+    GameMenu* playMenu;
+    GameMenu* optionsMenu;
+    GameMenu* aboutMenu;
+    GameMenu* helpMenu;
+    GameMenu* confirmClearHighscoresMenu;
+    GameMenu* confirmFullResetMenu;
+    GameMenu* finishedTrackMenu;
+    GameMenu* ingameMenu;
+    // Menu navigation elements
+    PhysicsElemOrMenuItem* playMenuTask;
+    PhysicsElemOrMenuItem* optionsTask;
+    PhysicsElemOrMenuItem* helpTask;
+    SettingsStringRender* levelSetting;
+    GameMenu* levelSelectionMenu;
+    SettingsStringRender* trackSetting;
+    // Parent menu when track selection is active
+    GameMenu* trackSelectionParentMenu;
+    SettingsStringRender* leagueSetting;
+    GameMenu* leagueSelectionMenu;
+    GameMenu* highscoreMenu;
+    PhysicsElemOrMenuItem* highscoreTask;
+    SettingsStringRender* startTask;
     SettingsStringRender* perspectiveSetting;
     SettingsStringRender* shadowsSetting;
     SettingsStringRender* driverSpriteSetting;
     SettingsStringRender* bikeSpriteSetting;
     SettingsStringRender* inputSetting;
     SettingsStringRender* lookAheadSetting;
-    TimerOrMotoPartOrMenuElem* clearHighscoreSetting;
-    TimerOrMotoPartOrMenuElem* field_313;
-    SettingsStringRender* field_314;
-    SettingsStringRender* field_315;
-    TimerOrMotoPartOrMenuElem* taskAbout;
-    GameMenu* field_317;
-    TimerOrMotoPartOrMenuElem* field_318;
-    GameMenu* field_319;
-    TimerOrMotoPartOrMenuElem* field_320;
-    GameMenu* field_321;
-    TimerOrMotoPartOrMenuElem* field_322;
-    GameMenu* gameMenuOptionsHighscoreDescription;
-    TimerOrMotoPartOrMenuElem* taskHighscore;
-    GameMenu* gameMenuOptions2;
-    TimerOrMotoPartOrMenuElem* field_326;
-    GameMenu* gameMenuEnterName;
-    SettingsStringRender* settingStringBack;
-    SettingsStringRender* settingStringPlayMenu;
-    SettingsStringRender* settingStringContinue;
-    SettingsStringRender* settingStringGoToMain;
-    SettingsStringRender* settingStringExitGame;
-    SettingsStringRender* field_333;
-    SettingsStringRender* field_334;
-    SettingsStringRender* field_335;
-    SettingsStringRender* field_336;
-    int64_t field_337;
-    int field_338;
-    int field_339;
-    std::string field_340;
-    char* field_341;
-    char field_342[4];
-    char defaultInputString[4] = "AAA";
-    int8_t availableLeagues = 0;
-    int8_t field_344 = 0;
-    std::vector<int> field_345 = { 0, 0, 0 };
-    std::vector<std::vector<std::string>> levelNames;
+    PhysicsElemOrMenuItem* clearHighscoreTask;
+    PhysicsElemOrMenuItem* fullResetTask;
+    SettingsStringRender* confirmYesSetting;
+    SettingsStringRender* confirmNoSetting;
+    PhysicsElemOrMenuItem* aboutTask;
+    GameMenu* helpObjectiveMenu;
+    PhysicsElemOrMenuItem* helpObjectiveTask;
+    GameMenu* helpKeysMenu;
+    PhysicsElemOrMenuItem* helpKeysTask;
+    GameMenu* helpUnlockingMenu;
+    PhysicsElemOrMenuItem* helpUnlockingTask;
+    GameMenu* helpHighscoreDescriptionMenu;
+    PhysicsElemOrMenuItem* helpHighscoreTask;
+    GameMenu* helpOptionsDescriptionMenu;
+    PhysicsElemOrMenuItem* helpOptionsTask;
+    GameMenu* enterNameMenu;
+    SettingsStringRender* backSetting;
+    SettingsStringRender* playMenuSetting;
+    SettingsStringRender* continueSetting;
+    SettingsStringRender* goToMainSetting;
+    SettingsStringRender* exitGameSetting;
+    // "Restart: [track name]"
+    SettingsStringRender* restartTrackSetting;
+    // "Next: [track name]"
+    SettingsStringRender* nextTrackSetting;
+    // "Ok" for highscore entry
+    SettingsStringRender* okSetting;
+    // "Name - [player name]"
+    SettingsStringRender* nameEntrySetting;
+    int64_t finishTime;
+    // For display formatting
+    int finishTimeSeconds;
+    // For display formatting
+    int finishTimeCentiseconds;
+    // Formatted time string (MM:SS.cc)
+    std::string finishTimeFormatted;
+    // 3-character player name for highscores
+    char* playerName;
+    // Array[3]: max unlocked track per level
+    char maxUnlockedTracksPerLevel[4];
+    char defaultPlayerName[4] = "AAA";
+    // Number of unlocked leagues (0-3)
+    int8_t maxAvailableLeagues = 0;
+    // Number of unlocked levels (1-3)
+    int8_t maxAvailableLevels = 0;
+    // Last selected track for each level
+    std::vector<int> lastSelectedTrackPerLevel = { 0, 0, 0 };
+    // Track names by level
+    std::vector<std::vector<std::string>> trackNamesByLevel;
+    // Current league names
     std::vector<std::string> leagueNames = std::vector<std::string>(3);
-    std::vector<std::string> leagueNamesAll4;
+    // All 4 league names (including 325cc)
+    std::vector<std::string> allLeagueNames;
     RecordStore* recordStore;
-    int recorcStoreRecordId = -1;
+    // Record ID for saved state (typo in original: "recorc")
+    int savedStateRecordId = -1;
     bool isRecordStoreOpened;
-    std::unique_ptr<Image> rasterImage;
-    TextRender* textRenderCodeBrewLink;
-    int field_354 = 0;
-    int field_355 = 0;
-    bool field_356 = false;
-    bool field_357 = false;
-    std::vector<std::string> field_361 = { "Easy", "Medium", "Pro" };
-    int64_t field_362 = 0L;
-    int8_t isDisablePerspective = 0;
-    int8_t isDisabledShadows = 0;
-    int8_t isDisabledDriverSprite = 0;
-    int8_t isDisabledBikeSprite = 0;
-    int8_t field_367 = 0;
-    int8_t isDisableLookAhead = 0;
-    int8_t field_369 = 0;
-    int8_t field_370 = 0;
-    int8_t field_371 = 0;
-    int8_t field_372 = 0;
-    int8_t field_373 = 0;
-    std::vector<std::string> field_374;
-    std::vector<std::string> field_375;
-    std::unique_ptr<TextRender> field_376;
+    // raster.png
+    std::unique_ptr<Image> menuBackgroundImage;
+    // Clickable link to codebrew.se
+    TextRender* codebrewLinkText;
+    int savedLevelBeforeMenu = 0;
+    int savedTrackBeforeMenu = 0;
+    bool isAllTracksCompletedAtLevel = false;
+    // Flag to start race without menu interaction
+    bool shouldStartRaceImmediately = false;
+    // Level display names
+    std::vector<std::string> levelNames = { "Easy", "Medium", "Pro" };
+    int64_t menuLoopStartTime = 0L;
+    int8_t perspectiveDisabled = 0;
+    int8_t shadowsDisabled = 0;
+    int8_t driverSpriteDisabled = 0;
+    int8_t bikeSpriteDisabled = 0;
+    // Selected input method (0-2)
+    int8_t inputMethod = 0;
+    int8_t lookAheadDisabled = 0;
+    int8_t lastSelectedTrack = 0;
+    int8_t lastSelectedLevel = 0;
+    int8_t lastSelectedLeague = 0;
+    int8_t unknownGraphicsSetting = 0; // Graphics setting passed to setInputConfigEnabled
+    int8_t unknownSetting15 = 0; // Unknown setting from save index 15
+    std::vector<std::string> onOffOptions; // {"On", "Off"}
+    // {"Keyset 1", "Keyset 2", "Keyset 3"}
+    std::vector<std::string> inputMethodNames;
+    // Empty text for help menu separators
+    std::unique_ptr<TextRender> helpSeparatorText;
     // Alert alert = nullptr; // TODO
 
-    void addTextRender(GameMenu* gameMenu, std::string text);
-    void method_197();
-    void fillCanvasWithImage(Graphics* graphics);
-    void processNonFireKeyCode(int keyCode);
-    std::vector<int8_t> method_216(int var1, int8_t var2);
-    int8_t method_217(int var1, int8_t var2);
-    void copyThreeBytesFromArr(int var1, char* var2);
-    std::string timeToString(int64_t time);
-    void setValue(int pos, int8_t value);
-    void exit();
-    int getCountOfRecordStoresWithPrefix(int prefixNumber);
+    void addMultilineTextToMenu(GameMenu* menu, const std::string& text);
+    void saveHighscoreAndShowResults();
+    void tileBackgroundImage(Graphics* graphics);
+    void processNonFireKey(int keyCode);
+    std::vector<int8_t> loadPlayerName(int index, int8_t defaultValue);
+    int8_t loadSavedStateValue(int index, int8_t defaultValue);
+    void savePlayerNameToBuffer(int index, char* name);
+    std::string formatTime(int64_t timeMs);
+    void setSavedStateValue(int index, int8_t value);
+    void performFullReset();
+    int countRecordStoresForLevel(int levelIndex);
 
 public:
     GameMenu* currentGameMenu;
-    int field_360 = 0;
-    bool field_377 = false;
+    // Currently viewed league in highscore screen
+    int highscoreLeagueViewIndex = 0;
+    // Prevents menu rendering over game
+    bool isMenuRenderingBlocked = false;
 
-    MenuManager(Micro* var1);
-    void initPart(int var1);
-    int getCurrentLevel();
-    int getCurrentTrack();
-    bool method_196();
-    void repaint();
+    MenuManager(Micro* micro);
+    // Initialize in phases 1-7
+    void initializePhase(int phase);
+    // Returns and clears shouldStartRaceImmediately
+    bool consumeShouldStartRaceFlag();
+    void requestRepaint();
     int getCanvasHeight();
     int getCanvasWidth();
-    void method_201(int var1);
-    void method_206(Command* var1, Displayable* var2);
-    GameMenu* getGameMenu();
-    void method_1(GameMenu* gm, bool var2);
-    void method_207(int var1);
-    /* synchronized */ void saveSmthToRecordStoreAndCloseIt();
-    void method_208();
-    void run();
-    void showAlert(std::string title, std::string alertText, Image* image);
-    void processMenu(IGameMenuElement* menuElement);
-    int method_210();
-    void method_211(int var1);
-    int method_212();
-    int method_213();
-    int method_214();
-    void method_215(int64_t var1);
-    void removeOkAndBackCommands();
-    void addOkAndBackCommands();
-    /* synchronized */ void method_202(Graphics* var1);
-    void processKeyCode(int keyCode);
+    // 0=main, 1=ingame, 2=finished
+    void runMenuLoop(int menuType);
+    void handleCommand(Command* command, Displayable* displayable);
+    GameMenu* getCurrentMenu();
+    void switchToMenu(GameMenu* menu, bool skipSelectionReset);
+    void refreshHighscoreDisplay(int leagueIndex);
+    /* synchronized */ void saveStateAndCloseRecordStore();
+    void saveSettingsToBuffer();
+    void runAlertThread(); // TODO: Thread entry point for alert display
+    void showAlert(const std::string& title, const std::string& message, Image* image);
+    void handleMenuSelection(IGameMenuElement* element);
+    // Bitfield: bit 0=bike sprite, bit 1=driver sprite
+    int getGraphicsFlags();
+    void applyGraphicsFlags(int flags);
+    int getSelectedLevel();
+    int getSelectedTrack();
+    int getSelectedLeague();
+    void setFinishTime(int64_t timeMs);
+    void removeCommands();
+    void addCommands();
+    /* synchronized */ void renderMenuOverGame(Graphics* graphics);
+    void processKey(int keyCode);
 };

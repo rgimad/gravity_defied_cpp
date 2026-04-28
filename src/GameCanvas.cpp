@@ -42,10 +42,10 @@ void GameCanvas::drawSprite(Graphics* g, int spriteNo, int x, int y)
     }
 }
 
-void GameCanvas::requestRepaint(int var1)
+void GameCanvas::requestRepaint(int state)
 {
-    field_184 = var1;
-    if (var1 == 0) {
+    loadingScreenState = state;
+    if (state == 0) {
         splashImage = nullptr;
         logoImage = nullptr;
     } else {
@@ -54,9 +54,9 @@ void GameCanvas::requestRepaint(int var1)
     }
 }
 
-void GameCanvas::method_124(bool var1)
+void GameCanvas::setInputConfigEnabled(bool enabled)
 {
-    field_205 = var1;
+    unknown_bool = enabled; // Set but never read - possibly dead code
     updateSizeAndRepaint();
 }
 
@@ -85,7 +85,7 @@ int GameCanvas::loadSprites(int flags)
         fenderImage = nullptr;
         engineImage = nullptr;
     }
-    
+
     if (flags & 2) {
         if (!bodyPartsImages[1]) {
             bodyPartsImages[1] = std::make_unique<Image>("blueleg.png");
@@ -112,9 +112,9 @@ int GameCanvas::loadSprites(int flags)
     return flags;
 }
 
-void GameCanvas::method_129()
+void GameCanvas::reset()
 {
-    method_164();
+    resetActiveKeys();
 }
 
 void GameCanvas::setViewPosition(int dx, int dy)
@@ -175,17 +175,19 @@ void GameCanvas::renderBodyPart(int x1F16, int y1F16, int x2F16, int y2F16, int 
     }
 }
 
-void GameCanvas::method_142(int var1, int var2, int var3, int var4)
+void GameCanvas::drawWheelHub(int centerX, int centerY, int radius, int angleF16)
 {
-    ++var3;
-    int var5 = addDx(var1 - var3);
-    int var6 = addDy(var2 + var3);
-    int var7 = var3 << 1;
-    if ((var4 = -((int)(((int64_t)((int)((int64_t)var4 * 11796480L >> 16)) << 32) / 205887L >> 16))) < 0) {
-        var4 += 360;
+    // Draw arc representing wheel hub/spokes at specified position and angle
+    ++radius; // Slight radius adjustment
+    int screenX = addDx(centerX - radius);
+    int screenY = addDy(centerY + radius);
+    int diameter = radius << 1;
+    // Convert angle from fixed-point to degrees and draw 90-degree arc
+    if ((angleF16 = -((int)(((int64_t)((int)((int64_t)angleF16 * 11796480L >> 16)) << 32) / 205887L >> 16))) < 0) {
+        angleF16 += 360;
     }
 
-    graphics->drawArc(var5, var6, var7, var7, (var4 >> 16) + 170, 90);
+    graphics->drawArc(screenX, screenY, diameter, diameter, (angleF16 >> 16) + 170, 90);
 }
 
 void GameCanvas::drawCircle(int x, int y, int size)
@@ -198,26 +200,26 @@ void GameCanvas::drawCircle(int x, int y, int size)
 
 void GameCanvas::fillRect(int x, int y, int w, int h)
 {
-    int var5 = addDx(x);
-    int var6 = addDy(y);
-    graphics->fillRect(var5, var6, w, h);
+    int screenX = addDx(x);
+    int screenY = addDy(y);
+    graphics->fillRect(screenX, screenY, w, h);
 }
 
-void GameCanvas::drawForthSpriteByCenter(int centerX, int centerY)
+void GameCanvas::drawAttachmentPointSprite(int x, int y)
 {
     int halfSizeX = spriteSizeX[4] / 2;
     int halfSizeY = spriteSizeY[4] / 2;
-    drawSprite(graphics, 4, addDx(centerX - halfSizeX), addDy(centerY + halfSizeY));
+    drawSprite(graphics, 4, addDx(x - halfSizeX), addDy(y + halfSizeY));
 }
 
 void GameCanvas::drawHelmet(int x, int y, int angleF16)
 {
-    int var4 = calcSpriteNo(angleF16, -102943, 411774, 32, true);
+    int spriteNo = calcSpriteNo(angleF16, -102943, 411774, 32, true);
     if (helmetImage != nullptr) {
-        int var5 = addDx(x) - helmetSpriteWidth / 2;
-        int var6 = addDy(y) - helmetSpriteHeight / 2;
-        graphics->setClip(var5, var6, helmetSpriteWidth, helmetSpriteHeight);
-        graphics->drawImage(helmetImage.get(), var5 - helmetSpriteWidth * (var4 % 6), var6 - helmetSpriteHeight * (var4 / 6), 20);
+        int screenX = addDx(x) - helmetSpriteWidth / 2;
+        int screenY = addDy(y) - helmetSpriteHeight / 2;
+        graphics->setClip(screenX, screenY, helmetSpriteWidth, helmetSpriteHeight);
+        graphics->drawImage(helmetImage.get(), screenX - helmetSpriteWidth * (spriteNo % 6), screenY - helmetSpriteHeight * (spriteNo / 6), 20);
         graphics->setClip(0, 0, width, getHeight());
     }
 }
@@ -260,18 +262,19 @@ void GameCanvas::drawTime(int64_t time10Ms)
     }
 }
 
-void GameCanvas::method_150(int var1)
+void GameCanvas::triggerTimerIfMatching(int timerId)
 {
-    if (timerId == var1) {
+    if (this->timerId == timerId) {
         timerTriggered = true;
     }
 }
 
-void GameCanvas::method_151()
+void GameCanvas::flagAnimation()
 {
-    field_226 += 655;
-    int var0 = 32768 + ((MathF16::sinF16(field_226) < 0 ? -MathF16::sinF16(field_226) : MathF16::sinF16(field_226)) >> 1);
-    flagAnimationTime += (int)(6553L * (int64_t)var0 >> 16);
+    // Update flag animation phase (fixed-point, incremented by 655 each frame)
+    flagAnimationPhase += 655;
+    int amplitude = 32768 + ((MathF16::sinF16(flagAnimationPhase) < 0 ? -MathF16::sinF16(flagAnimationPhase) : MathF16::sinF16(flagAnimationPhase)) >> 1);
+    flagAnimationTime += (int)(6553L * (int64_t)amplitude >> 16);
 }
 
 void GameCanvas::renderStartFlag(int x, int y)
@@ -312,21 +315,22 @@ void GameCanvas::drawWheelTires(int x, int y, int wheelIsThin)
     drawSprite(graphics, spriteNo, centerX, centerY);
 }
 
-int GameCanvas::calcSpriteNo(int angleF16, int var2, int var3, int var4, bool var5)
+int GameCanvas::calcSpriteNo(int angleF16, int angleOffset, int angleRange, int spriteCount, bool flipDirection)
 {
-    for (angleF16 += var2; angleF16 < 0; angleF16 += var3) {
+    // Calculate sprite number from angle for animated sprites
+    for (angleF16 += angleOffset; angleF16 < 0; angleF16 += angleRange) {
     }
 
-    while (angleF16 >= var3) {
-        angleF16 -= var3;
+    while (angleF16 >= angleRange) {
+        angleF16 -= angleRange;
     }
 
-    if (var5) {
-        angleF16 = var3 - angleF16;
+    if (flipDirection) {
+        angleF16 = angleRange - angleF16;
     }
 
-    int var6;
-    return (var6 = (int)((int64_t)((int)(((int64_t)angleF16 << 32) / (int64_t)var3 >> 16)) * (int64_t)(var4 << 16) >> 16)) >> 16 < var4 - 1 ? var6 >> 16 : var4 - 1;
+    int spriteIndex;
+    return (spriteIndex = (int)((int64_t)((int)(((int64_t)angleF16 << 32) / (int64_t)angleRange >> 16)) * (int64_t)(spriteCount << 16) >> 16)) >> 16 < spriteCount - 1 ? spriteIndex >> 16 : spriteCount - 1;
 }
 
 void GameCanvas::renderEngine(int x, int y, int angleF16)
@@ -384,12 +388,13 @@ void GameCanvas::setColor(int red, int green, int blue)
 void GameCanvas::drawGame(Graphics* g)
 {
     // synchronized (objectForSyncronization) {
-    if (Micro::field_249 && !micro->field_242) {
+    if (Micro::isGameLoopRunning && !micro->isAboutToExit) {
         graphics = g;
 
-        int var3;
-        if (field_184 != 0) {
-            if (field_184 == 1) {
+        int progress;
+        if (loadingScreenState != 0) {
+            if (loadingScreenState == 1) {
+                // Logo screen
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
                 if (logoImage != nullptr) {
@@ -398,6 +403,7 @@ void GameCanvas::drawGame(Graphics* g)
                     drawSprite(graphics, 17, getWidth() - spriteSizeX[17] - 4, getHeight() - spriteSizeY[17] - spriteSizeY[16] - 9);
                 }
             } else {
+                // Splash screen
                 graphics->setColor(255, 255, 255);
                 graphics->fillRect(0, 0, getWidth(), getHeight());
                 if (splashImage != nullptr) {
@@ -405,15 +411,16 @@ void GameCanvas::drawGame(Graphics* g)
                 }
             }
 
-            var3 = (int)(((int64_t)(Micro::gameLoadingStateStage << 16) << 32) / 655360L >> 16);
-            method_161(var3, true);
+            progress = (int)(((int64_t)(Micro::gameLoadingStateStage << 16) << 32) / 655360L >> 16);
+            drawProgressBar(progress, true);
         } else {
             if (height != getHeight()) {
                 updateSizeAndRepaint();
             }
 
-            gamePhysics->setMotoComponents();
-            setViewPosition(-gamePhysics->getCamPosX() + field_178 + width / 2, gamePhysics->getCamPosY() + field_179 + height2 / 2);
+            gamePhysics->prepareRenderCache();
+            // Apply camera offsets for view adjustment
+            setViewPosition(-gamePhysics->getCamPosX() + cameraOffsetX + width / 2, gamePhysics->getCamPosY() + cameraOffsetY + height2 / 2);
             gamePhysics->renderGame(this);
             if (isDrawingTime) {
                 drawTime(micro->gameTimeMs / 10L);
@@ -439,8 +446,8 @@ void GameCanvas::drawGame(Graphics* g)
             // graphics->setFont(font);
             // graphics->drawString("FPS: " + std::to_string(fps), defaultFontWidth00, height2 - 5, 36);
 
-            var3 = gamePhysics->method_52();
-            method_161(var3, false);
+            progress = gamePhysics->getRawXDistance();
+            drawProgressBar(progress, false);
         }
 
         graphics = nullptr;
@@ -448,18 +455,21 @@ void GameCanvas::drawGame(Graphics* g)
     // }
 }
 
-void GameCanvas::method_161(int var1, bool mode)
+void GameCanvas::drawProgressBar(int progress, bool mode)
 {
-    int h = mode ? height : height2;
+    // Draw progress bar (loading or distance)
+    // progress: 0-65536 fixed-point value
+    int canvasHeight = mode ? height : height2;
     setColor(0, 0, 0);
-    graphics->fillRect(1, h - 4, width - 2, 3);
+    graphics->fillRect(1, canvasHeight - 4, width - 2, 3);
     setColor(255, 255, 255);
-    graphics->fillRect(2, h - 3, (int)((int64_t)((width - 4) << 16) * (int64_t)var1 >> 16) >> 16, 1);
+    graphics->fillRect(2, canvasHeight - 3, (int)((int64_t)((width - 4) << 16) * (int64_t)progress >> 16) >> 16, 1);
 }
 
-void GameCanvas::method_163(int var1)
+void GameCanvas::setInputConfigIndex(int configIndex)
 {
-    field_232 = var1;
+    // Set input configuration index (0, 1, or 2) - selects key-to-direction mapping
+    inputConfigIndex = configIndex;
 }
 
 void GameCanvas::paint(Graphics* graphics)
@@ -476,53 +486,53 @@ void GameCanvas::paint(Graphics* graphics)
 
     processTimers(); // We need to call this function as often as we can. It might be better to move this call somewhere.
     if (Micro::isInGameMenu && menuManager != nullptr) {
-        menuManager->method_202(graphics);
+        menuManager->renderMenuOverGame(graphics);
     } else {
         drawGame(graphics);
     }
 }
 
-void GameCanvas::method_164()
+void GameCanvas::resetActiveKeys()
 {
-    int var1;
-    for (var1 = 0; var1 < 10; ++var1) {
-        activeKeys[var1] = false;
+    int i;
+    for (i = 0; i < 10; ++i) {
+        activeKeys[i] = false;
     }
 
-    for (var1 = 0; var1 < 7; ++var1) {
-        activeActions[var1] = false;
+    for (i = 0; i < 7; ++i) {
+        activeActions[i] = false;
     }
 }
 
 void GameCanvas::handleUpdatedInput()
 {
-    int var1 = 0;
-    int var2 = 0;
-    int var3 = field_232;
+    int upDown = 0;
+    int leftRight = 0;
+    int configIndex = inputConfigIndex;
 
-    int var4;
-    for (var4 = 0; var4 < 10; ++var4) {
-        if (activeKeys[var4]) {
-            var1 += field_231[var3][var4][0];
-            var2 += field_231[var3][var4][1];
+    int i;
+    for (i = 0; i < 10; ++i) {
+        if (activeKeys[i]) {
+            upDown += keyDirectionMap[configIndex][i][0];
+            leftRight += keyDirectionMap[configIndex][i][1];
         }
     }
 
-    for (var4 = 0; var4 < 7; ++var4) {
-        if (activeActions[var4]) {
-            var1 += field_230[var4][0];
-            var2 += field_230[var4][1];
+    for (i = 0; i < 7; ++i) {
+        if (activeActions[i]) {
+            upDown += actionDirectionMap[i][0];
+            leftRight += actionDirectionMap[i][1];
         }
     }
 
-    gamePhysics->method_30(var1, var2);
+    gamePhysics->updateInputs(upDown, leftRight);
 }
 
 void GameCanvas::processTimers()
 {
     for (auto i = timers.begin(); i != timers.end();) {
         if (i->ready()) {
-            method_150(i->getId());
+            triggerTimerIfMatching(i->getId());
             i = timers.erase(i);
         } else {
             i++;
@@ -563,11 +573,11 @@ void GameCanvas::init(GamePhysics* gamePhysics)
     gamePhysics->setMinimalScreenWH(width < height2 ? width : height2);
 }
 
-void GameCanvas::scheduleGameTimerTask(std::string timerMessage, int delayMs)
+void GameCanvas::scheduleGameTimerTask(const std::string& message, int delayMs)
 {
     timerTriggered = false;
     ++timerId;
-    this->timerMessage = timerMessage;
+    timerMessage = message;
     timers.push_back(Timer(timerId, delayMs));
 }
 
@@ -576,35 +586,35 @@ void GameCanvas::setMenuManager(MenuManager* menuManager)
     this->menuManager = menuManager;
 }
 
-void GameCanvas::method_168(Command* var1, Displayable* var2)
+void GameCanvas::handleMenuCommand(Command* command, Displayable* displayable)
 {
-    (void)var2;
-    if (var1 == commandMenu) {
-        menuManager->field_377 = true;
-        micro->gameToMenu();
+    (void)displayable;
+    if (command == commandMenu) {
+        menuManager->isMenuRenderingBlocked = true; // Signal menu manager to show menu
+        micro->gameToMenu(); // Transition from game to menu state
     }
 }
 
-void GameCanvas::keyPressed(int var1)
+void GameCanvas::keyPressed(int keyCode)
 {
     if (Micro::isInGameMenu && menuManager != nullptr) {
-        menuManager->processKeyCode(var1);
+        menuManager->processKey(keyCode);
     }
 
-    processKeyPressed(var1);
+    processKeyPressed(keyCode);
 }
 
-void GameCanvas::keyReleased(int var1)
+void GameCanvas::keyReleased(int keyCode)
 {
-    processKeyReleased(var1);
+    processKeyReleased(keyCode);
 }
 
-void GameCanvas::commandAction(Command* var1, Displayable* var2)
+void GameCanvas::commandAction(Command* command, Displayable* displayable)
 {
     if (Micro::isInGameMenu && menuManager != nullptr) {
-        menuManager->method_206(var1, var2);
+        menuManager->handleCommand(command, displayable);
     } else {
-        method_168(var1, var2);
+        handleMenuCommand(command, displayable);
     }
 }
 
